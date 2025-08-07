@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모의투자 시스템</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="logo">💼 투자관리</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">홈</a></li>
+                    <li><a href="a2.html" class="nav-link">뉴스</a></li>
+                    <li><a href="a5.html" class="nav-link active">모의투자</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 탭 네비게이션 -->
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="overview">포트폴리오</button>
+                <button class="tab-button" data-tab="trading">주식거래</button>
+                <button class="tab-button" data-tab="savings">예적금</button>
+                <button class="tab-button" data-tab="ledger">가계부</button>
+            </div>
+
+            <!-- 포트폴리오 개요 -->
+            <div id="overview" class="tab-content active">
+                <div class="card">
+                    <h2 class="card-title">💰 포트폴리오 현황</h2>
+                    <div class="portfolio-grid">
+                        <div class="portfolio-item">
+                            <div class="portfolio-symbol">총 자산</div>
+                            <div class="portfolio-price" id="totalAssets">₩0</div>
+                            <div class="portfolio-change" id="totalChange">+0.00%</div>
+                        </div>
+                        <div class="portfolio-item">
+                            <div class="portfolio-symbol">투자금</div>
+                            <div class="portfolio-price" id="investedAmount">₩0</div>
+                            <div class="portfolio-change">원금</div>
+                        </div>
+                        <div class="portfolio-item">
+                            <div class="portfolio-symbol">평가손익</div>
+                            <div class="portfolio-price" id="profitLoss">₩0</div>
+                            <div class="portfolio-change" id="profitLossPercent">0.00%</div>
+                        </div>
+                        <div class="portfolio-item">
+                            <div class="portfolio-symbol">보유 현금</div>
+                            <div class="portfolio-price" id="availableCash">₩10,000,000</div>
+                            <div class="portfolio-change">가용자금</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📊 보유 종목</h3>
+                    <div id="holdingsTable">
+                        <p class="text-center" style="color: #7f8c8d; padding: 2rem;">
+                            보유 중인 종목이 없습니다.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📈 거래 내역</h3>
+                    <div id="transactionHistory">
+                        <p class="text-center" style="color: #7f8c8d; padding: 2rem;">
+                            거래 내역이 없습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주식거래 -->
+            <div id="trading" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">📈 주식 거래</h2>
+                    
+                    <!-- 종목 검색 -->
+                    <div class="form-group">
+                        <label class="form-label">종목 선택:</label>
+                        <select id="stockSelect" class="form-input">
+                            <option value="">종목을 선택하세요</option>
+                            <option value="AAPL">Apple Inc. (AAPL)</option>
+                            <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
+                            <option value="TSLA">Tesla Inc. (TSLA)</option>
+                            <option value="MSFT">Microsoft Corp. (MSFT)</option>
+                            <option value="AMZN">Amazon.com Inc. (AMZN)</option>
+                        </select>
+                    </div>
+
+                    <!-- 선택된 종목 정보 -->
+                    <div id="stockInfo" class="hidden">
+                        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                            <div class="flex justify-between align-center">
+                                <div>
+                                    <h4 id="stockName" style="margin-bottom: 0.5rem;">-</h4>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #2c3e50;" id="stockPrice">$0.00</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="stockChange" class="portfolio-change">+0.00%</div>
+                                    <div style="font-size: 0.9rem; color: #7f8c8d;">실시간 가격</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 거래 폼 -->
+                    <div id="tradingForm" class="hidden">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div class="card">
+                                <h4 style="color: #27ae60; margin-bottom: 1rem;">📈 매수</h4>
+                                <div class="form-group">
+                                    <label class="form-label">수량:</label>
+                                    <input type="number" id="buyQuantity" class="form-input" min="1" placeholder="매수할 수량">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">예상 총액:</label>
+                                    <div id="buyTotal" style="font-size: 1.2rem; font-weight: bold; color: #27ae60;">$0.00</div>
+                                </div>
+                                <button class="btn btn-success" onclick="executeTrade('buy')">매수 주문</button>
+                            </div>
+                            
+                            <div class="card">
+                                <h4 style="color: #e74c3c; margin-bottom: 1rem;">📉 매도</h4>
+                                <div class="form-group">
+                                    <label class="form-label">수량:</label>
+                                    <input type="number" id="sellQuantity" class="form-input" min="1" placeholder="매도할 수량">
+                                    <small id="maxSellQuantity" style="color: #7f8c8d;"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">예상 총액:</label>
+                                    <div id="sellTotal" style="font-size: 1.2rem; font-weight: bold; color: #e74c3c;">$0.00</div>
+                                </div>
+                                <button class="btn btn-danger" onclick="executeTrade('sell')">매도 주문</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 실시간 시장 현황 -->
+                <div class="card">
+                    <h3 class="card-title">🌍 실시간 시장 현황</h3>
+                    <div id="marketData">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>시장 데이터를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예적금 -->
+            <div id="savings" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">🏦 예적금 관리</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div class="card">
+                            <h4 style="color: #3498db; margin-bottom: 1rem;">💰 예금 가입</h4>
+                            <div class="form-group">
+                                <label class="form-label">예금 종류:</label>
+                                <select id="depositType" class="form-input">
+                                    <option value="정기예금">정기예금</option>
+                                    <option value="자유적금">자유적금</option>
+                                    <option value="정기적금">정기적금</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">가입 금액 (원):</label>
+                                <input type="number" id="depositAmount" class="form-input" min="10000" step="10000" placeholder="최소 1만원">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">기간 (개월):</label>
+                                <select id="depositTerm" class="form-input">
+                                    <option value="3">3개월 (연 2.5%)</option>
+                                    <option value="6">6개월 (연 2.8%)</option>
+                                    <option value="12">12개월 (연 3.2%)</option>
+                                    <option value="24">24개월 (연 3.5%)</option>
+                                    <option value="36">36개월 (연 3.8%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">예상 만기 금액:</label>
+                                <div id="expectedReturn" style="font-size: 1.2rem; font-weight: bold; color: #3498db;">₩0</div>
+                            </div>
+                            <button class="btn btn-success" onclick="subscribeSavings()">가입하기</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h4 style="color: #9b59b6; margin-bottom: 1rem;">📋 가입 상품 목록</h4>
+                            <div id="savingsList">
+                                <p class="text-center" style="color: #7f8c8d;">가입한 예적금 상품이 없습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 가계부 -->
+            <div id="ledger" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">📝 가계부 관리</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">새 항목 추가</h4>
+                            <div class="form-group">
+                                <label class="form-label">날짜:</label>
+                                <input type="date" id="ledgerDate" class="form-input" value="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">구분:</label>
+                                <select id="ledgerType" class="form-input">
+                                    <option value="income">수입</option>
+                                    <option value="expense">지출</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">카테고리:</label>
+                                <select id="ledgerCategory" class="form-input">
+                                    <option value="급여">급여</option>
+                                    <option value="용돈">용돈</option>
+                                    <option value="식비">식비</option>
+                                    <option value="교통비">교통비</option>
+                                    <option value="쇼핑">쇼핑</option>
+                                    <option value="금융상품">금융상품</option>
+                                    <option value="기타">기타</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">금액 (원):</label>
+                                <input type="number" id="ledgerAmount" class="form-input" min="1" placeholder="금액 입력">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">내용:</label>
+                                <input type="text" id="ledgerDescription" class="form-input" placeholder="상세 내용">
+                            </div>
+                            <button class="btn btn-success" onclick="addLedgerEntry()">추가</button>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="flex justify-between align-center mb-2">
+                                <h4>가계부 내역</h4>
+                                <div>
+                                    <button class="btn btn-secondary" onclick="exportLedger()">엑셀 내보내기</button>
+                                </div>
+                            </div>
+                            <div id="ledgerSummary" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="background: #e8f5e8; padding: 1rem; border-radius: 4px; text-align: center;">
+                                    <div style="color: #27ae60; font-weight: bold;">총 수입</div>
+                                    <div id="totalIncome" style="font-size: 1.2rem; font-weight: bold;">₩0</div>
+                                </div>
+                                <div style="background: #ffeaea; padding: 1rem; border-radius: 4px; text-align: center;">
+                                    <div style="color: #e74c3c; font-weight: bold;">총 지출</div>
+                                    <div id="totalExpense" style="font-size: 1.2rem; font-weight: bold;">₩0</div>
+                                </div>
+                                <div style="background: #e3f2fd; padding: 1rem; border-radius: 4px; text-align: center;">
+                                    <div style="color: #2196f3; font-weight: bold;">잔액</div>
+                                    <div id="balance" style="font-size: 1.2rem; font-weight: bold;">₩0</div>
+                                </div>
+                            </div>
+                            <div id="ledgerTable">
+                                <p class="text-center" style="color: #7f8c8d; padding: 2rem;">
+                                    가계부 내역이 없습니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        let currentStock = null;
+        let stockPrices = {};
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            // 오늘 날짜 설정
+            document.getElementById('ledgerDate').value = new Date().toISOString().split('T')[0];
+            
+            // 데이터 로드
+            updatePortfolioOverview();
+            loadMarketData();
+            loadSavingsList();
+            updateLedgerDisplay();
+            
+            // 실시간 가격 업데이트 시작
+            startRealTimeUpdates();
+            
+            // 이벤트 리스너 등록
+            setupEventListeners();
+        });
+
+        // 이벤트 리스너 설정
+        function setupEventListeners() {
+            // 종목 선택 시
+            document.getElementById('stockSelect').addEventListener('change', function() {
+                const symbol = this.value;
+                if (symbol) {
+                    loadStockInfo(symbol);
+                } else {
+                    document.getElementById('stockInfo').classList.add('hidden');
+                    document.getElementById('tradingForm').classList.add('hidden');
+                }
+            });
+
+            // 수량 입력 시 총액 계산
+            document.getElementById('buyQuantity').addEventListener('input', updateTradingCalculations);
+            document.getElementById('sellQuantity').addEventListener('input', updateTradingCalculations);
+
+            // 예적금 계산
+            document.getElementById('depositAmount').addEventListener('input', calculateExpectedReturn);
+            document.getElementById('depositTerm').addEventListener('change', calculateExpectedReturn);
+        }
+
+        // 종목 정보 로드
+        async function loadStockInfo(symbol) {
+            const stockData = await API.getStockPrice(symbol);
+            stockPrices[symbol] = stockData;
+            currentStock = symbol;
+
+            document.getElementById('stockName').textContent = symbol;
+            document.getElementById('stockPrice').textContent = `$${stockData.price.toFixed(2)}`;
+            document.getElementById('stockChange').textContent = formatPercent(stockData.changePercent);
+            document.getElementById('stockChange').className = `portfolio-change ${stockData.changePercent >= 0 ? 'positive' : 'negative'}`;
+
+            document.getElementById('stockInfo').classList.remove('hidden');
+            document.getElementById('tradingForm').classList.remove('hidden');
+
+            // 보유 수량 표시
+            const holdings = portfolio.data.holdings[symbol];
+            const maxSell = holdings ? holdings.quantity : 0;
+            document.getElementById('maxSellQuantity').textContent = `보유: ${maxSell}주`;
+        }
+
+        // 거래 계산 업데이트
+        function updateTradingCalculations() {
+            if (!currentStock || !stockPrices[currentStock]) return;
+
+            const price = stockPrices[currentStock].price;
+            const buyQuantity = parseInt(document.getElementById('buyQuantity').value) || 0;
+            const sellQuantity = parseInt(document.getElementById('sellQuantity').value) || 0;
+
+            document.getElementById('buyTotal').textContent = `$${(buyQuantity * price).toFixed(2)}`;
+            document.getElementById('sellTotal').textContent = `$${(sellQuantity * price).toFixed(2)}`;
+        }
+
+        // 거래 실행
+        function executeTrade(type) {
+            if (!currentStock) {
+                alert('종목을 선택해주세요.');
+                return;
+            }
+
+            const price = stockPrices[currentStock].price * 1328.5; // USD to KRW
+            const quantity = parseInt(document.getElementById(type + 'Quantity').value);
+
+            if (!quantity || quantity <= 0) {
+                alert('올바른 수량을 입력해주세요.');
+                return;
+            }
+
+            try {
+                if (type === 'buy') {
+                    portfolio.buyStock(currentStock, quantity, price);
+                    showSuccess(`${currentStock} ${quantity}주를 매수했습니다.`);
+                } else {
+                    portfolio.sellStock(currentStock, quantity, price);
+                    showSuccess(`${currentStock} ${quantity}주를 매도했습니다.`);
+                }
+
+                // UI 업데이트
+                updatePortfolioOverview();
+                loadStockInfo(currentStock); // 보유 수량 업데이트
+                
+                // 입력 필드 초기화
+                document.getElementById(type + 'Quantity').value = '';
+                updateTradingCalculations();
+
+            } catch (error) {
+                alert('거래 실패: ' + error.message);
+            }
+        }
+
+        // 포트폴리오 개요 업데이트
+        async function updatePortfolioOverview() {
+            const currentValue = await portfolio.getCurrentValue();
+            const returnData = await portfolio.getReturn();
+
+            document.getElementById('totalAssets').textContent = formatCurrency(currentValue);
+            document.getElementById('availableCash').textContent = formatCurrency(portfolio.data.totalAssets);
+            document.getElementById('investedAmount').textContent = formatCurrency(10000000 - portfolio.data.totalAssets);
+            document.getElementById('profitLoss').textContent = formatCurrency(returnData.amount);
+            document.getElementById('profitLossPercent').textContent = formatPercent(returnData.percent);
+            document.getElementById('profitLossPercent').className = `portfolio-change ${returnData.amount >= 0 ? 'positive' : 'negative'}`;
+
+            // 보유 종목 테이블 업데이트
+            updateHoldingsTable();
+            updateTransactionHistory();
+        }
+
+        // 보유 종목 테이블 업데이트
+        function updateHoldingsTable() {
+            const holdings = portfolio.data.holdings;
+            const container = document.getElementById('holdingsTable');
+
+            if (Object.keys(holdings).length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 2rem;">보유 중인 종목이 없습니다.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'table';
+            
+            let tableHTML = `
+                <thead>
+                    <tr>
+                        <th>종목</th>
+                        <th>수량</th>
+                        <th>평균단가</th>
+                        <th>현재가</th>
+                        <th>평가금액</th>
+                        <th>손익</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            for (const [symbol, holding] of Object.entries(holdings)) {
+                const currentPrice = stockPrices[symbol]?.price * 1328.5 || holding.avgPrice;
+                const currentValue = holding.quantity * currentPrice;
+                const investedValue = holding.quantity * holding.avgPrice;
+                const profitLoss = currentValue - investedValue;
+                const profitPercent = (profitLoss / investedValue) * 100;
+
+                tableHTML += `
+                    <tr>
+                        <td>${symbol}</td>
+                        <td>${holding.quantity}</td>
+                        <td>${formatCurrency(holding.avgPrice)}</td>
+                        <td>${formatCurrency(currentPrice)}</td>
+                        <td>${formatCurrency(currentValue)}</td>
+                        <td class="${profitLoss >= 0 ? 'positive' : 'negative'}">
+                            ${formatCurrency(profitLoss)}<br>
+                            <small>(${formatPercent(profitPercent)})</small>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            tableHTML += '</tbody>';
+            table.innerHTML = tableHTML;
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // 거래 내역 업데이트
+        function updateTransactionHistory() {
+            const transactions = portfolio.data.transactions.slice(-10).reverse();
+            const container = document.getElementById('transactionHistory');
+
+            if (transactions.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 2rem;">거래 내역이 없습니다.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>종목</th>
+                        <th>구분</th>
+                        <th>수량</th>
+                        <th>단가</th>
+                        <th>총액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${transactions.map(transaction => `
+                        <tr>
+                            <td>${formatDate(transaction.date)}</td>
+                            <td>${transaction.symbol || transaction.savingsType || '예적금'}</td>
+                            <td style="color: ${transaction.type === 'buy' ? '#27ae60' : transaction.type === 'sell' ? '#e74c3c' : '#3498db'}">
+                                ${transaction.type === 'buy' ? '매수' : transaction.type === 'sell' ? '매도' : '가입'}
+                            </td>
+                            <td>${transaction.quantity || '-'}</td>
+                            <td>${transaction.price ? formatCurrency(transaction.price) : '-'}</td>
+                            <td>${formatCurrency(transaction.total || transaction.amount)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // 시장 데이터 로드
+        function loadMarketData() {
+            setTimeout(() => {
+                const marketItems = [
+                    { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, change: 2.15 },
+                    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2650.80, change: -15.30 },
+                    { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.60, change: 8.90 },
+                    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 310.45, change: 1.20 },
+                    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 135.75, change: -2.85 }
+                ];
+
+                document.getElementById('marketData').innerHTML = `
+                    <div class="portfolio-grid">
+                        ${marketItems.map(item => `
+                            <div class="portfolio-item" style="cursor: pointer;" onclick="selectStock('${item.symbol}')">
+                                <div class="portfolio-symbol">${item.symbol}</div>
+                                <div class="portfolio-price">$${item.price.toFixed(2)}</div>
+                                <div class="portfolio-change ${item.change >= 0 ? 'positive' : 'negative'}">
+                                    ${item.change >= 0 ? '+' : ''}${item.change.toFixed(2)}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        // 종목 선택
+        function selectStock(symbol) {
+            document.getElementById('stockSelect').value = symbol;
+            loadStockInfo(symbol);
+            
+            // 주식거래 탭으로 이동
+            document.querySelector('[data-tab="trading"]').click();
+        }
+
+        // 예적금 예상 수익 계산
+        function calculateExpectedReturn() {
+            const amount = parseInt(document.getElementById('depositAmount').value) || 0;
+            const termSelect = document.getElementById('depositTerm');
+            const term = parseInt(termSelect.value);
+            const rate = parseFloat(termSelect.selectedOptions[0].text.match(/연 ([\d.]+)%/)[1]);
+
+            if (amount > 0 && term > 0) {
+                const expectedReturn = amount * (1 + (rate / 100) * (term / 12));
+                document.getElementById('expectedReturn').textContent = formatCurrency(expectedReturn);
+            } else {
+                document.getElementById('expectedReturn').textContent = '₩0';
+            }
+        }
+
+        // 예적금 가입
+        function subscribeSavings() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+            const type = document.getElementById('depositType').value;
+            const termSelect = document.getElementById('depositTerm');
+            const term = parseInt(termSelect.value);
+            const rate = parseFloat(termSelect.selectedOptions[0].text.match(/연 ([\d.]+)%/)[1]);
+
+            if (!amount || amount < 10000) {
+                alert('최소 가입 금액은 1만원입니다.');
+                return;
+            }
+
+            if (amount > portfolio.data.totalAssets) {
+                alert('잔액이 부족합니다.');
+                return;
+            }
+
+            try {
+                portfolio.addSavings(amount, type, rate, term);
+                showSuccess(`${type}에 ${formatCurrency(amount)}으로 가입했습니다.`);
+                
+                // 폼 초기화
+                document.getElementById('depositAmount').value = '';
+                document.getElementById('expectedReturn').textContent = '₩0';
+                
+                // UI 업데이트
+                updatePortfolioOverview();
+                loadSavingsList();
+                updateLedgerDisplay();
+                
+            } catch (error) {
+                alert('가입 실패: ' + error.message);
+            }
+        }
+
+        // 예적금 목록 로드
+        function loadSavingsList() {
+            const savingsTransactions = portfolio.data.transactions.filter(t => t.type === 'savings');
+            const container = document.getElementById('savingsList');
+
+            if (savingsTransactions.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d;">가입한 예적금 상품이 없습니다.</p>';
+                return;
+            }
+
+            container.innerHTML = savingsTransactions.map(savings => {
+                const maturityDate = new Date(savings.maturityDate);
+                const isMatured = maturityDate <= new Date();
+                const daysLeft = Math.ceil((maturityDate - new Date()) / (1000 * 60 * 60 * 24));
+
+                return `
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                        <h5 style="color: #2c3e50; margin-bottom: 0.5rem;">${savings.savingsType}</h5>
+                        <p style="margin-bottom: 0.5rem;">가입금액: ${formatCurrency(savings.amount)}</p>
+                        <p style="margin-bottom: 0.5rem;">금리: ${savings.interestRate}%</p>
+                        <p style="margin-bottom: 0.5rem;">만기일: ${formatDate(savings.maturityDate)}</p>
+                        <p style="color: ${isMatured ? '#e74c3c' : '#27ae60'};">
+                            ${isMatured ? '만료됨' : `${daysLeft}일 남음`}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 가계부 항목 추가
+        function addLedgerEntry() {
+            const date = document.getElementById('ledgerDate').value;
+            const type = document.getElementById('ledgerType').value;
+            const category = document.getElementById('ledgerCategory').value;
+            const amount = parseInt(document.getElementById('ledgerAmount').value);
+            const description = document.getElementById('ledgerDescription').value;
+
+            if (!date || !amount || !description) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            portfolio.addToLedger({
+                date: new Date(date).toISOString(),
+                type,
+                category,
+                amount: type === 'income' ? amount : -amount,
+                description
+            });
+
+            // 폼 초기화
+            document.getElementById('ledgerAmount').value = '';
+            document.getElementById('ledgerDescription').value = '';
+
+            // UI 업데이트
+            updateLedgerDisplay();
+            showSuccess('가계부에 항목이 추가되었습니다.');
+        }
+
+        // 가계부 표시 업데이트
+        function updateLedgerDisplay() {
+            const ledger = portfolio.data.ledger;
+            const container = document.getElementById('ledgerTable');
+
+            // 요약 정보 계산
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            ledger.forEach(entry => {
+                if (entry.amount > 0) {
+                    totalIncome += entry.amount;
+                } else {
+                    totalExpense += Math.abs(entry.amount);
+                }
+            });
+
+            const balance = totalIncome - totalExpense;
+
+            // 요약 정보 업데이트
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+            document.getElementById('balance').textContent = formatCurrency(balance);
+
+            if (ledger.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 2rem;">가계부 내역이 없습니다.</p>';
+                return;
+            }
+
+            // 최근 20개 항목만 표시
+            const recentEntries = ledger.slice(-20).reverse();
+
+            const table = document.createElement('table');
+            table.className = 'table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>구분</th>
+                        <th>카테고리</th>
+                        <th>내용</th>
+                        <th>금액</th>
+                        <th>액션</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${recentEntries.map(entry => `
+                        <tr>
+                            <td>${formatDate(entry.date)}</td>
+                            <td style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">
+                                ${entry.amount > 0 ? '수입' : '지출'}
+                            </td>
+                            <td>${entry.category}</td>
+                            <td>${entry.description}</td>
+                            <td style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">
+                                ${formatCurrency(Math.abs(entry.amount))}
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editLedgerEntry(${entry.id})">수정</button>
+                                <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="deleteLedgerEntry(${entry.id})">삭제</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // 가계부 항목 수정
+        function editLedgerEntry(id) {
+            const entry = portfolio.data.ledger.find(e => e.id === id);
+            if (!entry) return;
+
+            const newDescription = prompt('새로운 내용:', entry.description);
+            const newAmount = prompt('새로운 금액:', Math.abs(entry.amount));
+
+            if (newDescription && newAmount) {
+                portfolio.updateLedgerEntry(id, {
+                    description: newDescription,
+                    amount: entry.amount > 0 ? parseInt(newAmount) : -parseInt(newAmount)
+                });
+                updateLedgerDisplay();
+                showSuccess('가계부 항목이 수정되었습니다.');
+            }
+        }
+
+        // 가계부 항목 삭제
+        function deleteLedgerEntry(id) {
+            if (confirm('이 항목을 삭제하시겠습니까?')) {
+                portfolio.deleteLedgerEntry(id);
+                updateLedgerDisplay();
+                showSuccess('가계부 항목이 삭제되었습니다.');
+            }
+        }
+
+        // 가계부 엑셀 내보내기
+        function exportLedger() {
+            const ledger = portfolio.data.ledger;
+            let csv = '날짜,구분,카테고리,내용,금액\n';
+            
+            ledger.forEach(entry => {
+                csv += `${entry.date.split('T')[0]},${entry.amount > 0 ? '수입' : '지출'},${entry.category},"${entry.description}",${Math.abs(entry.amount)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `가계부_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // 실시간 가격 업데이트
+        function startRealTimeUpdates() {
+            setInterval(async () => {
+                // 현재 선택된 종목의 가격 업데이트
+                if (currentStock) {
+                    const updatedPrice = await API.getStockPrice(currentStock);
+                    stockPrices[currentStock] = updatedPrice;
+                    
+                    document.getElementById('stockPrice').textContent = `$${updatedPrice.price.toFixed(2)}`;
+                    document.getElementById('stockChange').textContent = formatPercent(updatedPrice.changePercent);
+                    document.getElementById('stockChange').className = `portfolio-change ${updatedPrice.changePercent >= 0 ? 'positive' : 'negative'}`;
+                    
+                    updateTradingCalculations();
+                }
+
+                // 포트폴리오 값 업데이트
+                updatePortfolioOverview();
+                
+            }, 30000); // 30초마다 업데이트
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>금융 뉴스 및 정보</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="logo">💼 투자관리</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">홈</a></li>
+                    <li><a href="a2.html" class="nav-link active">뉴스</a></li>
+                    <li><a href="a5.html" class="nav-link">모의투자</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 탭 네비게이션 -->
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="todayTerms">오늘의 금융 용어</button>
+                <button class="tab-button" data-tab="todayNews">오늘의 뉴스레터</button>
+                <button class="tab-button" data-tab="studyTerms">금융 용어 공부하기</button>
+                <button class="tab-button" data-tab="weeklyNews">주간 뉴스레터</button>
+                <button class="tab-button" data-tab="cardNews">카드뉴스</button>
+            </div>
+
+            <!-- 오늘의 금융 용어 -->
+            <div id="todayTerms" class="tab-content active">
+                <div class="card">
+                    <h2 class="card-title">📚 오늘의 금융 용어</h2>
+                    <div id="todayTermContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>오늘의 금융 용어를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오늘의 뉴스레터 -->
+            <div id="todayNews" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">📰 오늘의 뉴스레터</h2>
+                    <div id="todayNewsContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>오늘의 뉴스를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 금융 용어 공부하기 -->
+            <div id="studyTerms" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">🎓 금융 용어 공부하기</h2>
+                    <div class="form-group">
+                        <input type="text" id="termSearch" class="form-input" placeholder="검색할 금융 용어를 입력하세요...">
+                        <button class="btn mt-2" onclick="searchTerms()">검색</button>
+                    </div>
+                    <div id="studyTermsContent">
+                        <div class="terms-grid" id="termsGrid">
+                            <!-- 금융 용어 목록이 여기에 표시됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주간 뉴스레터 -->
+            <div id="weeklyNews" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">📅 주간 뉴스레터</h2>
+                    <div id="weeklyNewsContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>주간 뉴스레터를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 카드뉴스 -->
+            <div id="cardNews" class="tab-content">
+                <div class="card">
+                    <h2 class="card-title">🎨 카드뉴스</h2>
+                    <div id="cardNewsContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>카드뉴스를 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // 금융 용어 데이터베이스
+        const financialTerms = {
+            "주식": {
+                definition: "기업이 발행한 지분증권으로, 주주가 해당 기업의 소유권을 갖게 해주는 증권입니다.",
+                example: "삼성전자 주식을 구매하면 삼성전자의 일부를 소유하게 됩니다.",
+                category: "증권"
+            },
+            "배당금": {
+                definition: "기업이 주주들에게 이익의 일부를 분배하는 금액입니다.",
+                example: "1주당 1,000원의 배당금을 받으면, 100주 보유 시 10만원을 받게 됩니다.",
+                category: "증권"
+            },
+            "이자율": {
+                definition: "돈을 빌려주거나 빌릴 때 적용되는 대가의 비율입니다.",
+                example: "연 3% 이자율로 1억원을 대출받으면 1년간 300만원의 이자를 지불합니다.",
+                category: "금리"
+            },
+            "인플레이션": {
+                definition: "물가가 지속적으로 상승하는 경제 현상입니다.",
+                example: "작년에 1,000원이던 커피가 올해 1,100원이 되면 10% 인플레이션입니다.",
+                category: "경제지표"
+            },
+            "환율": {
+                definition: "한 나라의 화폐와 다른 나라의 화폐 간의 교환 비율입니다.",
+                example: "달러/원 환율이 1,300원이면 1달러를 1,300원에 살 수 있습니다.",
+                category: "외환"
+            },
+            "펀드": {
+                definition: "다수의 투자자로부터 자금을 모아 전문가가 운용하는 투자상품입니다.",
+                example: "주식형 펀드는 주식에 투자하고, 채권형 펀드는 채권에 투자합니다.",
+                category: "투자상품"
+            },
+            "ETF": {
+                definition: "상장지수펀드로, 특정 지수를 추종하는 펀드를 주식처럼 거래할 수 있는 상품입니다.",
+                example: "KODEX 200 ETF는 코스피 200 지수를 추종합니다.",
+                category: "투자상품"
+            },
+            "채권": {
+                definition: "정부나 기업이 자금 조달을 위해 발행하는 부채증권입니다.",
+                example: "국고채는 정부가 발행하는 채권으로 안전성이 높습니다.",
+                category: "증권"
+            }
+        };
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            loadTodayTerm();
+            loadTodayNews();
+            loadStudyTerms();
+            loadWeeklyNews();
+            loadCardNews();
+        });
+
+        // 오늘의 금융 용어 로드
+        function loadTodayTerm() {
+            setTimeout(() => {
+                const terms = Object.keys(financialTerms);
+                const randomTerm = terms[Math.floor(Math.random() * terms.length)];
+                const termData = financialTerms[randomTerm];
+                
+                document.getElementById('todayTermContent').innerHTML = `
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <h3 style="font-size: 2rem; margin-bottom: 1rem;">💡 ${randomTerm}</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 1rem; opacity: 0.9;">${termData.definition}</p>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 4px;">
+                            <strong>💰 예시:</strong> ${termData.example}
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span style="background: rgba(255,255,255,0.2); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">
+                                📂 ${termData.category}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="loadTodayTerm()">다른 용어 보기</button>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        // 오늘의 뉴스레터 로드
+        async function loadTodayNews() {
+            try {
+                const newsData = await API.getNews('business');
+                const container = document.getElementById('todayNewsContent');
+                
+                setTimeout(() => {
+                    container.innerHTML = `
+                        <div class="news-grid">
+                            ${newsData.articles.slice(0, 6).map(article => `
+                                <div class="news-item">
+                                    <img src="${article.urlToImage}" alt="${article.title}" class="news-image" onerror="this.src='https://via.placeholder.com/300x200?text=News'">
+                                    <div class="news-content">
+                                        <h3 class="news-title">${article.title}</h3>
+                                        <p class="news-summary">${article.description}</p>
+                                        <div class="flex justify-between align-center">
+                                            <span class="news-date">${formatDate(article.publishedAt)}</span>
+                                            <small style="color: #3498db;">${article.source.name}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button class="btn" onclick="loadTodayNews()">뉴스 새로고침</button>
+                        </div>
+                    `;
+                }, 1000);
+            } catch (error) {
+                showError('todayNewsContent', '뉴스를 불러오는데 실패했습니다.');
+            }
+        }
+
+        // 금융 용어 공부하기 로드
+        function loadStudyTerms() {
+            const container = document.getElementById('termsGrid');
+            const termsArray = Object.entries(financialTerms);
+            
+            container.innerHTML = termsArray.map(([term, data]) => `
+                <div class="card" style="margin-bottom: 1rem; cursor: pointer;" onclick="showTermDetail('${term}')">
+                    <h4 style="color: #3498db; margin-bottom: 0.5rem;">${term}</h4>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.5rem;">${data.definition.substring(0, 100)}...</p>
+                    <span style="background: #ecf0f1; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: #2c3e50;">
+                        ${data.category}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // 용어 검색
+        function searchTerms() {
+            const searchTerm = document.getElementById('termSearch').value.toLowerCase();
+            const container = document.getElementById('termsGrid');
+            
+            if (!searchTerm) {
+                loadStudyTerms();
+                return;
+            }
+            
+            const filteredTerms = Object.entries(financialTerms).filter(([term, data]) => 
+                term.toLowerCase().includes(searchTerm) || 
+                data.definition.toLowerCase().includes(searchTerm) ||
+                data.category.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredTerms.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: #7f8c8d; padding: 2rem;">검색 결과가 없습니다.</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredTerms.map(([term, data]) => `
+                <div class="card" style="margin-bottom: 1rem; cursor: pointer;" onclick="showTermDetail('${term}')">
+                    <h4 style="color: #3498db; margin-bottom: 0.5rem;">${term}</h4>
+                    <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.5rem;">${data.definition}</p>
+                    <span style="background: #ecf0f1; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: #2c3e50;">
+                        ${data.category}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // 용어 상세 보기
+        function showTermDetail(term) {
+            const data = financialTerms[term];
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 1000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                    <h3 style="color: #2c3e50; margin-bottom: 1rem;">${term}</h3>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">${data.definition}</p>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                        <strong>💡 예시:</strong><br>${data.example}
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <span style="background: #3498db; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">
+                            ${data.category}
+                        </span>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="btn" onclick="this.closest('.modal').remove()">닫기</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            
+            document.body.appendChild(modal);
+        }
+
+        // 주간 뉴스레터 로드
+        function loadWeeklyNews() {
+            setTimeout(() => {
+                const weeklyContent = [
+                    {
+                        title: "이번 주 금융시장 돌아보기",
+                        content: "이번 주 국내 증시는 외국인 매수세에 힘입어 상승세를 보였습니다. 특히 기술주를 중심으로 강세가 이어졌으며...",
+                        date: "2024년 12월 첫째 주"
+                    },
+                    {
+                        title: "주요 경제 지표 분석",
+                        content: "한국은행이 발표한 11월 소비자물가지수는 전년 동월 대비 3.3% 상승하여 정부 목표치를 상회했습니다...",
+                        date: "2024년 12월 첫째 주"
+                    },
+                    {
+                        title: "다음 주 주목할 이슈",
+                        content: "다음 주에는 미국 연방준비제도의 금리 결정 회의가 예정되어 있어 글로벌 금융시장의 관심이 집중되고 있습니다...",
+                        date: "2024년 12월 둘째 주 전망"
+                    }
+                ];
+                
+                document.getElementById('weeklyNewsContent').innerHTML = weeklyContent.map(item => `
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3 style="color: #2c3e50; margin-bottom: 1rem;">${item.title}</h3>
+                        <p style="line-height: 1.6; margin-bottom: 1rem;">${item.content}</p>
+                        <div style="text-align: right; color: #7f8c8d; font-size: 0.9rem;">
+                            ${item.date}
+                        </div>
+                    </div>
+                `).join('');
+            }, 1000);
+        }
+
+        // 카드뉴스 로드
+        function loadCardNews() {
+            setTimeout(() => {
+                const cardNewsData = [
+                    {
+                        title: "초보 투자자를 위한 주식 투자 가이드",
+                        image: "https://via.placeholder.com/400x600?text=Card+News+1",
+                        summary: "주식 투자의 기초부터 실전 팁까지"
+                    },
+                    {
+                        title: "2024년 투자 트렌드 분석",
+                        image: "https://via.placeholder.com/400x600?text=Card+News+2",
+                        summary: "올해 주목받는 투자 섹터와 전망"
+                    },
+                    {
+                        title: "ETF vs 개별주식, 어떤 게 좋을까?",
+                        image: "https://via.placeholder.com/400x600?text=Card+News+3",
+                        summary: "투자 방식별 장단점 비교 분석"
+                    },
+                    {
+                        title: "경제 뉴스 읽는 법",
+                        image: "https://via.placeholder.com/400x600?text=Card+News+4",
+                        summary: "복잡한 경제 뉴스를 쉽게 이해하는 방법"
+                    }
+                ];
+                
+                document.getElementById('cardNewsContent').innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                        ${cardNewsData.map(card => `
+                            <div class="card" style="text-align: center; cursor: pointer;" onclick="showCardDetail('${card.title}')">
+                                <img src="${card.image}" alt="${card.title}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+                                <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${card.title}</h4>
+                                <p style="color: #7f8c8d; font-size: 0.9rem;">${card.summary}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        // 카드뉴스 상세 보기
+        function showCardDetail(title) {
+            alert(`${title} 카드뉴스를 보여줍니다.\n\n실제 구현에서는 슬라이드 형태의 카드뉴스가 표시됩니다.`);
+        }
+
+        // 검색 엔터키 이벤트
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('termSearch');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchTerms();
+                    }
+                });
+            }
+        });
+
+        // AI 기반 콘텐츠 업데이트 시뮬레이션
+        setInterval(() => {
+            // 실제 구현에서는 AI API를 통해 콘텐츠를 업데이트
+            console.log('AI 콘텐츠 업데이트 체크...');
+        }, 300000); // 5분마다 체크
+    </script>
+</body>
+</html>

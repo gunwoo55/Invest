@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자 포트폴리오 관리</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="index.html" class="logo">💼 투자관리</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link active">홈</a></li>
+                    <li><a href="a2.html" class="nav-link">뉴스</a></li>
+                    <li><a href="a5.html" class="nav-link">모의투자</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 프로필 섹션 -->
+            <div class="card">
+                <h2 class="card-title">프로필 관리</h2>
+                <div class="profile-upload">
+                    <div class="profile-preview" id="profilePreview">
+                        <span id="profilePlaceholder">📷</span>
+                        <img id="profileImage" style="display: none;" alt="프로필 사진">
+                    </div>
+                    <div class="form-group">
+                        <input type="file" id="profileInput" accept="image/*" style="display: none;">
+                        <button class="btn" onclick="document.getElementById('profileInput').click()">
+                            사진 업로드
+                        </button>
+                        <button class="btn btn-secondary" id="removeProfile" style="display: none; margin-left: 10px;">
+                            사진 제거
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="userName">사용자 이름:</label>
+                        <input type="text" id="userName" class="form-input" placeholder="이름을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="userEmail">이메일:</label>
+                        <input type="email" id="userEmail" class="form-input" placeholder="이메일을 입력하세요">
+                    </div>
+                    <button class="btn btn-success" onclick="saveProfile()">프로필 저장</button>
+                </div>
+            </div>
+
+            <!-- 포트폴리오 요약 -->
+            <div class="card">
+                <h2 class="card-title">포트폴리오 현황</h2>
+                <div class="portfolio-grid">
+                    <div class="portfolio-item">
+                        <div class="portfolio-symbol">총 자산</div>
+                        <div class="portfolio-price" id="totalAssets">₩0</div>
+                        <div class="portfolio-change" id="totalChange">+0.00%</div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-symbol">투자 수익률</div>
+                        <div class="portfolio-price" id="totalReturn">0.00%</div>
+                        <div class="portfolio-change" id="returnAmount">₩0</div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-symbol">보유 종목 수</div>
+                        <div class="portfolio-price" id="holdingCount">0</div>
+                        <div class="portfolio-change">개</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 거래 내역 -->
+            <div class="card">
+                <h2 class="card-title">최근 거래 내역</h2>
+                <div id="recentTransactions">
+                    <p class="text-center" style="color: #7f8c8d; padding: 2rem;">
+                        아직 거래 내역이 없습니다. 모의투자를 시작해보세요!
+                    </p>
+                </div>
+            </div>
+
+            <!-- 빠른 시장 정보 -->
+            <div class="card">
+                <h2 class="card-title">시장 현황</h2>
+                <div class="portfolio-grid" id="marketOverview">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>시장 데이터를 불러오는 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // 프로필 사진 업로드 기능
+        document.getElementById('profileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    const profileImage = document.getElementById('profileImage');
+                    const profilePlaceholder = document.getElementById('profilePlaceholder');
+                    const removeButton = document.getElementById('removeProfile');
+                    
+                    profileImage.src = imageData;
+                    profileImage.style.display = 'block';
+                    profilePlaceholder.style.display = 'none';
+                    removeButton.style.display = 'inline-block';
+                    
+                    // localStorage에 이미지 저장
+                    localStorage.setItem('profileImage', imageData);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 프로필 사진 제거
+        document.getElementById('removeProfile').addEventListener('click', function() {
+            const profileImage = document.getElementById('profileImage');
+            const profilePlaceholder = document.getElementById('profilePlaceholder');
+            const removeButton = document.getElementById('removeProfile');
+            
+            profileImage.style.display = 'none';
+            profilePlaceholder.style.display = 'block';
+            removeButton.style.display = 'none';
+            
+            // localStorage에서 이미지 제거
+            localStorage.removeItem('profileImage');
+        });
+
+        // 프로필 저장
+        function saveProfile() {
+            const userName = document.getElementById('userName').value;
+            const userEmail = document.getElementById('userEmail').value;
+            
+            if (userName) {
+                localStorage.setItem('userName', userName);
+            }
+            if (userEmail) {
+                localStorage.setItem('userEmail', userEmail);
+            }
+            
+            alert('프로필이 저장되었습니다!');
+        }
+
+        // 페이지 로드 시 저장된 프로필 정보 복원
+        window.addEventListener('load', function() {
+            // 프로필 이미지 복원
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const profileImage = document.getElementById('profileImage');
+                const profilePlaceholder = document.getElementById('profilePlaceholder');
+                const removeButton = document.getElementById('removeProfile');
+                
+                profileImage.src = savedImage;
+                profileImage.style.display = 'block';
+                profilePlaceholder.style.display = 'none';
+                removeButton.style.display = 'inline-block';
+            }
+            
+            // 사용자 정보 복원
+            const userName = localStorage.getItem('userName');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (userName) {
+                document.getElementById('userName').value = userName;
+            }
+            if (userEmail) {
+                document.getElementById('userEmail').value = userEmail;
+            }
+            
+            // 포트폴리오 데이터 로드
+            loadPortfolioData();
+            loadRecentTransactions();
+            loadMarketOverview();
+        });
+
+        // 포트폴리오 데이터 로드
+        function loadPortfolioData() {
+            const portfolio = JSON.parse(localStorage.getItem('portfolio') || '{"totalAssets": 0, "transactions": []}');
+            
+            // 총 자산 계산
+            let totalAssets = portfolio.totalAssets || 0;
+            let totalReturn = 0;
+            let holdingCount = 0;
+            
+            if (portfolio.holdings) {
+                holdingCount = Object.keys(portfolio.holdings).length;
+                // 수익률 계산 로직 추가 가능
+            }
+            
+            document.getElementById('totalAssets').textContent = `₩${totalAssets.toLocaleString()}`;
+            document.getElementById('totalReturn').textContent = `${totalReturn.toFixed(2)}%`;
+            document.getElementById('holdingCount').textContent = holdingCount;
+        }
+
+        // 최근 거래 내역 로드
+        function loadRecentTransactions() {
+            const portfolio = JSON.parse(localStorage.getItem('portfolio') || '{"transactions": []}');
+            const transactions = portfolio.transactions || [];
+            const recentTransactions = transactions.slice(-5).reverse();
+            
+            const container = document.getElementById('recentTransactions');
+            
+            if (recentTransactions.length === 0) {
+                return; // 기본 메시지 유지
+            }
+            
+            const table = document.createElement('table');
+            table.className = 'table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>종목</th>
+                        <th>거래유형</th>
+                        <th>수량</th>
+                        <th>가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${recentTransactions.map(transaction => `
+                        <tr>
+                            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+                            <td>${transaction.symbol}</td>
+                            <td style="color: ${transaction.type === 'buy' ? '#27ae60' : '#e74c3c'}">${transaction.type === 'buy' ? '매수' : '매도'}</td>
+                            <td>${transaction.quantity}</td>
+                            <td>₩${transaction.price.toLocaleString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // 시장 현황 로드 (실제 API는 나중에 구현)
+        function loadMarketOverview() {
+            // 임시 데이터로 시장 현황 표시
+            setTimeout(() => {
+                const marketData = [
+                    { name: 'KOSPI', value: '2,485.67', change: '+1.23%', positive: true },
+                    { name: 'KOSDAQ', value: '848.92', change: '-0.45%', positive: false },
+                    { name: 'USD/KRW', value: '1,328.50', change: '+0.78%', positive: true },
+                    { name: '비트코인', value: '₩45,234,000', change: '+2.15%', positive: true }
+                ];
+                
+                const container = document.getElementById('marketOverview');
+                container.innerHTML = marketData.map(item => `
+                    <div class="portfolio-item">
+                        <div class="portfolio-symbol">${item.name}</div>
+                        <div class="portfolio-price">${item.value}</div>
+                        <div class="portfolio-change ${item.positive ? 'positive' : 'negative'}">${item.change}</div>
+                    </div>
+                `).join('');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
