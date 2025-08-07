@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest - 모의투자 플랫폼</title>
+    <meta name="description" content="안전하고 실제적인 모의투자 경험을 제공하는 플랫폼">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>💼 Invest</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link">홈</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#features" class="nav-link">서비스</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link">소개</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">문의</a>
+                    </li>
+                </ul>
+                <div class="nav-auth">
+                    <button class="btn btn-outline" id="loginBtn">로그인</button>
+                    <button class="btn btn-primary" id="signupBtn">회원가입</button>
+                </div>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        실전 같은 모의투자,<br>
+                        <span class="highlight">안전한 투자 학습</span>
+                    </h1>
+                    <p class="hero-description">
+                        실제 시장 데이터를 활용한 모의투자로 투자 실력을 키우세요.<br>
+                        위험 없이 투자의 기초부터 고급 전략까지 학습할 수 있습니다.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-large" id="startInvestingBtn">
+                            <i class="fas fa-chart-line"></i>
+                            모의투자 시작하기
+                        </button>
+                        <button class="btn btn-outline btn-large" id="learnMoreBtn">
+                            <i class="fas fa-play-circle"></i>
+                            서비스 둘러보기
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-area"></i>
+                            <p>실시간 차트</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">주요 서비스</h2>
+                    <p class="section-description">
+                        전문적인 투자 도구와 교육 컨텐츠를 통해 투자 역량을 키워보세요
+                    </p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">실시간 모의투자</h3>
+                        <p class="feature-description">
+                            실제 시장 데이터를 활용한 실시간 모의투자 시스템으로 
+                            현실적인 투자 경험을 제공합니다.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="feature-title">투자 교육</h3>
+                        <p class="feature-description">
+                            기초부터 고급까지, 체계적인 투자 교육 프로그램으로 
+                            투자 지식을 단계별로 학습할 수 있습니다.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">커뮤니티</h3>
+                        <p class="feature-description">
+                            다른 투자자들과 정보를 공유하고 함께 성장할 수 있는 
+                            활발한 투자자 커뮤니티를 제공합니다.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">안전한 환경</h3>
+                        <p class="feature-description">
+                            실제 돈을 사용하지 않는 안전한 모의투자 환경에서 
+                            부담 없이 다양한 투자 전략을 시도해볼 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2 class="section-title">투자의 첫걸음, Invest와 함께</h2>
+                        <p class="about-description">
+                            Invest는 투자 초보자부터 경험자까지 모든 사용자가 안전하게 
+                            투자를 학습하고 연습할 수 있는 모의투자 플랫폼입니다.
+                        </p>
+                        <div class="about-features">
+                            <div class="about-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>실제 시장 데이터 기반 모의투자</span>
+                            </div>
+                            <div class="about-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>체계적인 투자 교육 프로그램</span>
+                            </div>
+                            <div class="about-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>포트폴리오 분석 및 리포트</span>
+                            </div>
+                            <div class="about-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>투자자 커뮤니티 및 멘토링</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="profileBtn">
+                            <i class="fas fa-user-circle"></i>
+                            프로필 설정하기
+                        </button>
+                    </div>
+                    <div class="about-visual">
+                        <div class="stats-card">
+                            <div class="stat">
+                                <h3>10,000+</h3>
+                                <p>활성 사용자</p>
+                            </div>
+                            <div class="stat">
+                                <h3>₩1조+</h3>
+                                <p>모의투자 거래액</p>
+                            </div>
+                            <div class="stat">
+                                <h3>95%</h3>
+                                <p>사용자 만족도</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Picture Upload Section (Initially Hidden) -->
+        <section id="profile-upload" class="profile-upload" style="display: none;">
+            <div class="container">
+                <div class="profile-upload-content">
+                    <h2 class="section-title">프로필 사진 설정</h2>
+                    <p class="section-description">
+                        프로필 사진을 업로드하여 나만의 투자 프로필을 완성하세요
+                    </p>
+                    
+                    <div class="upload-container">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h3>사진을 업로드하세요</h3>
+                                <p>드래그 앤 드롭하거나 클릭하여 파일을 선택하세요</p>
+                                <p class="upload-info">JPG, PNG, GIF 형식 (최대 5MB)</p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif" />
+                        </div>
+                        
+                        <div class="preview-container" id="previewContainer" style="display: none;">
+                            <div class="image-preview">
+                                <img id="previewImage" alt="Preview" />
+                                <div class="preview-overlay">
+                                    <button class="btn btn-small btn-danger" id="removeImage">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="upload-actions">
+                                <button class="btn btn-primary" id="uploadBtn">
+                                    <i class="fas fa-upload"></i>
+                                    업로드
+                                </button>
+                                <button class="btn btn-outline" id="cancelBtn">
+                                    취소
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-status" id="uploadStatus"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>💼 Invest</h3>
+                    <p>안전하고 실제적인 모의투자 경험을 제공하는 플랫폼</p>
+                </div>
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="#features">모의투자</a></li>
+                        <li><a href="#features">투자 교육</a></li>
+                        <li><a href="#features">커뮤니티</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>고객지원</h4>
+                    <ul>
+                        <li><a href="#contact">문의하기</a></li>
+                        <li><a href="#contact">FAQ</a></li>
+                        <li><a href="#contact">이용약관</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@invest.com</li>
+                        <li><i class="fas fa-phone"></i> 02-1234-5678</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Invest. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
