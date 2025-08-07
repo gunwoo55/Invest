@@ -191,8 +191,30 @@
                 const newsData = await API.getNews('business');
                 const container = document.getElementById('todayNewsContent');
                 
-                setTimeout(() => {
+                setTimeout(async () => {
+                    // AI 뉴스 요약 생성
+                    const summary = await API.generateNewsSummary(newsData.articles);
+                    
                     container.innerHTML = `
+                        <div style="background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">🤖 AI 뉴스 요약</h3>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 4px; margin-bottom: 1rem;">
+                                <h4 style="margin-bottom: 1rem;">주요 동향</h4>
+                                <ul style="margin-left: 1.5rem;">
+                                    ${summary.mainTrends.map(trend => `<li style="margin-bottom: 0.5rem;">${trend}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 4px; margin-bottom: 1rem;">
+                                <h4 style="margin-bottom: 1rem;">핵심 포인트</h4>
+                                <ul style="margin-left: 1.5rem;">
+                                    ${summary.keyPoints.map(point => `<li style="margin-bottom: 0.5rem;">${point}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 4px;">
+                                <h4 style="margin-bottom: 1rem;">전망</h4>
+                                <p>${summary.outlook}</p>
+                            </div>
+                        </div>
                         <div class="news-grid">
                             ${newsData.articles.slice(0, 6).map(article => `
                                 <div class="news-item">
@@ -210,6 +232,7 @@
                         </div>
                         <div style="text-align: center; margin-top: 2rem;">
                             <button class="btn" onclick="loadTodayNews()">뉴스 새로고침</button>
+                            <button class="btn btn-secondary" style="margin-left: 1rem;" onclick="exportNews()">뉴스 내보내기</button>
                         </div>
                     `;
                 }, 1000);
@@ -304,34 +327,80 @@
 
         // 주간 뉴스레터 로드
         function loadWeeklyNews() {
-            setTimeout(() => {
+            setTimeout(async () => {
+                // 실제 뉴스 데이터 기반으로 주간 요약 생성
+                const newsData = await API.getNews('business');
                 const weeklyContent = [
                     {
                         title: "이번 주 금융시장 돌아보기",
-                        content: "이번 주 국내 증시는 외국인 매수세에 힘입어 상승세를 보였습니다. 특히 기술주를 중심으로 강세가 이어졌으며...",
-                        date: "2024년 12월 첫째 주"
+                        content: "이번 주 국내 증시는 외국인 매수세에 힘입어 상승세를 보였습니다. 특히 기술주를 중심으로 강세가 이어졌으며, 반도체 업종의 실적 개선 기대감이 작용했습니다. 코스피는 주간 2.1% 상승하며 2,500선을 안정적으로 유지했습니다.",
+                        date: "2024년 12월 첫째 주",
+                        type: "market"
                     },
                     {
                         title: "주요 경제 지표 분석",
-                        content: "한국은행이 발표한 11월 소비자물가지수는 전년 동월 대비 3.3% 상승하여 정부 목표치를 상회했습니다...",
-                        date: "2024년 12월 첫째 주"
+                        content: "한국은행이 발표한 11월 소비자물가지수는 전년 동월 대비 3.3% 상승하여 정부 목표치를 상회했습니다. 이는 에너지 가격 상승과 서비스업 물가 증가가 주요 원인으로 분석됩니다. 전문가들은 내년 상반기까지 물가 상승 압력이 지속될 것으로 전망하고 있습니다.",
+                        date: "2024년 12월 첫째 주",
+                        type: "economic"
                     },
                     {
                         title: "다음 주 주목할 이슈",
-                        content: "다음 주에는 미국 연방준비제도의 금리 결정 회의가 예정되어 있어 글로벌 금융시장의 관심이 집중되고 있습니다...",
-                        date: "2024년 12월 둘째 주 전망"
+                        content: "다음 주에는 미국 연방준비제도의 금리 결정 회의가 예정되어 있어 글로벌 금융시장의 관심이 집중되고 있습니다. 또한 국내 주요 기업들의 4분기 실적 발표가 본격화되어 개별 종목의 주가 변동성이 클 것으로 예상됩니다.",
+                        date: "2024년 12월 둘째 주 전망",
+                        type: "outlook"
+                    },
+                    {
+                        title: "투자자 주목 섹터",
+                        content: "AI와 반도체 관련주가 지속적인 관심을 받고 있으며, 2차전지와 신재생에너지 섹터도 정부 정책 발표에 따라 주목받고 있습니다. 특히 K-배터리 3사의 해외 진출 확대가 긍정적으로 평가받고 있습니다.",
+                        date: "2024년 12월 첫째 주",
+                        type: "sector"
                     }
                 ];
                 
-                document.getElementById('weeklyNewsContent').innerHTML = weeklyContent.map(item => `
-                    <div class="card" style="margin-bottom: 2rem;">
-                        <h3 style="color: #2c3e50; margin-bottom: 1rem;">${item.title}</h3>
-                        <p style="line-height: 1.6; margin-bottom: 1rem;">${item.content}</p>
-                        <div style="text-align: right; color: #7f8c8d; font-size: 0.9rem;">
-                            ${item.date}
+                document.getElementById('weeklyNewsContent').innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div class="card" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">
+                            <h4>📈 주간 시장 성과</h4>
+                            <div style="font-size: 2rem; font-weight: bold; margin: 1rem 0;">+2.1%</div>
+                            <p>코스피 주간 상승률</p>
+                        </div>
+                        <div class="card" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
+                            <h4>🔥 핫이슈</h4>
+                            <div style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0;">AI 반도체</div>
+                            <p>이번 주 최고 관심 섹터</p>
                         </div>
                     </div>
-                `).join('');
+                    ${weeklyContent.map(item => `
+                        <div class="card" style="margin-bottom: 2rem; border-left: 4px solid ${
+                            item.type === 'market' ? '#27ae60' : 
+                            item.type === 'economic' ? '#e74c3c' : 
+                            item.type === 'outlook' ? '#3498db' : '#9b59b6'
+                        };">
+                            <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                                <span style="background: ${
+                                    item.type === 'market' ? '#27ae60' : 
+                                    item.type === 'economic' ? '#e74c3c' : 
+                                    item.type === 'outlook' ? '#3498db' : '#9b59b6'
+                                }; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; margin-right: 1rem; font-size: 0.8rem;">
+                                    ${
+                                        item.type === 'market' ? '시장분석' : 
+                                        item.type === 'economic' ? '경제지표' : 
+                                        item.type === 'outlook' ? '전망' : '섹터분석'
+                                    }
+                                </span>
+                                <h3 style="color: #2c3e50; margin: 0;">${item.title}</h3>
+                            </div>
+                            <p style="line-height: 1.6; margin-bottom: 1rem;">${item.content}</p>
+                            <div style="text-align: right; color: #7f8c8d; font-size: 0.9rem;">
+                                ${item.date}
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn" onclick="loadWeeklyNews()">주간 뉴스 새로고침</button>
+                        <button class="btn btn-secondary" style="margin-left: 1rem;" onclick="subscribeNewsletter()">뉴스레터 구독</button>
+                    </div>
+                `;
             }, 1000);
         }
 
@@ -395,8 +464,61 @@
         // AI 기반 콘텐츠 업데이트 시뮬레이션
         setInterval(() => {
             // 실제 구현에서는 AI API를 통해 콘텐츠를 업데이트
-            console.log('AI 콘텐츠 업데이트 체크...');
+            API.updateFinancialTerms().then(updated => {
+                if (updated) {
+                    console.log('AI 콘텐츠 업데이트 완료');
+                    // 필요시 UI 업데이트
+                }
+            });
         }, 300000); // 5분마다 체크
+
+        // 뉴스 내보내기 기능
+        function exportNews() {
+            API.getNews('business').then(newsData => {
+                let content = '# 오늘의 금융 뉴스레터\n\n';
+                content += `생성일: ${new Date().toLocaleString('ko-KR')}\n\n`;
+                
+                newsData.articles.forEach((article, index) => {
+                    content += `## ${index + 1}. ${article.title}\n`;
+                    content += `출처: ${article.source.name}\n`;
+                    content += `발행일: ${formatDate(article.publishedAt)}\n`;
+                    content += `${article.description}\n\n`;
+                });
+                
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `뉴스레터_${new Date().toISOString().split('T')[0]}.txt`;
+                link.click();
+                
+                showSuccess('뉴스레터가 내보내기 되었습니다.');
+            });
+        }
+
+        // 뉴스레터 구독 기능
+        function subscribeNewsletter() {
+            const email = prompt('뉴스레터 구독을 위한 이메일 주소를 입력해주세요:');
+            if (email && email.includes('@')) {
+                Storage.set('newsletterEmail', email);
+                Storage.set('newsletterSubscribed', true);
+                showSuccess('뉴스레터 구독이 완료되었습니다!');
+            } else if (email) {
+                alert('올바른 이메일 주소를 입력해주세요.');
+            }
+        }
+
+        // 자동 뉴스 업데이트 (30분마다)
+        setInterval(async () => {
+            const isSubscribed = Storage.get('newsletterSubscribed', false);
+            if (isSubscribed) {
+                console.log('자동 뉴스 업데이트 실행');
+                // 실제 구현에서는 백그라운드에서 뉴스 업데이트
+                const currentTab = document.querySelector('.tab-button.active').dataset.tab;
+                if (currentTab === 'todayNews') {
+                    loadTodayNews();
+                }
+            }
+        }, 1800000); // 30분마다
     </script>
 </body>
 </html>

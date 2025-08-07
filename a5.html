@@ -327,58 +327,126 @@
 
         // 종목 정보 로드
         async function loadStockInfo(symbol) {
-            const stockData = await API.getStockPrice(symbol);
-            stockPrices[symbol] = stockData;
-            currentStock = symbol;
+            try {
+                const stockData = await API.getStockPrice(symbol);
+                stockPrices[symbol] = stockData;
+                currentStock = symbol;
 
-            document.getElementById('stockName').textContent = symbol;
-            document.getElementById('stockPrice').textContent = `$${stockData.price.toFixed(2)}`;
-            document.getElementById('stockChange').textContent = formatPercent(stockData.changePercent);
-            document.getElementById('stockChange').className = `portfolio-change ${stockData.changePercent >= 0 ? 'positive' : 'negative'}`;
+                const stockName = getStockName(symbol);
+                document.getElementById('stockName').textContent = `${symbol} - ${stockName}`;
+                document.getElementById('stockPrice').textContent = `$${stockData.price.toFixed(2)}`;
+                document.getElementById('stockChange').textContent = formatPercent(stockData.changePercent);
+                document.getElementById('stockChange').className = `portfolio-change ${stockData.changePercent >= 0 ? 'positive' : 'negative'}`;
 
-            document.getElementById('stockInfo').classList.remove('hidden');
-            document.getElementById('tradingForm').classList.remove('hidden');
+                document.getElementById('stockInfo').classList.remove('hidden');
+                document.getElementById('tradingForm').classList.remove('hidden');
 
-            // 보유 수량 표시
-            const holdings = portfolio.data.holdings[symbol];
-            const maxSell = holdings ? holdings.quantity : 0;
-            document.getElementById('maxSellQuantity').textContent = `보유: ${maxSell}주`;
+                // 보유 수량 표시
+                const holdings = portfolio.data.holdings[symbol];
+                const maxSell = holdings ? holdings.quantity : 0;
+                document.getElementById('maxSellQuantity').textContent = `보유: ${maxSell}주`;
+                
+                // 평균 단가 정보 표시
+                if (holdings) {
+                    const avgPriceDiv = document.getElementById('avgPriceInfo') || createAvgPriceDiv();
+                    avgPriceDiv.innerHTML = `
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+                            <h5>보유 정보</h5>
+                            <p>보유 수량: ${holdings.quantity}주</p>
+                            <p>평균 단가: $${holdings.avgPrice.toFixed(2)}</p>
+                            <p>평가 금액: $${(holdings.quantity * stockData.price).toFixed(2)}</p>
+                            <p class="${(stockData.price - holdings.avgPrice) >= 0 ? 'positive' : 'negative'}">
+                                평가 손익: $${((stockData.price - holdings.avgPrice) * holdings.quantity).toFixed(2)}
+                                (${(((stockData.price - holdings.avgPrice) / holdings.avgPrice) * 100).toFixed(2)}%)
+                            </p>
+                        </div>
+                    `;
+                }
+                
+                updateTradingCalculations();
+                
+            } catch (error) {
+                console.error('종목 정보 로드 실패:', error);
+                showError('stockInfo', '종목 정보를 불러오는데 실패했습니다.');
+            }
+        }
+        
+        // 평균 단가 정보 div 생성
+        function createAvgPriceDiv() {
+            const div = document.createElement('div');
+            div.id = 'avgPriceInfo';
+            document.getElementById('stockInfo').appendChild(div);
+            return div;
         }
 
         // 거래 계산 업데이트
-        function updateTradingCalculations() {
+        async function updateTradingCalculations() {
             if (!currentStock || !stockPrices[currentStock]) return;
 
-            const price = stockPrices[currentStock].price;
-            const buyQuantity = parseInt(document.getElementById('buyQuantity').value) || 0;
-            const sellQuantity = parseInt(document.getElementById('sellQuantity').value) || 0;
+            try {
+                const exchangeRate = await API.getExchangeRate();
+                const priceUSD = stockPrices[currentStock].price;
+                const priceKRW = priceUSD * exchangeRate.rate;
+                
+                const buyQuantity = parseInt(document.getElementById('buyQuantity').value) || 0;
+                const sellQuantity = parseInt(document.getElementById('sellQuantity').value) || 0;
 
-            document.getElementById('buyTotal').textContent = `$${(buyQuantity * price).toFixed(2)}`;
-            document.getElementById('sellTotal').textContent = `$${(sellQuantity * price).toFixed(2)}`;
+                const buyTotalUSD = buyQuantity * priceUSD;
+                const buyTotalKRW = buyQuantity * priceKRW;
+                const sellTotalUSD = sellQuantity * priceUSD;
+                const sellTotalKRW = sellQuantity * priceKRW;
+
+                document.getElementById('buyTotal').innerHTML = `
+                    $${buyTotalUSD.toFixed(2)}<br>
+                    <small style="color: #7f8c8d;">${formatCurrency(buyTotalKRW)}</small>
+                `;
+                document.getElementById('sellTotal').innerHTML = `
+                    $${sellTotalUSD.toFixed(2)}<br>
+                    <small style="color: #7f8c8d;">${formatCurrency(sellTotalKRW)}</small>
+                `;
+            } catch (error) {
+                console.error('거래 계산 업데이트 실패:', error);
+            }
         }
 
         // 거래 실행
-        function executeTrade(type) {
+        async function executeTrade(type) {
             if (!currentStock) {
                 alert('종목을 선택해주세요.');
                 return;
             }
 
-            const price = stockPrices[currentStock].price * 1328.5; // USD to KRW
-            const quantity = parseInt(document.getElementById(type + 'Quantity').value);
-
-            if (!quantity || quantity <= 0) {
-                alert('올바른 수량을 입력해주세요.');
-                return;
-            }
-
             try {
+                // 실시간 환율 적용
+                const exchangeRate = await API.getExchangeRate();
+                const priceUSD = stockPrices[currentStock].price;
+                const priceKRW = priceUSD * exchangeRate.rate;
+                const quantity = parseInt(document.getElementById(type + 'Quantity').value);
+
+                if (!quantity || quantity <= 0) {
+                    alert('올바른 수량을 입력해주세요.');
+                    return;
+                }
+
+                const totalCostKRW = quantity * priceKRW;
+                
+                // 거래 확인 메시지
+                const action = type === 'buy' ? '매수' : '매도';
+                const confirmation = confirm(
+                    `${currentStock} ${quantity}주 ${action} 주문을 실행하시겠습니까?\n\n` +
+                    `단가: $${priceUSD.toFixed(2)} (${formatCurrency(priceKRW)})\n` +
+                    `총액: ${formatCurrency(totalCostKRW)}\n` +
+                    `환율: ${exchangeRate.rate.toFixed(2)} KRW/USD`
+                );
+                
+                if (!confirmation) return;
+
                 if (type === 'buy') {
-                    portfolio.buyStock(currentStock, quantity, price);
-                    showSuccess(`${currentStock} ${quantity}주를 매수했습니다.`);
+                    portfolio.buyStock(currentStock, quantity, priceKRW);
+                    showSuccess(`${currentStock} ${quantity}주를 ${formatCurrency(totalCostKRW)}에 매수했습니다.`);
                 } else {
-                    portfolio.sellStock(currentStock, quantity, price);
-                    showSuccess(`${currentStock} ${quantity}주를 매도했습니다.`);
+                    portfolio.sellStock(currentStock, quantity, priceKRW);
+                    showSuccess(`${currentStock} ${quantity}주를 ${formatCurrency(totalCostKRW)}에 매도했습니다.`);
                 }
 
                 // UI 업데이트
@@ -510,30 +578,51 @@
         }
 
         // 시장 데이터 로드
-        function loadMarketData() {
-            setTimeout(() => {
-                const marketItems = [
-                    { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, change: 2.15 },
-                    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2650.80, change: -15.30 },
-                    { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.60, change: 8.90 },
-                    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 310.45, change: 1.20 },
-                    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 135.75, change: -2.85 }
-                ];
+        async function loadMarketData() {
+            try {
+                const marketSymbols = ['AAPL', 'GOOGL', 'TSLA', 'MSFT', 'AMZN'];
+                const marketData = [];
+                
+                for (const symbol of marketSymbols) {
+                    const priceData = await API.getStockPrice(symbol);
+                    stockPrices[symbol] = priceData;
+                    marketData.push({
+                        symbol,
+                        name: getStockName(symbol),
+                        price: priceData.price,
+                        change: priceData.change,
+                        changePercent: priceData.changePercent
+                    });
+                }
 
                 document.getElementById('marketData').innerHTML = `
                     <div class="portfolio-grid">
-                        ${marketItems.map(item => `
+                        ${marketData.map(item => `
                             <div class="portfolio-item" style="cursor: pointer;" onclick="selectStock('${item.symbol}')">
                                 <div class="portfolio-symbol">${item.symbol}</div>
+                                <div style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 0.5rem;">${item.name}</div>
                                 <div class="portfolio-price">$${item.price.toFixed(2)}</div>
-                                <div class="portfolio-change ${item.change >= 0 ? 'positive' : 'negative'}">
-                                    ${item.change >= 0 ? '+' : ''}${item.change.toFixed(2)}
+                                <div class="portfolio-change ${item.changePercent >= 0 ? 'positive' : 'negative'}">
+                                    ${item.changePercent >= 0 ? '+' : ''}${item.changePercent.toFixed(2)}%
+                                </div>
+                                <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 0.5rem;">
+                                    실시간 업데이트
                                 </div>
                             </div>
                         `).join('')}
                     </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn btn-secondary" onclick="loadMarketData()">시장 데이터 새로고침</button>
+                    </div>
                 `;
-            }, 1000);
+            } catch (error) {
+                document.getElementById('marketData').innerHTML = `
+                    <div class="text-center" style="color: #e74c3c; padding: 2rem;">
+                        <p>⚠️ 시장 데이터를 불러오는데 실패했습니다.</p>
+                        <button class="btn" onclick="loadMarketData()">다시 시도</button>
+                    </div>
+                `;
+            }
         }
 
         // 종목 선택
@@ -543,6 +632,18 @@
             
             // 주식거래 탭으로 이동
             document.querySelector('[data-tab="trading"]').click();
+        }
+
+        // 주식 이름 매핑
+        function getStockName(symbol) {
+            const names = {
+                'AAPL': 'Apple Inc.',
+                'GOOGL': 'Alphabet Inc.',
+                'TSLA': 'Tesla Inc.',
+                'MSFT': 'Microsoft Corp.',
+                'AMZN': 'Amazon.com Inc.'
+            };
+            return names[symbol] || symbol;
         }
 
         // 예적금 예상 수익 계산

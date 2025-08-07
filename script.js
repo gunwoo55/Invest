@@ -15,79 +15,216 @@ const API = {
     // 뉴스 API (NewsAPI 사용 예정)
     async getNews(category = 'business', country = 'kr') {
         try {
-            // 실제 API 키가 필요하므로 임시 데이터 반환
-            return this.getMockNews();
+            // 실제 NewsAPI 호출 시도 (API 키 없이는 fallback 사용)
+            const apiKey = 'demo'; // 실제 API 키로 교체 필요
+            if (apiKey !== 'demo') {
+                const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                }
+            }
+            // API 키가 없거나 요청 실패 시 향상된 mock 데이터 사용
+            return this.getEnhancedMockNews();
         } catch (error) {
             console.error('뉴스 데이터 로드 실패:', error);
-            return this.getMockNews();
+            return this.getEnhancedMockNews();
         }
     },
 
-    // 임시 뉴스 데이터
-    getMockNews() {
+    // 향상된 임시 뉴스 데이터 (AI 업데이트 시뮬레이션)
+    getEnhancedMockNews() {
+        const newsTemplates = [
+            {
+                title: "한국 증시, 외국인 매수세에 상승 마감",
+                description: "코스피가 외국인의 순매수에 힘입어 상승 마감했습니다. 기술주와 바이오주를 중심으로 강세가 이어졌습니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=KOSPI+UP",
+                publishedAt: new Date().toISOString(),
+                source: { name: "경제신문" }
+            },
+            {
+                title: "중앙은행, 기준금리 동결 결정",
+                description: "한국은행이 기준금리를 현 수준에서 동결하기로 결정했습니다. 인플레이션 압력과 경제성장률을 종합적으로 고려한 결과입니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=BOK+Rate",
+                publishedAt: new Date(Date.now() - 3600000).toISOString(),
+                source: { name: "금융일보" }
+            },
+            {
+                title: "암호화폐 시장 급등, 비트코인 신고가 경신",
+                description: "비트코인이 새로운 최고가를 기록하며 암호화폐 시장 전체가 상승했습니다. 기관투자자들의 관심이 증가하고 있습니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=Bitcoin+High",
+                publishedAt: new Date(Date.now() - 7200000).toISOString(),
+                source: { name: "디지털경제" }
+            },
+            {
+                title: "국내 주요 기업 3분기 실적 발표",
+                description: "삼성전자, SK하이닉스 등 주요 기업들이 양호한 3분기 실적을 발표했습니다. 반도체 업황 회복이 주요 원인으로 분석됩니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=Q3+Results",
+                publishedAt: new Date(Date.now() - 10800000).toISOString(),
+                source: { name: "기업뉴스" }
+            },
+            {
+                title: "부동산 시장 안정화 정책 발표",
+                description: "정부가 부동산 시장 안정화를 위한 추가 정책을 발표했습니다. 공급 확대와 투기 억제에 중점을 두고 있습니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=Real+Estate",
+                publishedAt: new Date(Date.now() - 14400000).toISOString(),
+                source: { name: "부동산뉴스" }
+            },
+            {
+                title: "글로벌 인플레이션 둔화 조짐",
+                description: "주요국의 인플레이션이 둔화되고 있어 통화정책 변화에 대한 관심이 높아지고 있습니다.",
+                url: "#",
+                urlToImage: "https://via.placeholder.com/300x200?text=Global+Inflation",
+                publishedAt: new Date(Date.now() - 18000000).toISOString(),
+                source: { name: "글로벌경제" }
+            }
+        ];
+
+        // 랜덤하게 뉴스 선택하여 AI 업데이트 시뮬레이션
+        const shuffled = newsTemplates.sort(() => 0.5 - Math.random());
         return {
-            articles: [
-                {
-                    title: "한국 증시, 외국인 매수세에 상승 마감",
-                    description: "코스피가 외국인의 순매수에 힘입어 상승 마감했습니다.",
-                    url: "#",
-                    urlToImage: "https://via.placeholder.com/300x200?text=News1",
-                    publishedAt: new Date().toISOString(),
-                    source: { name: "경제신문" }
-                },
-                {
-                    title: "중앙은행, 기준금리 동결 결정",
-                    description: "한국은행이 기준금리를 현 수준에서 동결하기로 결정했습니다.",
-                    url: "#",
-                    urlToImage: "https://via.placeholder.com/300x200?text=News2",
-                    publishedAt: new Date(Date.now() - 3600000).toISOString(),
-                    source: { name: "금융일보" }
-                },
-                {
-                    title: "암호화폐 시장 급등, 비트코인 신고가 경신",
-                    description: "비트코인이 새로운 최고가를 기록하며 암호화폐 시장 전체가 상승했습니다.",
-                    url: "#",
-                    urlToImage: "https://via.placeholder.com/300x200?text=News3",
-                    publishedAt: new Date(Date.now() - 7200000).toISOString(),
-                    source: { name: "디지털경제" }
-                }
-            ]
+            articles: shuffled.slice(0, 6),
+            status: 'ok',
+            totalResults: shuffled.length
         };
+    },
+
+    // 기존 임시 뉴스 데이터 (호환성 유지)
+    getMockNews() {
+        return this.getEnhancedMockNews();
     },
 
     // 금융 데이터 API (Alpha Vantage 등 사용 예정)
     async getStockPrice(symbol) {
         try {
-            // 실제 API 호출 대신 임시 데이터 반환
-            return this.getMockStockPrice(symbol);
+            // 실제 API 호출 시도 (API 키 없이는 fallback 사용)
+            const apiKey = 'demo'; // 실제 API 키로 교체 필요
+            if (apiKey !== 'demo') {
+                const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data['Global Quote']) {
+                        const quote = data['Global Quote'];
+                        return {
+                            price: parseFloat(quote['05. price']),
+                            change: parseFloat(quote['09. change']),
+                            changePercent: parseFloat(quote['10. change percent'].replace('%', ''))
+                        };
+                    }
+                }
+            }
+            // API 키가 없거나 요청 실패 시 향상된 mock 데이터 사용
+            return this.getRealtimeMockStockPrice(symbol);
         } catch (error) {
             console.error('주식 데이터 로드 실패:', error);
-            return this.getMockStockPrice(symbol);
+            return this.getRealtimeMockStockPrice(symbol);
         }
     },
 
-    // 임시 주식 데이터
-    getMockStockPrice(symbol) {
-        const mockPrices = {
-            'AAPL': { price: 150.25, change: 2.15, changePercent: 1.45 },
-            'GOOGL': { price: 2650.80, change: -15.30, changePercent: -0.57 },
-            'TSLA': { price: 245.60, change: 8.90, changePercent: 3.76 },
-            'MSFT': { price: 310.45, change: 1.20, changePercent: 0.39 },
-            'AMZN': { price: 135.75, change: -2.85, changePercent: -2.06 }
+    // 실시간 주식 가격 시뮬레이션
+    getRealtimeMockStockPrice(symbol) {
+        const basePrices = {
+            'AAPL': 150.25,
+            'GOOGL': 2650.80,
+            'TSLA': 245.60,
+            'MSFT': 310.45,
+            'AMZN': 135.75
         };
         
-        return mockPrices[symbol] || { price: 100, change: 0, changePercent: 0 };
+        const basePrice = basePrices[symbol] || 100;
+        // 실시간 가격 변동 시뮬레이션 (-2% ~ +2%)
+        const variation = (Math.random() - 0.5) * 0.04;
+        const currentPrice = basePrice * (1 + variation);
+        const change = currentPrice - basePrice;
+        const changePercent = (change / basePrice) * 100;
+        
+        return {
+            price: currentPrice,
+            change: change,
+            changePercent: changePercent
+        };
+    },
+
+    // 기존 임시 주식 데이터 (호환성 유지)
+    getMockStockPrice(symbol) {
+        return this.getRealtimeMockStockPrice(symbol);
     },
 
     // 환율 정보
     async getExchangeRate(from = 'USD', to = 'KRW') {
         try {
-            // 실제 환율 API 호출 대신 임시 데이터 반환
-            return { rate: 1328.50, change: 0.78 };
+            // 실제 환율 API 호출 시도
+            const apiKey = 'demo'; // 실제 API 키로 교체 필요
+            if (apiKey !== 'demo') {
+                const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return { 
+                        rate: data.conversion_rate, 
+                        change: (Math.random() - 0.5) * 2 // 임시 변동률
+                    };
+                }
+            }
+            // API 키가 없거나 요청 실패 시 시뮬레이션 데이터 사용
+            return this.getRealtimeExchangeRate();
         } catch (error) {
             console.error('환율 데이터 로드 실패:', error);
-            return { rate: 1328.50, change: 0 };
+            return this.getRealtimeExchangeRate();
         }
+    },
+
+    // 실시간 환율 시뮬레이션
+    getRealtimeExchangeRate() {
+        const baseRate = 1328.50;
+        const variation = (Math.random() - 0.5) * 0.02; // -1% ~ +1% 변동
+        const currentRate = baseRate * (1 + variation);
+        const change = ((currentRate - baseRate) / baseRate) * 100;
+        
+        return { 
+            rate: currentRate, 
+            change: change 
+        };
+    },
+
+    // AI 기반 콘텐츠 업데이트 시뮬레이션
+    async updateFinancialTerms() {
+        // 실제로는 AI API를 통해 새로운 금융 용어나 설명을 생성
+        const updateTime = Storage.get('lastTermUpdate', 0);
+        const now = Date.now();
+        
+        // 1시간마다 업데이트 체크
+        if (now - updateTime > 3600000) {
+            console.log('AI 금융 용어 업데이트 시뮬레이션');
+            Storage.set('lastTermUpdate', now);
+            // 실제 구현에서는 새로운 용어 추가 또는 기존 용어 업데이트
+            return true;
+        }
+        return false;
+    },
+
+    // 뉴스 요약 AI 시뮬레이션
+    async generateNewsSummary(articles) {
+        // 실제로는 AI를 통해 뉴스 요약 생성
+        const summary = {
+            mainTrends: [
+                "국내 증시는 전반적으로 상승세를 보이고 있습니다.",
+                "글로벌 경제 불확실성에도 불구하고 기술주가 강세입니다.",
+                "중앙은행의 통화정책 변화에 대한 관심이 높아지고 있습니다."
+            ],
+            keyPoints: [
+                "외국인 투자자들의 순매수세가 지속되고 있습니다.",
+                "반도체 업종의 실적 개선이 두드러집니다.",
+                "부동산 시장 안정화 정책이 논의되고 있습니다."
+            ],
+            outlook: "단기적으로는 긍정적인 흐름이 지속될 것으로 예상되지만, 글로벌 경제 동향을 주의 깊게 지켜봐야 합니다."
+        };
+        
+        return summary;
     }
 };
 
