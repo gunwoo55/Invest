@@ -680,8 +680,8 @@
             }
 
             try {
-                portfolio.addSavings(amount, type, rate, term);
-                showSuccess(`${type}에 ${formatCurrency(amount)}으로 가입했습니다.`);
+                const savingsResult = portfolio.addSavings(amount, type, rate, term);
+                showTemporaryMessage(`${type}에 ${formatCurrency(amount)}으로 가입했습니다.`, 'success');
                 
                 // 폼 초기화
                 document.getElementById('depositAmount').value = '';
@@ -697,8 +697,34 @@
             }
         }
 
+        // 임시 메시지 표시 함수
+        function showTemporaryMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                padding: 1rem 2rem; border-radius: 4px; color: white;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease-out;
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 3000);
+        }
+
         // 예적금 목록 로드
         function loadSavingsList() {
+            // 만기된 예적금 체크
+            const maturedSavings = portfolio.checkMaturedSavings();
+            if (maturedSavings.length > 0) {
+                const maturedTotal = maturedSavings.reduce((sum, saving) => sum + (saving.expectedReturn || saving.amount), 0);
+                showTemporaryMessage(`${maturedSavings.length}개의 예적금이 만기되어 ${formatCurrency(maturedTotal)}이 입금되었습니다!`, 'success');
+            }
+            
             const savingsTransactions = portfolio.data.transactions.filter(t => t.type === 'savings');
             const container = document.getElementById('savingsList');
 
@@ -709,18 +735,31 @@
 
             container.innerHTML = savingsTransactions.map(savings => {
                 const maturityDate = new Date(savings.maturityDate);
-                const isMatured = maturityDate <= new Date();
+                const isMatured = savings.matured || maturityDate <= new Date();
                 const daysLeft = Math.ceil((maturityDate - new Date()) / (1000 * 60 * 60 * 24));
+                const expectedReturn = savings.expectedReturn || savings.amount;
+                const profit = expectedReturn - savings.amount;
 
                 return `
-                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
-                        <h5 style="color: #2c3e50; margin-bottom: 0.5rem;">${savings.savingsType}</h5>
-                        <p style="margin-bottom: 0.5rem;">가입금액: ${formatCurrency(savings.amount)}</p>
-                        <p style="margin-bottom: 0.5rem;">금리: ${savings.interestRate}%</p>
-                        <p style="margin-bottom: 0.5rem;">만기일: ${formatDate(savings.maturityDate)}</p>
-                        <p style="color: ${isMatured ? '#e74c3c' : '#27ae60'};">
-                            ${isMatured ? '만료됨' : `${daysLeft}일 남음`}
-                        </p>
+                    <div style="background: ${isMatured ? '#e8f5e8' : '#f8f9fa'}; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid ${isMatured ? '#27ae60' : '#3498db'};">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem;">
+                            <h5 style="color: #2c3e50; margin: 0;">${savings.savingsType}</h5>
+                            <span style="background: ${isMatured ? '#27ae60' : '#3498db'}; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;">
+                                ${isMatured ? '만료됨' : '진행중'}
+                            </span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                            <p style="margin: 0.2rem 0;"><strong>가입금액:</strong> ${formatCurrency(savings.amount)}</p>
+                            <p style="margin: 0.2rem 0;"><strong>금리:</strong> ${savings.interestRate}%</p>
+                            <p style="margin: 0.2rem 0;"><strong>만기일:</strong> ${formatDate(savings.maturityDate)}</p>
+                            <p style="margin: 0.2rem 0;"><strong>예상 수익:</strong> <span style="color: #27ae60;">${formatCurrency(profit)}</span></p>
+                        </div>
+                        <div style="margin-top: 0.5rem; font-weight: bold;">
+                            <span style="color: ${isMatured ? '#e74c3c' : '#27ae60'};">
+                                ${isMatured ? '만료됨' : `${daysLeft}일 남음`}
+                            </span>
+                            ${!isMatured ? `<span style="margin-left: 1rem; color: #3498db;">만기 예상액: ${formatCurrency(expectedReturn)}</span>` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -886,6 +925,11 @@
 
                 // 포트폴리오 값 업데이트
                 updatePortfolioOverview();
+                
+                // 만기된 예적금 체크 (1시간마다)
+                if (Math.random() < 0.1) { // 10% 확률로 체크 (실제로는 정시에 체크)
+                    loadSavingsList();
+                }
                 
             }, 30000); // 30초마다 업데이트
         }

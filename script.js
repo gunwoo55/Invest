@@ -315,16 +315,25 @@ class Portfolio {
 
     // 예적금 추가
     addSavings(amount, type, interestRate, term) {
+        if (this.data.totalAssets < amount) {
+            throw new Error('잔액이 부족합니다.');
+        }
+        
         this.data.totalAssets -= amount;
         
+        const maturityDate = new Date(Date.now() + (term * 30 * 24 * 60 * 60 * 1000));
+        const expectedReturn = amount * (1 + (interestRate / 100) * (term / 12));
+        
         const savingsRecord = {
+            id: Date.now(),
             date: new Date().toISOString(),
             type: 'savings',
             amount,
             savingsType: type,
             interestRate,
             term,
-            maturityDate: new Date(Date.now() + (term * 30 * 24 * 60 * 60 * 1000)).toISOString()
+            maturityDate: maturityDate.toISOString(),
+            expectedReturn
         };
 
         this.data.transactions.push(savingsRecord);
@@ -333,13 +342,14 @@ class Portfolio {
         this.addToLedger({
             date: new Date().toISOString(),
             category: '금융상품',
-            description: `${type} 가입`,
+            description: `${type} 가입 (${term}개월, 연 ${interestRate}%)`,
             amount: -amount,
-            type: 'expense'
+            type: 'expense',
+            relatedSavingsId: savingsRecord.id
         });
 
         this.save();
-        return true;
+        return savingsRecord;
     }
 
     // 가계부 항목 추가
@@ -366,6 +376,42 @@ class Portfolio {
     deleteLedgerEntry(id) {
         this.data.ledger = this.data.ledger.filter(entry => entry.id !== id);
         this.save();
+    }
+
+    // 만기 예적금 체크 및 자동 만기 처리
+    checkMaturedSavings() {
+        const now = new Date();
+        let maturedSavings = [];
+        
+        this.data.transactions.forEach(transaction => {
+            if (transaction.type === 'savings' && !transaction.matured) {
+                const maturityDate = new Date(transaction.maturityDate);
+                if (maturityDate <= now) {
+                    // 만기 처리
+                    transaction.matured = true;
+                    const returnAmount = transaction.expectedReturn || transaction.amount;
+                    this.data.totalAssets += returnAmount;
+                    
+                    // 가계부에 만기 수익 기록
+                    this.addToLedger({
+                        date: new Date().toISOString(),
+                        category: '금융상품',
+                        description: `${transaction.savingsType} 만기 (원금: ${formatCurrency(transaction.amount)})`,
+                        amount: returnAmount,
+                        type: 'income',
+                        relatedSavingsId: transaction.id
+                    });
+                    
+                    maturedSavings.push(transaction);
+                }
+            }
+        });
+        
+        if (maturedSavings.length > 0) {
+            this.save();
+        }
+        
+        return maturedSavings;
     }
 
     // 현재 포트폴리오 가치 계산 (실제 가격 반영)

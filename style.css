@@ -166,6 +166,14 @@ body {
     margin: 0 auto 1rem;
     color: #7f8c8d;
     font-size: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.profile-preview:hover {
+    border-color: #2980b9;
+    transform: scale(1.05);
 }
 
 .profile-preview img {
@@ -173,6 +181,13 @@ body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.profile-preview #profilePlaceholder {
+    z-index: 1;
 }
 
 /* 탭 네비게이션 */
@@ -345,6 +360,16 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
 }
 
 /* 반응형 디자인 */
