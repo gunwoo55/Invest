@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포트폴리오 - FINE U</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">FINE U</h1>
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="default-profile.svg" alt="프로필 사진" class="profile-image">
+                </div>
+                <span class="welcome-text">포트폴리오</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">홈</span>
+        </a>
+        <a href="a2.html" class="nav-item">
+            <span class="nav-icon">📰</span>
+            <span class="nav-text">뉴스</span>
+        </a>
+        <a href="a3.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">투자</span>
+        </a>
+        <a href="a4.html" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">포트폴리오</span>
+        </a>
+        <a href="a5.html" class="nav-item">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-text">등급</span>
+        </a>
+    </nav>
+
+    <main class="main-content">
+        <section class="coming-soon">
+            <h2>포트폴리오 페이지</h2>
+            <p>상세한 포트폴리오 기능은 "등급" 메뉴에서 확인하실 수 있습니다.</p>
+            <button onclick="window.location.href='a5.html?tab=portfolio'" class="action-btn">
+                포트폴리오 보기
+            </button>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+</body>
+</html>

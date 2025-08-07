@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>등급 - FINE U</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">FINE U</h1>
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="default-profile.svg" alt="프로필 사진" class="profile-image">
+                </div>
+                <span class="welcome-text">등급 및 투자</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">홈</span>
+        </a>
+        <a href="a2.html" class="nav-item">
+            <span class="nav-icon">📰</span>
+            <span class="nav-text">뉴스</span>
+        </a>
+        <a href="a3.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">투자</span>
+        </a>
+        <a href="a4.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">포트폴리오</span>
+        </a>
+        <a href="a5.html" class="nav-item active">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-text">등급</span>
+        </a>
+    </nav>
+
+    <main class="main-content">
+        <!-- 투자자 등급 섹션 -->
+        <section class="investor-grade">
+            <h2>내 투자자 등급</h2>
+            <div class="grade-card">
+                <div class="grade-info">
+                    <span class="grade-level" id="userGrade">골드</span>
+                    <span class="grade-description">안정적인 투자자</span>
+                </div>
+                <div class="grade-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <span class="progress-text">다음 등급까지 35%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 투자 상품 탭 -->
+        <div class="investment-tabs">
+            <button class="tab-btn active" data-tab="stocks">주식</button>
+            <button class="tab-btn" data-tab="crypto">암호화폐</button>
+            <button class="tab-btn" data-tab="bonds">채권</button>
+            <button class="tab-btn" data-tab="savings">예적금</button>
+            <button class="tab-btn" data-tab="portfolio">포트폴리오</button>
+            <button class="tab-btn" data-tab="accounting">가계부</button>
+        </div>
+
+        <!-- 주식 탭 -->
+        <div class="tab-content active" id="stocks">
+            <div class="search-bar">
+                <input type="text" id="stockSearch" placeholder="종목명 또는 티커 검색">
+                <button onclick="searchStocks()">검색</button>
+            </div>
+            <div class="stock-categories">
+                <button class="category-btn active" data-category="popular">인기 종목</button>
+                <button class="category-btn" data-category="kospi">코스피</button>
+                <button class="category-btn" data-category="kosdaq">코스닥</button>
+                <button class="category-btn" data-category="us">미국 주식</button>
+            </div>
+            <div class="stock-list" id="stockList">
+                <div class="loading">주식 데이터를 불러오는 중...</div>
+            </div>
+        </div>
+
+        <!-- 암호화폐 탭 -->
+        <div class="tab-content" id="crypto">
+            <div class="crypto-summary">
+                <h3>암호화폐 시장</h3>
+                <div class="market-cap-info">
+                    <span>총 시가총액: <span id="totalMarketCap">$1.2T</span></span>
+                    <span>24시간 거래량: <span id="totalVolume">$45B</span></span>
+                </div>
+            </div>
+            <div class="crypto-list" id="cryptoList">
+                <div class="loading">암호화폐 데이터를 불러오는 중...</div>
+            </div>
+        </div>
+
+        <!-- 채권 탭 -->
+        <div class="tab-content" id="bonds">
+            <div class="bond-categories">
+                <button class="category-btn active" data-category="government">국채</button>
+                <button class="category-btn" data-category="corporate">회사채</button>
+                <button class="category-btn" data-category="municipal">지방채</button>
+            </div>
+            <div class="bond-list" id="bondList">
+                <div class="loading">채권 데이터를 불러오는 중...</div>
+            </div>
+        </div>
+
+        <!-- 예적금 탭 -->
+        <div class="tab-content" id="savings">
+            <div class="savings-calculator">
+                <h3>예적금 계산기</h3>
+                <div class="calculator-form">
+                    <div class="input-group">
+                        <label>투자 금액</label>
+                        <input type="number" id="investAmount" placeholder="투자할 금액 입력">
+                    </div>
+                    <div class="input-group">
+                        <label>투자 기간 (개월)</label>
+                        <input type="number" id="investPeriod" placeholder="투자 기간 입력">
+                    </div>
+                    <div class="input-group">
+                        <label>연 이율 (%)</label>
+                        <input type="number" id="interestRate" placeholder="연 이율 입력" step="0.01">
+                    </div>
+                    <button onclick="calculateSavings()">계산하기</button>
+                </div>
+                <div class="calculation-result" id="savingsResult" style="display: none;">
+                    <h4>계산 결과</h4>
+                    <p>만기 시 수령액: <span id="maturityAmount"></span></p>
+                    <p>총 이자: <span id="totalInterest"></span></p>
+                    <button onclick="investInSavings()">투자하기</button>
+                </div>
+            </div>
+            <div class="savings-products" id="savingsProducts">
+                <h3>추천 예적금 상품</h3>
+                <div class="loading">상품 정보를 불러오는 중...</div>
+            </div>
+        </div>
+
+        <!-- 포트폴리오 탭 -->
+        <div class="tab-content" id="portfolio">
+            <div class="portfolio-overview">
+                <h3>내 포트폴리오</h3>
+                <div class="portfolio-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">총 투자금</span>
+                        <span class="stat-value" id="totalInvestment">₩10,000,000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">현재 가치</span>
+                        <span class="stat-value" id="currentValue">₩10,250,000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">수익률</span>
+                        <span class="stat-value positive" id="portfolioReturn">+2.5%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-chart">
+                <canvas id="portfolioChart" width="400" height="200"></canvas>
+            </div>
+            <div class="holdings-list" id="holdingsList">
+                <!-- 보유 종목 리스트 -->
+            </div>
+        </div>
+
+        <!-- 가계부 탭 -->
+        <div class="tab-content" id="accounting">
+            <div class="accounting-summary">
+                <h3>이번 달 가계부</h3>
+                <div class="month-summary">
+                    <div class="summary-item">
+                        <span class="label">총 수입</span>
+                        <span class="value income" id="monthlyIncome">+₩3,500,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">총 지출</span>
+                        <span class="value expense" id="monthlyExpense">-₩2,800,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">순 수익</span>
+                        <span class="value profit" id="monthlyProfit">+₩700,000</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accounting-actions">
+                <button onclick="showAddTransactionModal('income')" class="action-btn income">수입 추가</button>
+                <button onclick="showAddTransactionModal('expense')" class="action-btn expense">지출 추가</button>
+                <button onclick="showAddTransactionModal('investment')" class="action-btn investment">투자 기록</button>
+            </div>
+
+            <div class="transaction-list" id="transactionList">
+                <h4>최근 거래 내역</h4>
+                <div class="loading">거래 내역을 불러오는 중...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 거래 추가 모달 -->
+    <div id="transactionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <h3 id="modalTitle">거래 추가</h3>
+            <form id="transactionForm">
+                <div class="input-group">
+                    <label>금액</label>
+                    <input type="number" id="transactionAmount" required>
+                </div>
+                <div class="input-group">
+                    <label>카테고리</label>
+                    <select id="transactionCategory" required>
+                        <!-- 동적으로 채워짐 -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>메모</label>
+                    <input type="text" id="transactionMemo" placeholder="메모 입력 (선택사항)">
+                </div>
+                <div class="input-group">
+                    <label>날짜</label>
+                    <input type="date" id="transactionDate" required>
+                </div>
+                <button type="submit">추가</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/investment.js"></script>
+</body>
+</html>

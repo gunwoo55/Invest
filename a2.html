@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뉴스 - FINE U</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">FINE U</h1>
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="default-profile.svg" alt="프로필 사진" class="profile-image">
+                </div>
+                <span class="welcome-text">뉴스</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">홈</span>
+        </a>
+        <a href="a2.html" class="nav-item active">
+            <span class="nav-icon">📰</span>
+            <span class="nav-text">뉴스</span>
+        </a>
+        <a href="a3.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">투자</span>
+        </a>
+        <a href="a4.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">포트폴리오</span>
+        </a>
+        <a href="a5.html" class="nav-item">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-text">등급</span>
+        </a>
+    </nav>
+
+    <main class="main-content">
+        <div class="news-tabs">
+            <button class="tab-btn active" data-tab="today-term">오늘의 금융 용어</button>
+            <button class="tab-btn" data-tab="newsletter">뉴스레터</button>
+            <button class="tab-btn" data-tab="weekly">주간 뉴스레터</button>
+            <button class="tab-btn" data-tab="card-news">카드뉴스</button>
+            <button class="tab-btn" data-tab="economic-news">경제뉴스</button>
+        </div>
+
+        <!-- 오늘의 금융 용어 -->
+        <div class="tab-content active" id="today-term">
+            <div class="term-card">
+                <h3 id="termTitle">오늘의 금융 용어</h3>
+                <div class="term-content">
+                    <h4 id="termName">로딩 중...</h4>
+                    <p id="termDefinition">용어를 불러오는 중입니다...</p>
+                    <div class="term-example">
+                        <h5>예시</h5>
+                        <p id="termExample">예시를 불러오는 중입니다...</p>
+                    </div>
+                </div>
+                <button class="refresh-btn" onclick="loadTodayTerm()">새로고침</button>
+            </div>
+        </div>
+
+        <!-- 뉴스레터 -->
+        <div class="tab-content" id="newsletter">
+            <div class="newsletter-section">
+                <h3>일간 뉴스레터</h3>
+                <div class="newsletter-content">
+                    <div class="newsletter-summary" id="dailySummary">
+                        <h4>오늘의 주요 경제 이슈</h4>
+                        <div class="summary-loading">뉴스레터를 생성하는 중...</div>
+                    </div>
+                    <div class="newsletter-topics" id="newsletterTopics">
+                        <!-- AI가 생성한 뉴스레터 내용이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateDailyNewsletter()">새 뉴스레터 생성</button>
+            </div>
+        </div>
+
+        <!-- 주간 뉴스레터 -->
+        <div class="tab-content" id="weekly">
+            <div class="weekly-newsletter">
+                <h3>주간 시장 리포트</h3>
+                <div class="weekly-content">
+                    <div class="week-summary" id="weeklySummary">
+                        <h4>이번 주 시장 동향</h4>
+                        <div class="summary-loading">주간 리포트를 생성하는 중...</div>
+                    </div>
+                    <div class="market-analysis" id="marketAnalysis">
+                        <!-- AI가 생성한 주간 분석 내용 -->
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateWeeklyNewsletter()">주간 리포트 생성</button>
+            </div>
+        </div>
+
+        <!-- 카드뉴스 -->
+        <div class="tab-content" id="card-news">
+            <div class="card-news-section">
+                <h3>오늘의 카드뉴스</h3>
+                <div class="card-news-container">
+                    <div class="card-news-slider" id="cardNewsSlider">
+                        <!-- 카드뉴스 슬라이더 -->
+                    </div>
+                    <div class="slider-controls">
+                        <button class="slider-btn prev" onclick="previousCard()">‹</button>
+                        <span class="slider-indicator" id="cardIndicator">1 / 5</span>
+                        <button class="slider-btn next" onclick="nextCard()">›</button>
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateCardNews()">새 카드뉴스 생성</button>
+            </div>
+        </div>
+
+        <!-- 경제뉴스 -->
+        <div class="tab-content" id="economic-news">
+            <div class="news-filters">
+                <select id="newsCategory">
+                    <option value="general">전체</option>
+                    <option value="stock">주식</option>
+                    <option value="crypto">암호화폐</option>
+                    <option value="forex">환율</option>
+                    <option value="economy">경제정책</option>
+                </select>
+                <button class="filter-btn" onclick="filterNews()">필터 적용</button>
+            </div>
+            <div class="news-list" id="economicNewsList">
+                <div class="loading">뉴스를 불러오는 중...</div>
+            </div>
+            <button class="load-more-btn" onclick="loadMoreNews()" id="loadMoreBtn" style="display: none;">더 보기</button>
+        </div>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/news.js"></script>
+</body>
+</html>

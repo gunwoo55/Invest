@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 모의투자 앱</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">FINE U</h1>
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img id="profileImage" src="default-profile.svg" alt="프로필 사진" class="profile-image">
+                    <input type="file" id="profileImageInput" accept="image/*" style="display: none;">
+                </div>
+                <span class="welcome-text">환영합니다!</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">홈</span>
+        </a>
+        <a href="a2.html" class="nav-item">
+            <span class="nav-icon">📰</span>
+            <span class="nav-text">뉴스</span>
+        </a>
+        <a href="a3.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">투자</span>
+        </a>
+        <a href="a4.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">포트폴리오</span>
+        </a>
+        <a href="a5.html" class="nav-item">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-text">등급</span>
+        </a>
+    </nav>
+
+    <main class="main-content">
+        <section class="portfolio-summary">
+            <h2>내 포트폴리오</h2>
+            <div class="portfolio-card">
+                <div class="total-value">
+                    <span class="label">총 자산</span>
+                    <span class="value" id="totalAssets">₩10,000,000</span>
+                </div>
+                <div class="profit-loss">
+                    <span class="label">수익률</span>
+                    <span class="value positive" id="profitRate">+2.5% (+₩250,000)</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h3>빠른 투자</h3>
+            <div class="action-grid">
+                <button class="action-btn" onclick="navigateToInvest('stock')">
+                    <span class="action-icon">📈</span>
+                    <span>주식</span>
+                </button>
+                <button class="action-btn" onclick="navigateToInvest('crypto')">
+                    <span class="action-icon">₿</span>
+                    <span>암호화폐</span>
+                </button>
+                <button class="action-btn" onclick="navigateToInvest('bond')">
+                    <span class="action-icon">📋</span>
+                    <span>채권</span>
+                </button>
+                <button class="action-btn" onclick="navigateToInvest('savings')">
+                    <span class="action-icon">🏦</span>
+                    <span>예적금</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="market-overview">
+            <h3>시장 현황</h3>
+            <div class="market-indices">
+                <div class="index-item">
+                    <span class="index-name">KOSPI</span>
+                    <span class="index-value" id="kospiValue">2,450.32</span>
+                    <span class="index-change positive" id="kospiChange">+12.45 (+0.51%)</span>
+                </div>
+                <div class="index-item">
+                    <span class="index-name">NASDAQ</span>
+                    <span class="index-value" id="nasdaqValue">15,235.71</span>
+                    <span class="index-change negative" id="nasdaqChange">-25.83 (-0.17%)</span>
+                </div>
+                <div class="index-item">
+                    <span class="index-name">비트코인</span>
+                    <span class="index-value" id="bitcoinValue">$43,250</span>
+                    <span class="index-change positive" id="bitcoinChange">+$1,230 (+2.93%)</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent-news">
+            <h3>최신 뉴스</h3>
+            <div class="news-list" id="recentNewsList">
+                <div class="news-item">
+                    <div class="news-content">
+                        <h4>한국은행, 기준금리 동결 결정</h4>
+                        <p>한국은행이 기준금리를 현행 3.50% 수준에서 동결하기로 결정했습니다.</p>
+                        <span class="news-time">2시간 전</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>
