@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뉴스 - FINE U</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .news-card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center">
+                <button onclick="history.back()" class="mr-4">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">뉴스 & 학습</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex">
+                <button id="newsTab" class="px-6 py-3 text-blue-600 border-b-2 border-blue-600 font-medium">
+                    금융뉴스
+                </button>
+                <button id="learnTab" class="px-6 py-3 text-gray-600 hover:text-blue-600 font-medium">
+                    용어학습
+                </button>
+                <button id="newsletterTab" class="px-6 py-3 text-gray-600 hover:text-blue-600 font-medium">
+                    뉴스레터
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- News Section -->
+        <div id="newsSection">
+            <!-- Market Summary -->
+            <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-green-500 mr-2"></i>
+                    시장 현황
+                </h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">코스피</p>
+                        <p class="text-xl font-bold text-red-500">2,485.67</p>
+                        <p class="text-sm text-red-500">▼ 1.2%</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">코스닥</p>
+                        <p class="text-xl font-bold text-blue-500">765.23</p>
+                        <p class="text-sm text-blue-500">▲ 0.8%</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">환율(USD)</p>
+                        <p class="text-xl font-bold text-orange-500">1,325.50</p>
+                        <p class="text-sm text-orange-500">▲ 0.3%</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">비트코인</p>
+                        <p class="text-xl font-bold text-yellow-500">65,432,000</p>
+                        <p class="text-sm text-yellow-500">▲ 2.1%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest News -->
+            <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-newspaper text-blue-500 mr-2"></i>
+                    최신 뉴스
+                </h2>
+                <div class="space-y-4" id="newsList">
+                    <!-- News items will be populated by JavaScript -->
+                </div>
+                <button class="w-full mt-4 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                    더 많은 뉴스 보기
+                </button>
+            </div>
+
+            <!-- Economic Indicators -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-bar text-purple-500 mr-2"></i>
+                    경제 지표
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium">기준금리</span>
+                        <span class="text-lg font-bold">3.5%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium">소비자물가지수</span>
+                        <span class="text-lg font-bold text-red-500">+3.2%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium">실업률</span>
+                        <span class="text-lg font-bold">2.8%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Section -->
+        <div id="learnSection" class="hidden">
+            <!-- Search Bar -->
+            <div class="bg-white rounded-lg card-shadow p-4 mb-6">
+                <div class="relative">
+                    <input type="text" id="termSearch" placeholder="금융 용어를 검색하세요..." 
+                           class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-book text-green-500 mr-2"></i>
+                    카테고리
+                </h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="showTermCategory('stock')" class="p-4 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition">
+                        <i class="fas fa-chart-line text-2xl mb-2"></i>
+                        <p class="font-medium">주식</p>
+                    </button>
+                    <button onclick="showTermCategory('crypto')" class="p-4 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition">
+                        <i class="fab fa-bitcoin text-2xl mb-2"></i>
+                        <p class="font-medium">암호화폐</p>
+                    </button>
+                    <button onclick="showTermCategory('bond')" class="p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition">
+                        <i class="fas fa-university text-2xl mb-2"></i>
+                        <p class="font-medium">채권</p>
+                    </button>
+                    <button onclick="showTermCategory('economy')" class="p-4 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">
+                        <i class="fas fa-globe text-2xl mb-2"></i>
+                        <p class="font-medium">경제</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terms List -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    <span id="termCategoryTitle">인기 용어</span>
+                </h2>
+                <div class="space-y-3" id="termsList">
+                    <!-- Terms will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div id="newsletterSection" class="hidden">
+            <!-- Subscribe Banner -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-2">FINE U 뉴스레터</h2>
+                <p class="mb-4">매주 금융 시장 분석과 투자 팁을 받아보세요!</p>
+                <div class="flex space-x-4">
+                    <input type="email" placeholder="이메일 주소를 입력하세요" 
+                           class="flex-1 px-4 py-2 rounded-lg text-gray-800">
+                    <button class="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
+                        구독하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Newsletter Archive -->
+            <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-archive text-orange-500 mr-2"></i>
+                    뉴스레터 아카이브
+                </h2>
+                <div class="space-y-4" id="newsletterList">
+                    <!-- Newsletter items will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Weekly Market Report -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-pie text-indigo-500 mr-2"></i>
+                    주간 시장 리포트
+                </h2>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-bold mb-2">이번 주 시장 요약</h3>
+                    <p class="text-gray-700 text-sm leading-relaxed">
+                        이번 주 국내 증시는 미국 연준의 금리 인상 여파로 하락세를 보였습니다. 
+                        코스피는 전주 대비 1.2% 하락한 2,485포인트에서 마감했으며, 
+                        외국인 투자자들의 순매도가 이어졌습니다.
+                    </p>
+                    <div class="mt-4 flex justify-between text-sm">
+                        <span class="text-gray-500">2024.01.15</span>
+                        <span class="text-blue-600 font-medium">전체 보기 →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Term Detail Modal -->
+    <div id="termModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-80 overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold" id="termTitle"></h2>
+                <button id="closeTerm" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="text-gray-700" id="termDefinition"></div>
+            <div class="mt-4 text-sm text-blue-600" id="termExample"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-5 h-16">
+            <a href="index.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs mt-1">홈</span>
+            </a>
+            <a href="a1.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-chart-line text-xl"></i>
+                <span class="text-xs mt-1">투자</span>
+            </a>
+            <a href="a2.html" class="flex flex-col items-center justify-center text-blue-600">
+                <i class="fas fa-newspaper text-xl"></i>
+                <span class="text-xs mt-1">뉴스</span>
+            </a>
+            <a href="a4.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-gamepad text-xl"></i>
+                <span class="text-xs mt-1">게임</span>
+            </a>
+            <a href="a3.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-bars text-xl"></i>
+                <span class="text-xs mt-1">더보기</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Sample data
+        const newsData = [
+            {
+                title: "국내 증시, 외국인 매도세에 하락 마감",
+                summary: "코스피 2,485포인트로 1.2% 하락, 반도체·바이오주 부진",
+                time: "2시간 전",
+                category: "증시"
+            },
+            {
+                title: "한국은행, 기준금리 3.5% 동결 결정",
+                summary: "물가 안정세와 경기 둔화 고려해 현 수준 유지",
+                time: "4시간 전",
+                category: "금융정책"
+            },
+            {
+                title: "비트코인 6만5천달러 돌파, 기관투자자 유입 확대",
+                summary: "ETF 승인 기대감과 제도권 진입으로 상승세",
+                time: "6시간 전",
+                category: "암호화폐"
+            },
+            {
+                title: "부동산 PF 부실 우려 확산, 은행권 긴장",
+                summary: "프로젝트 파이낸싱 연체율 상승으로 금융권 리스크 관리 강화",
+                time: "8시간 전",
+                category: "부동산"
+            },
+            {
+                title: "원달러 환율 1,325원 돌파, 연말까지 상승 전망",
+                summary: "미국 금리 인상 지속과 무역수지 악화 영향",
+                time: "10시간 전",
+                category: "환율"
+            }
+        ];
+
+        const termsData = {
+            stock: [
+                { term: "PER", definition: "주가수익비율(Price Earnings Ratio)로, 주가를 주당순이익으로 나눈 값입니다.", example: "예: PER 15배라면 현재 주가가 1주당 순이익의 15배라는 의미" },
+                { term: "PBR", definition: "주가순자산비율(Price Book-value Ratio)로, 주가를 주당순자산으로 나눈 값입니다.", example: "예: PBR 1.0이면 주가와 순자산가치가 같다는 의미" },
+                { term: "배당수익률", definition: "주식 투자로 받는 배당금의 수익률을 나타내는 지표입니다.", example: "예: 배당수익률 3%라면 투자금액의 3%를 배당으로 받는다는 의미" },
+                { term: "시가총액", definition: "상장된 주식의 총 가치로, 주가 × 발행주식수로 계산합니다.", example: "예: 주가 10만원, 발행주식 100만주라면 시가총액은 1조원" }
+            ],
+            crypto: [
+                { term: "블록체인", definition: "암호화된 거래 기록을 여러 컴퓨터에 분산 저장하는 기술입니다.", example: "예: 비트코인 거래는 모두 블록체인에 기록되어 투명하게 관리됩니다" },
+                { term: "마이닝", definition: "암호화폐 거래를 검증하고 새로운 코인을 발행하는 과정입니다.", example: "예: 비트코인 마이닝으로 새로운 비트코인이 생성됩니다" },
+                { term: "스테이킹", definition: "암호화폐를 보유하고 네트워크 검증에 참여해 보상을 받는 방식입니다.", example: "예: 이더리움 스테이킹으로 연 4-6% 수익을 얻을 수 있습니다" },
+                { term: "DeFi", definition: "탈중앙화 금융(Decentralized Finance)으로, 블록체인 기반 금융 서비스입니다.", example: "예: DeFi 플랫폼에서 암호화폐를 담보로 대출받을 수 있습니다" }
+            ],
+            bond: [
+                { term: "국고채", definition: "국가가 발행하는 채권으로, 가장 안전한 투자처 중 하나입니다.", example: "예: 3년 만기 국고채의 연 수익률이 3.2%라면 안전한 투자 수단입니다" },
+                { term: "회사채", definition: "기업이 자금조달을 위해 발행하는 채권입니다.", example: "예: 삼성전자 회사채는 국고채보다 약간 높은 수익률을 제공합니다" },
+                { term: "신용등급", definition: "채권 발행자의 상환능력을 평가한 등급입니다.", example: "예: AAA등급은 최고 신용등급으로 가장 안전합니다" },
+                { term: "만기수익률", definition: "채권을 만기까지 보유할 때 얻는 연간 수익률입니다.", example: "예: 만기수익률 4%인 채권을 만기까지 보유하면 연 4% 수익" }
+            ],
+            economy: [
+                { term: "인플레이션", definition: "물가가 지속적으로 상승하는 현상입니다.", example: "예: 인플레이션 3%라면 작년 1,000원 물건이 올해 1,030원" },
+                { term: "GDP", definition: "국내총생산(Gross Domestic Product)으로, 한 나라의 경제 규모를 나타냅니다.", example: "예: 한국의 GDP는 세계 10위 규모입니다" },
+                { term: "기준금리", definition: "중앙은행이 시중은행에 돈을 빌려줄 때 적용하는 금리입니다.", example: "예: 기준금리 3.5%로 인상하면 대출금리도 상승합니다" },
+                { term: "환율", definition: "한 나라 화폐와 다른 나라 화폐의 교환 비율입니다.", example: "예: 달러 환율 1,300원이면 1달러를 1,300원에 살 수 있습니다" }
+            ]
+        };
+
+        const newsletterData = [
+            {
+                title: "2024년 1월 2주차 시장 분석",
+                date: "2024.01.15",
+                summary: "국내외 증시 동향과 주요 투자 포인트 분석"
+            },
+            {
+                title: "신년 투자 전략 가이드",
+                date: "2024.01.08",
+                summary: "2024년 유망 투자 섹터와 포트폴리오 구성법"
+            },
+            {
+                title: "연말정산과 세금 절약 투자법",
+                date: "2024.01.01",
+                summary: "절세 효과가 있는 투자 상품 활용 방법"
+            }
+        ];
+
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTabs();
+            loadNews();
+            loadTerms();
+            loadNewsletters();
+        });
+
+        function setupTabs() {
+            const tabs = ['newsTab', 'learnTab', 'newsletterTab'];
+            const sections = ['newsSection', 'learnSection', 'newsletterSection'];
+
+            tabs.forEach((tabId, index) => {
+                document.getElementById(tabId).addEventListener('click', () => {
+                    // Reset all tabs and sections
+                    tabs.forEach(t => {
+                        const tab = document.getElementById(t);
+                        tab.className = 'px-6 py-3 text-gray-600 hover:text-blue-600 font-medium';
+                    });
+                    sections.forEach(s => {
+                        document.getElementById(s).classList.add('hidden');
+                    });
+
+                    // Activate clicked tab and section
+                    document.getElementById(tabId).className = 'px-6 py-3 text-blue-600 border-b-2 border-blue-600 font-medium';
+                    document.getElementById(sections[index]).classList.remove('hidden');
+                });
+            });
+        }
+
+        function loadNews() {
+            const newsList = document.getElementById('newsList');
+            newsList.innerHTML = '';
+
+            newsData.forEach(news => {
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-card p-4 border-l-4 border-blue-500 bg-gray-50 rounded-lg cursor-pointer';
+                newsItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">${news.category}</span>
+                        <span class="text-gray-500 text-xs">${news.time}</span>
+                    </div>
+                    <h3 class="font-bold mb-1">${news.title}</h3>
+                    <p class="text-gray-600 text-sm">${news.summary}</p>
+                `;
+                newsList.appendChild(newsItem);
+            });
+        }
+
+        function loadTerms(category = null) {
+            const termsList = document.getElementById('termsList');
+            const categoryTitle = document.getElementById('termCategoryTitle');
+            
+            let terms = [];
+            let title = '인기 용어';
+
+            if (category && termsData[category]) {
+                terms = termsData[category];
+                title = getCategoryTitle(category);
+            } else {
+                // Show popular terms from all categories
+                Object.values(termsData).forEach(categoryTerms => {
+                    terms = terms.concat(categoryTerms.slice(0, 2));
+                });
+            }
+
+            categoryTitle.textContent = title;
+            termsList.innerHTML = '';
+
+            terms.forEach(termData => {
+                const termItem = document.createElement('div');
+                termItem.className = 'p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition';
+                termItem.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">${termData.term}</span>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                `;
+                termItem.addEventListener('click', () => showTermDetail(termData));
+                termsList.appendChild(termItem);
+            });
+        }
+
+        function loadNewsletters() {
+            const newsletterList = document.getElementById('newsletterList');
+            newsletterList.innerHTML = '';
+
+            newsletterData.forEach(newsletter => {
+                const newsletterItem = document.createElement('div');
+                newsletterItem.className = 'p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition cursor-pointer';
+                newsletterItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold">${newsletter.title}</h3>
+                        <span class="text-gray-500 text-sm">${newsletter.date}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm">${newsletter.summary}</p>
+                `;
+                newsletterList.appendChild(newsletterItem);
+            });
+        }
+
+        function showTermCategory(category) {
+            loadTerms(category);
+        }
+
+        function getCategoryTitle(category) {
+            const titles = {
+                stock: '주식 용어',
+                crypto: '암호화폐 용어',
+                bond: '채권 용어',
+                economy: '경제 용어'
+            };
+            return titles[category] || '인기 용어';
+        }
+
+        function showTermDetail(termData) {
+            document.getElementById('termTitle').textContent = termData.term;
+            document.getElementById('termDefinition').textContent = termData.definition;
+            document.getElementById('termExample').textContent = termData.example;
+            document.getElementById('termModal').classList.remove('hidden');
+        }
+
+        // Term search functionality
+        document.getElementById('termSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm.length < 2) {
+                loadTerms();
+                return;
+            }
+
+            const allTerms = [];
+            Object.values(termsData).forEach(categoryTerms => {
+                categoryTerms.forEach(term => {
+                    if (term.term.toLowerCase().includes(searchTerm) || 
+                        term.definition.toLowerCase().includes(searchTerm)) {
+                        allTerms.push(term);
+                    }
+                });
+            });
+
+            const termsList = document.getElementById('termsList');
+            const categoryTitle = document.getElementById('termCategoryTitle');
+            
+            categoryTitle.textContent = `'${searchTerm}' 검색 결과`;
+            termsList.innerHTML = '';
+
+            if (allTerms.length === 0) {
+                termsList.innerHTML = '<div class="text-center text-gray-500 py-8">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            allTerms.forEach(termData => {
+                const termItem = document.createElement('div');
+                termItem.className = 'p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition';
+                termItem.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">${termData.term}</span>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                `;
+                termItem.addEventListener('click', () => showTermDetail(termData));
+                termsList.appendChild(termItem);
+            });
+        });
+
+        // Close term modal
+        document.getElementById('closeTerm').addEventListener('click', function() {
+            document.getElementById('termModal').classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('termModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

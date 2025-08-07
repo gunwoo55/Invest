@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 모의투자 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">FINE U</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="userGreeting" class="hidden">안녕하세요, <span id="userName"></span>님!</span>
+                    <button id="loginBtn" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
+                        로그인
+                    </button>
+                    <button id="logoutBtn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition">
+                        로그아웃
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Login Modal -->
+        <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                <h2 class="text-2xl font-bold mb-4">로그인</h2>
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">이름</label>
+                        <input type="text" id="nameInput" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">나이</label>
+                        <input type="number" id="ageInput" min="1" max="100" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">초기 자금</label>
+                        <select id="initialFunds" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="1000000">100만원</option>
+                            <option value="5000000">500만원</option>
+                            <option value="10000000">1,000만원</option>
+                            <option value="50000000">5,000만원</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                            시작하기
+                        </button>
+                        <button type="button" id="closeLoginModal" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition">
+                            취소
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- User Profile Section -->
+        <div id="profileSection" class="hidden mb-6">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold" id="profileName"></h2>
+                        <p class="text-gray-600" id="profileAge"></p>
+                        <p class="text-sm text-blue-600 font-medium" id="userGrade"></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-gray-500 text-sm">총 자산</p>
+                        <p class="text-2xl font-bold text-green-600" id="totalAssets"></p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-500 text-sm">수익률</p>
+                        <p class="text-2xl font-bold" id="returnRate"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Chart -->
+        <div id="portfolioSection" class="hidden mb-6">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-bold mb-4">포트폴리오</h3>
+                <div class="h-64">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Status -->
+        <div id="assetSection" class="hidden mb-6">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-bold mb-4">자산 현황</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="flex items-center">
+                            <i class="fas fa-won-sign text-blue-500 mr-2"></i>
+                            현금
+                        </span>
+                        <span class="font-bold" id="cashAmount"></span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="flex items-center">
+                            <i class="fas fa-chart-line text-green-500 mr-2"></i>
+                            주식
+                        </span>
+                        <span class="font-bold" id="stockAmount"></span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="flex items-center">
+                            <i class="fab fa-bitcoin text-yellow-500 mr-2"></i>
+                            암호화폐
+                        </span>
+                        <span class="font-bold" id="cryptoAmount"></span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span class="flex items-center">
+                            <i class="fas fa-university text-purple-500 mr-2"></i>
+                            채권
+                        </span>
+                        <span class="font-bold" id="bondAmount"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div id="actionSection" class="hidden mb-6">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h3 class="text-lg font-bold mb-4">빠른 메뉴</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="location.href='a1.html'" class="p-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-chart-line text-2xl mb-2"></i>
+                        <p class="font-medium">투자하기</p>
+                    </button>
+                    <button onclick="location.href='a5.html'" class="p-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                        <i class="fas fa-book text-2xl mb-2"></i>
+                        <p class="font-medium">가계부</p>
+                    </button>
+                    <button onclick="location.href='a4.html'" class="p-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition">
+                        <i class="fas fa-gamepad text-2xl mb-2"></i>
+                        <p class="font-medium">게임</p>
+                    </button>
+                    <button onclick="location.href='a2.html'" class="p-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+                        <i class="fas fa-newspaper text-2xl mb-2"></i>
+                        <p class="font-medium">뉴스</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Message for Non-logged users -->
+        <div id="welcomeSection" class="text-center py-12">
+            <div class="bg-white rounded-lg card-shadow p-8">
+                <i class="fas fa-chart-pie text-6xl text-blue-500 mb-4"></i>
+                <h2 class="text-3xl font-bold mb-4">FINE U에 오신 것을 환영합니다!</h2>
+                <p class="text-gray-600 mb-6">가상 투자로 금융 지식을 쌓아보세요.</p>
+                <button onclick="showLogin()" class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition">
+                    지금 시작하기
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-5 h-16">
+            <a href="index.html" class="flex flex-col items-center justify-center text-blue-600">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs mt-1">홈</span>
+            </a>
+            <a href="a1.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-chart-line text-xl"></i>
+                <span class="text-xs mt-1">투자</span>
+            </a>
+            <a href="a2.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-newspaper text-xl"></i>
+                <span class="text-xs mt-1">뉴스</span>
+            </a>
+            <a href="a4.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-gamepad text-xl"></i>
+                <span class="text-xs mt-1">게임</span>
+            </a>
+            <a href="a3.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-bars text-xl"></i>
+                <span class="text-xs mt-1">더보기</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // User data management
+        let userData = JSON.parse(localStorage.getItem('fineUserData')) || null;
+        let portfolioChart = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            if (userData) {
+                showUserInterface();
+            } else {
+                showWelcomeInterface();
+            }
+        });
+
+        // Show login modal
+        function showLogin() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        // Hide login modal
+        function hideLogin() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('nameInput').value;
+            const age = parseInt(document.getElementById('ageInput').value);
+            const initialFunds = parseInt(document.getElementById('initialFunds').value);
+            
+            userData = {
+                name: name,
+                age: age,
+                initialFunds: initialFunds,
+                currentFunds: initialFunds,
+                cash: initialFunds,
+                stocks: 0,
+                crypto: 0,
+                bonds: 0,
+                etf: 0,
+                savings: 0,
+                preciousMetals: 0,
+                transactions: [],
+                loginDate: new Date().toISOString()
+            };
+            
+            localStorage.setItem('fineUserData', JSON.stringify(userData));
+            hideLogin();
+            showUserInterface();
+        });
+
+        // Show user interface
+        function showUserInterface() {
+            document.getElementById('welcomeSection').classList.add('hidden');
+            document.getElementById('profileSection').classList.remove('hidden');
+            document.getElementById('portfolioSection').classList.remove('hidden');
+            document.getElementById('assetSection').classList.remove('hidden');
+            document.getElementById('actionSection').classList.remove('hidden');
+            
+            document.getElementById('loginBtn').classList.add('hidden');
+            document.getElementById('userGreeting').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            
+            updateUserProfile();
+            updateAssetStatus();
+            createPortfolioChart();
+        }
+
+        // Show welcome interface
+        function showWelcomeInterface() {
+            document.getElementById('welcomeSection').classList.remove('hidden');
+            document.getElementById('profileSection').classList.add('hidden');
+            document.getElementById('portfolioSection').classList.add('hidden');
+            document.getElementById('assetSection').classList.add('hidden');
+            document.getElementById('actionSection').classList.add('hidden');
+            
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('userGreeting').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+        }
+
+        // Update user profile
+        function updateUserProfile() {
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('profileAge').textContent = `${userData.age}세`;
+            
+            const totalAssets = userData.cash + userData.stocks + userData.crypto + userData.bonds + userData.etf + userData.savings + userData.preciousMetals;
+            const returnRate = ((totalAssets - userData.initialFunds) / userData.initialFunds * 100).toFixed(2);
+            
+            document.getElementById('totalAssets').textContent = formatCurrency(totalAssets);
+            document.getElementById('returnRate').textContent = `${returnRate}%`;
+            document.getElementById('returnRate').className = `text-2xl font-bold ${returnRate >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            
+            // Determine user grade based on assets
+            let grade = '브론즈';
+            if (totalAssets >= 100000000) grade = '다이아몬드';
+            else if (totalAssets >= 50000000) grade = '플래티넘';
+            else if (totalAssets >= 20000000) grade = '골드';
+            else if (totalAssets >= 10000000) grade = '실버';
+            
+            document.getElementById('userGrade').textContent = `${grade} 등급`;
+        }
+
+        // Update asset status
+        function updateAssetStatus() {
+            document.getElementById('cashAmount').textContent = formatCurrency(userData.cash);
+            document.getElementById('stockAmount').textContent = formatCurrency(userData.stocks);
+            document.getElementById('cryptoAmount').textContent = formatCurrency(userData.crypto);
+            document.getElementById('bondAmount').textContent = formatCurrency(userData.bonds);
+        }
+
+        // Create portfolio chart
+        function createPortfolioChart() {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            
+            if (portfolioChart) {
+                portfolioChart.destroy();
+            }
+            
+            const data = [
+                userData.cash,
+                userData.stocks,
+                userData.crypto,
+                userData.bonds,
+                userData.etf + userData.savings + userData.preciousMetals
+            ];
+            
+            portfolioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['현금', '주식', '암호화폐', '채권', '기타'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#3B82F6',
+                            '#10B981',
+                            '#F59E0B',
+                            '#8B5CF6',
+                            '#EF4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency: 'KRW'
+            }).format(amount);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('fineUserData');
+            userData = null;
+            showWelcomeInterface();
+        }
+
+        // Event listeners
+        document.getElementById('loginBtn').addEventListener('click', showLogin);
+        document.getElementById('closeLoginModal').addEventListener('click', hideLogin);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    </script>
+</body>
+</html>
