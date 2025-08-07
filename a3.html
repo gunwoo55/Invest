@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>더보기 - FINE U</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .link-card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center">
+                <button onclick="history.back()" class="mr-4">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">더보기</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- User Info (if logged in) -->
+    <div id="userInfoSection" class="hidden bg-white border-b p-4">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-white text-xl"></i>
+            </div>
+            <div>
+                <p class="font-bold" id="displayUserName"></p>
+                <p class="text-sm text-gray-600" id="displayUserGrade"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Financial Supervisory Service Links -->
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fas fa-landmark text-blue-500 mr-2"></i>
+                금융감독원 관련 링크
+            </h2>
+            <div class="space-y-3">
+                <a href="https://www.fss.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-external-link-alt text-blue-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium">금융감독원</p>
+                            <p class="text-sm text-gray-600">Financial Supervisory Service</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://consumer.fss.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-shield-alt text-green-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium">금융소비자보호</p>
+                            <p class="text-sm text-gray-600">금융 피해 신고 및 상담</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://finlife.fss.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-search text-purple-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium">금융상품통합비교공시</p>
+                            <p class="text-sm text-gray-600">예금, 대출, 보험 상품 비교</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://edu.fss.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-graduation-cap text-orange-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium">금융교육센터</p>
+                            <p class="text-sm text-gray-600">금융교육 콘텐츠 및 자료</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://fine.fss.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium">파인(FINE)</p>
+                            <p class="text-sm text-gray-600">금융사고 신고 시스템</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Related Government Agencies -->
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fas fa-building text-indigo-500 mr-2"></i>
+                관련 기관
+            </h2>
+            <div class="space-y-3">
+                <a href="https://www.bok.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-university text-blue-600 mr-3"></i>
+                        <div>
+                            <p class="font-medium">한국은행</p>
+                            <p class="text-sm text-gray-600">통화정책, 금융안정, 경제통계</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://www.kdic.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-piggy-bank text-green-600 mr-3"></i>
+                        <div>
+                            <p class="font-medium">예금보험공사</p>
+                            <p class="text-sm text-gray-600">예금자 보호, 금융회사 정리</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://www.krx.co.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-chart-line text-purple-600 mr-3"></i>
+                        <div>
+                            <p class="font-medium">한국거래소</p>
+                            <p class="text-sm text-gray-600">증권, 파생상품 거래</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+                
+                <a href="https://www.kofia.or.kr" target="_blank" class="link-card flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-handshake text-orange-600 mr-3"></i>
+                        <div>
+                            <p class="font-medium">금융투자협회</p>
+                            <p class="text-sm text-gray-600">투자자 보호, 금융투자업계 자율규제</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- App Settings -->
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fas fa-cog text-gray-500 mr-2"></i>
+                앱 설정
+            </h2>
+            <div class="space-y-3">
+                <button onclick="showProfile()" class="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-circle text-blue-500 mr-3"></i>
+                        <span class="font-medium">프로필 관리</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button onclick="showTransactionHistory()" class="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-history text-green-500 mr-3"></i>
+                        <span class="font-medium">거래 내역</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button onclick="resetData()" class="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-redo-alt text-orange-500 mr-3"></i>
+                        <span class="font-medium">데이터 초기화</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+                
+                <button onclick="exportData()" class="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center">
+                        <i class="fas fa-download text-purple-500 mr-3"></i>
+                        <span class="font-medium">데이터 내보내기</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- App Information -->
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fas fa-info-circle text-teal-500 mr-2"></i>
+                앱 정보
+            </h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">버전</span>
+                    <span class="font-medium">1.0.0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">개발자</span>
+                    <span class="font-medium">FINE U Team</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">업데이트</span>
+                    <span class="font-medium">2024.01.15</span>
+                </div>
+                <hr class="my-4">
+                <button onclick="showPrivacyPolicy()" class="w-full text-left text-blue-600 hover:text-blue-800 transition">
+                    개인정보처리방침
+                </button>
+                <button onclick="showTermsOfService()" class="w-full text-left text-blue-600 hover:text-blue-800 transition">
+                    서비스 이용약관
+                </button>
+                <button onclick="showOpenSource()" class="w-full text-left text-blue-600 hover:text-blue-800 transition">
+                    오픈소스 라이선스
+                </button>
+            </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center text-red-700">
+                <i class="fas fa-phone text-red-500 mr-2"></i>
+                금융사고 신고
+            </h2>
+            <div class="space-y-2 text-sm">
+                <p class="text-red-700">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>보이스피싱 신고:</strong> 1588-2588
+                </p>
+                <p class="text-red-700">
+                    <i class="fas fa-headset mr-2"></i>
+                    <strong>금융감독원 콜센터:</strong> 1332
+                </p>
+                <p class="text-red-700">
+                    <i class="fas fa-globe mr-2"></i>
+                    <strong>인터넷 신고:</strong> fine.fss.or.kr
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Profile Modal -->
+    <div id="profileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 class="text-xl font-bold mb-4">프로필 정보</h2>
+            <div id="profileContent" class="space-y-4">
+                <!-- Profile content will be populated by JavaScript -->
+            </div>
+            <button id="closeProfile" class="w-full mt-4 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- Transaction History Modal -->
+    <div id="transactionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-96 overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4">거래 내역</h2>
+            <div id="transactionContent">
+                <!-- Transaction content will be populated by JavaScript -->
+            </div>
+            <button id="closeTransaction" class="w-full mt-4 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-96 overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4" id="infoModalTitle"></h2>
+            <div id="infoModalContent" class="text-gray-700 text-sm leading-relaxed">
+                <!-- Info content will be populated by JavaScript -->
+            </div>
+            <button id="closeInfo" class="w-full mt-4 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-5 h-16">
+            <a href="index.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs mt-1">홈</span>
+            </a>
+            <a href="a1.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-chart-line text-xl"></i>
+                <span class="text-xs mt-1">투자</span>
+            </a>
+            <a href="a2.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-newspaper text-xl"></i>
+                <span class="text-xs mt-1">뉴스</span>
+            </a>
+            <a href="a4.html" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600">
+                <i class="fas fa-gamepad text-xl"></i>
+                <span class="text-xs mt-1">게임</span>
+            </a>
+            <a href="a3.html" class="flex flex-col items-center justify-center text-blue-600">
+                <i class="fas fa-bars text-xl"></i>
+                <span class="text-xs mt-1">더보기</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // User data
+        let userData = JSON.parse(localStorage.getItem('fineUserData')) || null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (userData) {
+                showUserInfo();
+            }
+        });
+
+        // Show user information
+        function showUserInfo() {
+            const totalAssets = userData.cash + userData.stocks + userData.crypto + userData.bonds + userData.etf + userData.savings + userData.preciousMetals;
+            let grade = '브론즈';
+            if (totalAssets >= 100000000) grade = '다이아몬드';
+            else if (totalAssets >= 50000000) grade = '플래티넘';
+            else if (totalAssets >= 20000000) grade = '골드';
+            else if (totalAssets >= 10000000) grade = '실버';
+
+            document.getElementById('userInfoSection').classList.remove('hidden');
+            document.getElementById('displayUserName').textContent = userData.name;
+            document.getElementById('displayUserGrade').textContent = `${grade} 등급 • ${userData.age}세`;
+        }
+
+        // Show profile modal
+        function showProfile() {
+            if (!userData) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            const totalAssets = userData.cash + userData.stocks + userData.crypto + userData.bonds + userData.etf + userData.savings + userData.preciousMetals;
+            const returnRate = ((totalAssets - userData.initialFunds) / userData.initialFunds * 100).toFixed(2);
+            let grade = '브론즈';
+            if (totalAssets >= 100000000) grade = '다이아몬드';
+            else if (totalAssets >= 50000000) grade = '플래티넘';
+            else if (totalAssets >= 20000000) grade = '골드';
+            else if (totalAssets >= 10000000) grade = '실버';
+
+            const profileContent = document.getElementById('profileContent');
+            profileContent.innerHTML = `
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-user text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">${userData.name}</h3>
+                    <p class="text-gray-600">${userData.age}세 • ${grade} 등급</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">가입일</span>
+                        <span class="font-medium">${new Date(userData.loginDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">초기 자금</span>
+                        <span class="font-medium">${formatCurrency(userData.initialFunds)}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">총 자산</span>
+                        <span class="font-medium">${formatCurrency(totalAssets)}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">수익률</span>
+                        <span class="font-medium ${returnRate >= 0 ? 'text-green-600' : 'text-red-600'}">${returnRate}%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">거래 횟수</span>
+                        <span class="font-medium">${userData.transactions ? userData.transactions.length : 0}회</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        // Show transaction history
+        function showTransactionHistory() {
+            if (!userData || !userData.transactions) {
+                alert('거래 내역이 없습니다.');
+                return;
+            }
+
+            const transactionContent = document.getElementById('transactionContent');
+            
+            if (userData.transactions.length === 0) {
+                transactionContent.innerHTML = '<div class="text-center text-gray-500 py-8">거래 내역이 없습니다.</div>';
+            } else {
+                const transactions = userData.transactions.slice().reverse(); // Show latest first
+                transactionContent.innerHTML = `
+                    <div class="space-y-3">
+                        ${transactions.map(transaction => `
+                            <div class="p-3 bg-gray-50 rounded-lg">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-medium">${transaction.asset}</span>
+                                    <span class="text-sm ${transaction.action === 'buy' ? 'text-blue-600' : 'text-red-600'}">
+                                        ${transaction.action === 'buy' ? '매수' : '매도'}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">${new Date(transaction.date).toLocaleDateString()}</span>
+                                    <span class="font-bold">${formatCurrency(transaction.amount)}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('transactionModal').classList.remove('hidden');
+        }
+
+        // Reset data
+        function resetData() {
+            if (confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                localStorage.removeItem('fineUserData');
+                alert('데이터가 초기화되었습니다.');
+                location.href = 'index.html';
+            }
+        }
+
+        // Export data
+        function exportData() {
+            if (!userData) {
+                alert('내보낼 데이터가 없습니다.');
+                return;
+            }
+
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `fine_u_data_${userData.name}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            alert('데이터가 다운로드되었습니다.');
+        }
+
+        // Show privacy policy
+        function showPrivacyPolicy() {
+            document.getElementById('infoModalTitle').textContent = '개인정보처리방침';
+            document.getElementById('infoModalContent').innerHTML = `
+                <h3 class="font-bold mb-2">1. 개인정보의 처리 목적</h3>
+                <p class="mb-4">FINE U 앱은 모의투자 서비스 제공을 위해 최소한의 개인정보를 처리합니다.</p>
+                
+                <h3 class="font-bold mb-2">2. 개인정보의 수집 및 이용</h3>
+                <p class="mb-4">• 이름, 나이: 서비스 이용 및 맞춤형 콘텐츠 제공<br>
+                • 투자 데이터: 모의투자 시뮬레이션 제공</p>
+                
+                <h3 class="font-bold mb-2">3. 개인정보의 보유기간</h3>
+                <p class="mb-4">사용자가 앱을 삭제하거나 데이터 초기화를 요청할 때까지 보관됩니다.</p>
+                
+                <h3 class="font-bold mb-2">4. 개인정보 보호</h3>
+                <p>모든 데이터는 사용자의 기기에 로컬 저장되며, 외부로 전송되지 않습니다.</p>
+            `;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        // Show terms of service
+        function showTermsOfService() {
+            document.getElementById('infoModalTitle').textContent = '서비스 이용약관';
+            document.getElementById('infoModalContent').innerHTML = `
+                <h3 class="font-bold mb-2">제1조 (목적)</h3>
+                <p class="mb-4">본 약관은 FINE U 모의투자 앱 서비스 이용에 관한 조건을 규정함을 목적으로 합니다.</p>
+                
+                <h3 class="font-bold mb-2">제2조 (서비스 내용)</h3>
+                <p class="mb-4">• 모의투자 시뮬레이션 서비스<br>
+                • 금융교육 콘텐츠 제공<br>
+                • 투자 게임 및 퀴즈</p>
+                
+                <h3 class="font-bold mb-2">제3조 (면책사항)</h3>
+                <p class="mb-4">본 앱은 교육 목적의 모의투자 서비스로, 실제 투자와는 무관합니다.</p>
+                
+                <h3 class="font-bold mb-2">제4조 (서비스 이용)</h3>
+                <p>사용자는 본 서비스를 선량한 목적으로만 이용해야 합니다.</p>
+            `;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        // Show open source licenses
+        function showOpenSource() {
+            document.getElementById('infoModalTitle').textContent = '오픈소스 라이선스';
+            document.getElementById('infoModalContent').innerHTML = `
+                <h3 class="font-bold mb-2">사용된 오픈소스 라이브러리</h3>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold">Tailwind CSS</h4>
+                    <p class="text-sm text-gray-600">MIT License</p>
+                    <p class="text-sm">CSS 프레임워크</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold">Chart.js</h4>
+                    <p class="text-sm text-gray-600">MIT License</p>
+                    <p class="text-sm">차트 라이브러리</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold">Font Awesome</h4>
+                    <p class="text-sm text-gray-600">Font Awesome Free License</p>
+                    <p class="text-sm">아이콘 라이브러리</p>
+                </div>
+                
+                <p class="text-sm text-gray-600 mt-4">
+                    모든 라이브러리는 해당 라이선스 조건에 따라 사용되었습니다.
+                </p>
+            `;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency: 'KRW'
+            }).format(amount);
+        }
+
+        // Event listeners for closing modals
+        document.getElementById('closeProfile').addEventListener('click', () => {
+            document.getElementById('profileModal').classList.add('hidden');
+        });
+
+        document.getElementById('closeTransaction').addEventListener('click', () => {
+            document.getElementById('transactionModal').classList.add('hidden');
+        });
+
+        document.getElementById('closeInfo').addEventListener('click', () => {
+            document.getElementById('infoModal').classList.add('hidden');
+        });
+
+        // Close modals when clicking outside
+        [document.getElementById('profileModal'), document.getElementById('transactionModal'), document.getElementById('infoModal')].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
