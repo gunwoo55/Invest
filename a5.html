@@ -251,7 +251,18 @@
                             <div class="flex justify-between align-center mb-2">
                                 <h4>가계부 내역</h4>
                                 <div>
-                                    <button class="btn btn-secondary" onclick="exportLedger()">엑셀 내보내기</button>
+                                    <button class="btn btn-secondary" onclick="toggleBulkMode()" id="bulkModeBtn" style="margin-right: 0.5rem;">일괄 관리</button>
+                                    <button class="btn btn-secondary" onclick="exportLedger()" style="margin-right: 0.5rem;">CSV 내보내기</button>
+                                    <button class="btn btn-secondary" onclick="exportLedgerPDF()">PDF 리포트</button>
+                                </div>
+                            </div>
+                            <div id="bulkActions" style="display: none; background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <span>선택된 항목:</span>
+                                    <span id="selectedCount">0</span>개
+                                    <button class="btn btn-danger" onclick="deleteBulkEntries()" style="margin-left: auto;">일괄 삭제</button>
+                                    <button class="btn btn-secondary" onclick="selectAllEntries()">전체 선택</button>
+                                    <button class="btn btn-secondary" onclick="clearSelection()">선택 해제</button>
                                 </div>
                             </div>
                             <div id="ledgerSummary" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -832,17 +843,19 @@
             table.innerHTML = `
                 <thead>
                     <tr>
+                        ${bulkMode ? '<th><input type="checkbox" onchange="bulkSelectAll(this)"></th>' : ''}
                         <th>날짜</th>
                         <th>구분</th>
                         <th>카테고리</th>
                         <th>내용</th>
                         <th>금액</th>
-                        <th>액션</th>
+                        ${!bulkMode ? '<th>액션</th>' : ''}
                     </tr>
                 </thead>
                 <tbody>
                     ${recentEntries.map(entry => `
                         <tr>
+                            ${bulkMode ? `<td><input type="checkbox" data-entry-id="${entry.id}" onchange="toggleEntrySelection(${entry.id})" ${selectedEntries.has(entry.id) ? 'checked' : ''}></td>` : ''}
                             <td>${formatDate(entry.date)}</td>
                             <td style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">
                                 ${entry.amount > 0 ? '수입' : '지출'}
@@ -852,10 +865,12 @@
                             <td style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">
                                 ${formatCurrency(Math.abs(entry.amount))}
                             </td>
-                            <td>
-                                <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editLedgerEntry(${entry.id})">수정</button>
-                                <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="deleteLedgerEntry(${entry.id})">삭제</button>
-                            </td>
+                            ${!bulkMode ? `
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="editLedgerEntry(${entry.id})">수정</button>
+                                    <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="deleteLedgerEntry(${entry.id})">삭제</button>
+                                </td>
+                            ` : ''}
                         </tr>
                     `).join('')}
                 </tbody>
@@ -865,22 +880,116 @@
             container.appendChild(table);
         }
 
+        // 헤더 체크박스로 전체 선택/해제
+        function bulkSelectAll(checkbox) {
+            const entryCheckboxes = document.querySelectorAll('input[data-entry-id]');
+            entryCheckboxes.forEach(entryCheckbox => {
+                const id = parseInt(entryCheckbox.dataset.entryId);
+                if (checkbox.checked) {
+                    selectedEntries.add(id);
+                    entryCheckbox.checked = true;
+                } else {
+                    selectedEntries.delete(id);
+                    entryCheckbox.checked = false;
+                }
+            });
+            updateSelectedCount();
+        }
+        }
+
         // 가계부 항목 수정
         function editLedgerEntry(id) {
             const entry = portfolio.data.ledger.find(e => e.id === id);
             if (!entry) return;
 
-            const newDescription = prompt('새로운 내용:', entry.description);
-            const newAmount = prompt('새로운 금액:', Math.abs(entry.amount));
+            // 수정 모달 생성
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 1000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                    <h3 style="color: #2c3e50; margin-bottom: 2rem;">가계부 항목 수정</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">날짜:</label>
+                        <input type="date" id="editDate" value="${entry.date.split('T')[0]}" style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">구분:</label>
+                        <select id="editType" style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="income" ${entry.amount > 0 ? 'selected' : ''}>수입</option>
+                            <option value="expense" ${entry.amount < 0 ? 'selected' : ''}>지출</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">카테고리:</label>
+                        <select id="editCategory" style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="급여" ${entry.category === '급여' ? 'selected' : ''}>급여</option>
+                            <option value="용돈" ${entry.category === '용돈' ? 'selected' : ''}>용돈</option>
+                            <option value="식비" ${entry.category === '식비' ? 'selected' : ''}>식비</option>
+                            <option value="교통비" ${entry.category === '교통비' ? 'selected' : ''}>교통비</option>
+                            <option value="쇼핑" ${entry.category === '쇼핑' ? 'selected' : ''}>쇼핑</option>
+                            <option value="금융상품" ${entry.category === '금융상품' ? 'selected' : ''}>금융상품</option>
+                            <option value="기타" ${entry.category === '기타' ? 'selected' : ''}>기타</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">금액 (원):</label>
+                        <input type="number" id="editAmount" value="${Math.abs(entry.amount)}" min="1" style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">내용:</label>
+                        <input type="text" id="editDescription" value="${entry.description}" style="width: 100%; padding: 0.7rem; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="margin-right: 1rem;">취소</button>
+                        <button class="btn btn-success" onclick="saveEditedEntry(${id}, this.closest('.modal'))">저장</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            
+            document.body.appendChild(modal);
+        }
 
-            if (newDescription && newAmount) {
-                portfolio.updateLedgerEntry(id, {
-                    description: newDescription,
-                    amount: entry.amount > 0 ? parseInt(newAmount) : -parseInt(newAmount)
-                });
-                updateLedgerDisplay();
-                showSuccess('가계부 항목이 수정되었습니다.');
+        // 수정된 항목 저장
+        function saveEditedEntry(id, modal) {
+            const date = document.getElementById('editDate').value;
+            const type = document.getElementById('editType').value;
+            const category = document.getElementById('editCategory').value;
+            const amount = parseInt(document.getElementById('editAmount').value);
+            const description = document.getElementById('editDescription').value;
+
+            if (!date || !amount || !description) {
+                alert('모든 필드를 입력해주세요.');
+                return;
             }
+
+            const updates = {
+                date: new Date(date).toISOString(),
+                type,
+                category,
+                amount: type === 'income' ? amount : -amount,
+                description
+            };
+
+            portfolio.updateLedgerEntry(id, updates);
+            updateLedgerDisplay();
+            modal.remove();
+            showTemporaryMessage('가계부 항목이 수정되었습니다.', 'success');
         }
 
         // 가계부 항목 삭제
@@ -888,24 +997,229 @@
             if (confirm('이 항목을 삭제하시겠습니까?')) {
                 portfolio.deleteLedgerEntry(id);
                 updateLedgerDisplay();
-                showSuccess('가계부 항목이 삭제되었습니다.');
+                showTemporaryMessage('가계부 항목이 삭제되었습니다.', 'success');
             }
         }
 
         // 가계부 엑셀 내보내기
         function exportLedger() {
             const ledger = portfolio.data.ledger;
-            let csv = '날짜,구분,카테고리,내용,금액\n';
+            
+            if (ledger.length === 0) {
+                alert('내보낼 가계부 데이터가 없습니다.');
+                return;
+            }
+            
+            // CSV 헤더 및 데이터 생성
+            let csv = '\uFEFF'; // UTF-8 BOM for Excel compatibility
+            csv += '날짜,구분,카테고리,내용,금액\n';
             
             ledger.forEach(entry => {
-                csv += `${entry.date.split('T')[0]},${entry.amount > 0 ? '수입' : '지출'},${entry.category},"${entry.description}",${Math.abs(entry.amount)}\n`;
+                const date = new Date(entry.date).toLocaleDateString('ko-KR');
+                const type = entry.amount > 0 ? '수입' : '지출';
+                const amount = Math.abs(entry.amount);
+                csv += `"${date}","${type}","${entry.category}","${entry.description}",${amount}\n`;
             });
 
+            // Blob 생성 및 다운로드
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `가계부_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
+            
+            showTemporaryMessage('가계부가 CSV 파일로 내보내기되었습니다.', 'success');
+        }
+
+        // 가계부 PDF 내보내기
+        function exportLedgerPDF() {
+            const ledger = portfolio.data.ledger;
+            
+            if (ledger.length === 0) {
+                alert('내보낼 가계부 데이터가 없습니다.');
+                return;
+            }
+            
+            // 요약 정보 계산
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            ledger.forEach(entry => {
+                if (entry.amount > 0) {
+                    totalIncome += entry.amount;
+                } else {
+                    totalExpense += Math.abs(entry.amount);
+                }
+            });
+            
+            const balance = totalIncome - totalExpense;
+            
+            // HTML 리포트 생성
+            const reportHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>가계부 리포트</title>
+                    <style>
+                        body { font-family: 'Malgun Gothic', sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+                        .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; }
+                        .summary-item { background: white; padding: 15px; border-radius: 4px; }
+                        .income { color: #27ae60; }
+                        .expense { color: #e74c3c; }
+                        .balance { color: #3498db; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                        th { background-color: #f8f9fa; font-weight: bold; }
+                        .text-right { text-align: right; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>가계부 리포트</h1>
+                        <p>생성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+                    </div>
+                    
+                    <div class="summary">
+                        <h2>요약</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <h3 class="income">총 수입</h3>
+                                <div style="font-size: 1.5rem; font-weight: bold;">${formatCurrency(totalIncome)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <h3 class="expense">총 지출</h3>
+                                <div style="font-size: 1.5rem; font-weight: bold;">${formatCurrency(totalExpense)}</div>
+                            </div>
+                            <div class="summary-item">
+                                <h3 class="balance">잔액</h3>
+                                <div style="font-size: 1.5rem; font-weight: bold;">${formatCurrency(balance)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2>상세 내역</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>구분</th>
+                                <th>카테고리</th>
+                                <th>내용</th>
+                                <th class="text-right">금액</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${ledger.map(entry => `
+                                <tr>
+                                    <td>${new Date(entry.date).toLocaleDateString('ko-KR')}</td>
+                                    <td style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">${entry.amount > 0 ? '수입' : '지출'}</td>
+                                    <td>${entry.category}</td>
+                                    <td>${entry.description}</td>
+                                    <td class="text-right" style="color: ${entry.amount > 0 ? '#27ae60' : '#e74c3c'}">${formatCurrency(Math.abs(entry.amount))}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+            
+            // 새 창에서 리포트 열기
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(reportHTML);
+            newWindow.document.close();
+            
+            // 인쇄 다이얼로그 자동 열기
+            setTimeout(() => {
+                newWindow.print();
+            }, 100);
+            
+            showTemporaryMessage('가계부 리포트가 생성되었습니다.', 'success');
+        }
+
+        // 일괄 관리 모드 토글
+        let bulkMode = false;
+        let selectedEntries = new Set();
+
+        function toggleBulkMode() {
+            bulkMode = !bulkMode;
+            const bulkActions = document.getElementById('bulkActions');
+            const bulkModeBtn = document.getElementById('bulkModeBtn');
+            
+            if (bulkMode) {
+                bulkActions.style.display = 'block';
+                bulkModeBtn.textContent = '일반 모드';
+                bulkModeBtn.className = 'btn btn-success';
+            } else {
+                bulkActions.style.display = 'none';
+                bulkModeBtn.textContent = '일괄 관리';
+                bulkModeBtn.className = 'btn btn-secondary';
+                selectedEntries.clear();
+            }
+            
+            updateLedgerDisplay();
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = selectedEntries.size;
+        }
+
+        function toggleEntrySelection(id) {
+            if (selectedEntries.has(id)) {
+                selectedEntries.delete(id);
+            } else {
+                selectedEntries.add(id);
+            }
+            updateSelectedCount();
+            
+            // 체크박스 상태 업데이트
+            const checkbox = document.querySelector(`input[data-entry-id="${id}"]`);
+            if (checkbox) {
+                checkbox.checked = selectedEntries.has(id);
+            }
+        }
+
+        function selectAllEntries() {
+            const checkboxes = document.querySelectorAll('input[data-entry-id]');
+            checkboxes.forEach(checkbox => {
+                const id = parseInt(checkbox.dataset.entryId);
+                selectedEntries.add(id);
+                checkbox.checked = true;
+            });
+            updateSelectedCount();
+        }
+
+        function clearSelection() {
+            selectedEntries.clear();
+            const checkboxes = document.querySelectorAll('input[data-entry-id]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedCount();
+        }
+
+        function deleteBulkEntries() {
+            if (selectedEntries.size === 0) {
+                alert('삭제할 항목을 선택해주세요.');
+                return;
+            }
+            
+            const deleteCount = selectedEntries.size;
+            
+            if (confirm(`선택된 ${deleteCount}개 항목을 삭제하시겠습니까?`)) {
+                selectedEntries.forEach(id => {
+                    portfolio.deleteLedgerEntry(id);
+                });
+                
+                selectedEntries.clear();
+                updateLedgerDisplay();
+                updateSelectedCount();
+                showTemporaryMessage(`${deleteCount}개 항목이 삭제되었습니다.`, 'success');
+            }
         }
 
         // 실시간 가격 업데이트
