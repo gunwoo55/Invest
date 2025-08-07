@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 투자 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        .header-profile-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-image-container {
+            position: relative;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+            object-fit: cover;
+        }
+
+        .profile-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-placeholder:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .profile-upload-btn {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .profile-info h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info p {
+            color: #666;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-card h3 {
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .nav-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+            .navigation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">FINE U</div>
+        <div class="header-profile" onclick="openProfileModal()">
+            <img id="headerProfileImage" class="header-profile-img hidden" alt="프로필">
+            <div id="headerProfileIcon" class="header-profile-icon">👤</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="welcome-section">
+            <h1>투자의 시작, FINE U와 함께</h1>
+            <p>스마트한 투자 관리와 금융 교육을 한 번에</p>
+        </section>
+
+        <section class="profile-section">
+            <div class="profile-header">
+                <div class="profile-image-container">
+                    <img id="profileImage" class="profile-image hidden" alt="프로필 사진">
+                    <div id="profilePlaceholder" class="profile-placeholder" onclick="openProfileModal()">
+                        사진<br>추가
+                    </div>
+                    <button class="profile-upload-btn" onclick="document.getElementById('fileInput').click()">+</button>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="handleImageUpload(event)">
+                </div>
+                <div class="profile-info">
+                    <h2 id="userName">투자자님</h2>
+                    <p>FINE U와 함께 스마트한 투자 여정을 시작하세요</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="navigation-grid">
+            <a href="a1.html" class="nav-card">
+                <div class="nav-card-icon">📈</div>
+                <h3>투자하기</h3>
+                <p>다양한 투자 상품을 만나보세요</p>
+            </a>
+            <a href="a2.html" class="nav-card">
+                <div class="nav-card-icon">📚</div>
+                <h3>학습하기</h3>
+                <p>투자 지식과 최신 뉴스</p>
+            </a>
+            <a href="a3.html" class="nav-card">
+                <div class="nav-card-icon">📊</div>
+                <h3>더보기</h3>
+                <p>포트폴리오와 투자 분석</p>
+            </a>
+            <a href="a4.html" class="nav-card">
+                <div class="nav-card-icon">🎮</div>
+                <h3>게임</h3>
+                <p>재미있는 투자 게임</p>
+            </a>
+            <a href="a5.html" class="nav-card">
+                <div class="nav-card-icon">💰</div>
+                <h3>모의투자</h3>
+                <p>실전 투자 시뮬레이션</p>
+            </a>
+        </section>
+
+        <section class="stats-section">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">나의 투자 현황</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalInvestment">0원</div>
+                    <div class="stat-label">총 투자금액</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalProfit">0원</div>
+                    <div class="stat-label">총 수익</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="profitRate">0%</div>
+                    <div class="stat-label">수익률</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="investmentCount">0개</div>
+                    <div class="stat-label">투자 상품</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 프로필 모달 -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>프로필 설정</h3>
+                <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div style="text-align: center;">
+                <div class="profile-image-container" style="margin: 0 auto 1rem;">
+                    <img id="modalProfileImage" class="profile-image hidden" alt="프로필 사진">
+                    <div id="modalProfilePlaceholder" class="profile-placeholder">
+                        사진 선택
+                    </div>
+                </div>
+                <button onclick="document.getElementById('fileInput').click()" 
+                        style="background: #667eea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
+                    사진 변경
+                </button>
+                <div style="margin-top: 1rem;">
+                    <input type="text" id="userNameInput" placeholder="이름을 입력하세요" 
+                           style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1rem;">
+                    <button onclick="saveProfile()" 
+                            style="background: #667eea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; width: 100%;">
+                        저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 프로필 이미지 업로드 처리
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 파일 검증
+            if (file.size > 2 * 1024 * 1024) {
+                alert('파일 크기는 2MB 이하여야 합니다.');
+                return;
+            }
+            
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('JPG, PNG, GIF 파일만 업로드 가능합니다.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                localStorage.setItem('profileImage', imageData);
+                updateProfileImages(imageData);
+                alert('프로필 사진이 업데이트되었습니다!');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateProfileImages(imageData) {
+            // 모든 프로필 이미지 요소 업데이트
+            const profileElements = [
+                'profileImage', 'headerProfileImage', 'modalProfileImage'
+            ];
+            
+            profileElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.src = imageData;
+                    element.classList.remove('hidden');
+                }
+            });
+            
+            // 플레이스홀더 숨기기
+            const placeholders = [
+                'profilePlaceholder', 'modalProfilePlaceholder'
+            ];
+            
+            placeholders.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+            
+            // 헤더 아이콘 숨기기
+            const headerIcon = document.getElementById('headerProfileIcon');
+            if (headerIcon) {
+                headerIcon.style.display = 'none';
+            }
+        }
+
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                updateProfileImages(savedImage);
+            }
+        }
+
+        // 프로필 모달 관리
+        function openProfileModal() {
+            document.getElementById('profileModal').style.display = 'block';
+            
+            // 저장된 이름 로드
+            const savedName = localStorage.getItem('userName');
+            if (savedName) {
+                document.getElementById('userNameInput').value = savedName;
+            }
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function saveProfile() {
+            const userName = document.getElementById('userNameInput').value.trim();
+            if (userName) {
+                localStorage.setItem('userName', userName);
+                document.getElementById('userName').textContent = userName + '님';
+                closeProfileModal();
+                alert('프로필이 저장되었습니다!');
+            } else {
+                alert('이름을 입력해주세요.');
+            }
+        }
+
+        // 투자 현황 업데이트
+        function updateInvestmentStats() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('currentUser')) || {};
+                const investments = userData.investments || [];
+                const transactions = userData.transactions || [];
+                
+                let totalInvestment = 0;
+                let totalProfit = 0;
+                
+                // 투자 상품에서 계산
+                investments.forEach(investment => {
+                    totalInvestment += investment.amount || 0;
+                    totalProfit += (investment.profit || 0);
+                });
+                
+                // 거래 내역에서 추가 계산
+                transactions.forEach(transaction => {
+                    if (transaction.type === 'investment') {
+                        totalInvestment += transaction.amount || 0;
+                    }
+                });
+                
+                const profitRate = totalInvestment > 0 ? (totalProfit / totalInvestment * 100) : 0;
+                
+                document.getElementById('totalInvestment').textContent = totalInvestment.toLocaleString() + '원';
+                document.getElementById('totalProfit').textContent = totalProfit.toLocaleString() + '원';
+                document.getElementById('profitRate').textContent = profitRate.toFixed(2) + '%';
+                document.getElementById('investmentCount').textContent = investments.length + '개';
+            } catch (error) {
+                console.error('투자 현황 업데이트 오류:', error);
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+            
+            // 저장된 사용자 이름 로드
+            const savedName = localStorage.getItem('userName');
+            if (savedName) {
+                document.getElementById('userName').textContent = savedName + '님';
+            }
+            
+            updateInvestmentStats();
+            
+            // 모달 외부 클릭 시 닫기
+            window.onclick = function(event) {
+                const modal = document.getElementById('profileModal');
+                if (event.target == modal) {
+                    closeProfileModal();
+                }
+            }
+        });
+
+        // 정기적으로 투자 현황 업데이트
+        setInterval(updateInvestmentStats, 30000); // 30초마다 업데이트
+    </script>
+</body>
+</html>
