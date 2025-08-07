@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest - 금융 뉴스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 헤더 (index.html과 동일) */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-menu {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-list a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-list a:hover, .nav-list a.active {
+            background-color: #667eea;
+            color: white;
+        }
+
+        /* 메인 컨텐츠 */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* 탭 메뉴 */
+        .tab-menu {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: #f8f9fa;
+            color: #666;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-btn:hover {
+            background: #5a6fd8;
+            color: white;
+        }
+
+        /* 컨텐츠 영역 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 뉴스 그리드 */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #999;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .news-summary {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .news-source {
+            font-weight: 500;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 오늘의 용어 카드 */
+        .term-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .term-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .term-definition {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .term-example {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        /* 뉴스레터 카드 */
+        .newsletter-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .newsletter-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .newsletter-content {
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* 카드뉴스 */
+        .card-news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .card-news-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card-news-item:hover {
+            transform: scale(1.05);
+        }
+
+        .card-news-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .card-news-content {
+            padding: 1rem;
+        }
+
+        .card-news-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-news-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 오류 메시지 */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">💰 Invest</h1>
+                <div class="profile-header">
+                    <div class="profile-avatar" id="headerAvatar">
+                        👤
+                    </div>
+                    <span id="headerUserName">투자자님</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 네비게이션 -->
+    <nav class="nav-menu">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="index.html">홈</a></li>
+                <li><a href="a2.html" class="active">뉴스</a></li>
+                <li><a href="a3.html">교육</a></li>
+                <li><a href="a4.html">커뮤니티</a></li>
+                <li><a href="a5.html">투자/가계부</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 페이지 헤더 -->
+            <section class="page-header">
+                <h2 class="page-title">📰 금융 뉴스</h2>
+                <p class="page-subtitle">실시간 경제 뉴스와 AI 분석으로 스마트한 투자 결정을 내리세요</p>
+            </section>
+
+            <!-- 탭 메뉴 -->
+            <section class="tab-menu">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="news">실시간 뉴스</button>
+                    <button class="tab-btn" data-tab="term">오늘의 금융용어</button>
+                    <button class="tab-btn" data-tab="newsletter">뉴스레터</button>
+                    <button class="tab-btn" data-tab="cardnews">카드뉴스</button>
+                </div>
+
+                <!-- 실시간 뉴스 탭 -->
+                <div class="tab-content active" id="news">
+                    <div class="loading" id="newsLoading">
+                        <div class="loading-spinner"></div>
+                        <p>뉴스를 불러오는 중...</p>
+                    </div>
+                    <div class="news-grid" id="newsGrid"></div>
+                </div>
+
+                <!-- 오늘의 금융용어 탭 -->
+                <div class="tab-content" id="term">
+                    <div class="term-card" id="termCard">
+                        <h3 class="term-title">오늘의 금융용어</h3>
+                        <div class="loading" id="termLoading">
+                            <div class="loading-spinner"></div>
+                            <p>용어를 생성하는 중...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 뉴스레터 탭 -->
+                <div class="tab-content" id="newsletter">
+                    <div class="loading" id="newsletterLoading">
+                        <div class="loading-spinner"></div>
+                        <p>뉴스레터를 생성하는 중...</p>
+                    </div>
+                    <div id="newsletterContent"></div>
+                </div>
+
+                <!-- 카드뉴스 탭 -->
+                <div class="tab-content" id="cardnews">
+                    <div class="loading" id="cardnewsLoading">
+                        <div class="loading-spinner"></div>
+                        <p>카드뉴스를 생성하는 중...</p>
+                    </div>
+                    <div class="card-news-grid" id="cardnewsGrid"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // 글로벌 변수
+        let newsData = [];
+        let lastNewsUpdate = 0;
+        const NEWS_UPDATE_INTERVAL = 3600000; // 1시간
+
+        // 프로필 데이터 로드 (헤더용)
+        function loadProfileData() {
+            const saved = localStorage.getItem('userProfile');
+            if (saved) {
+                const profileData = JSON.parse(saved);
+                document.getElementById('headerUserName').textContent = profileData.name || '투자자님';
+                const headerAvatar = document.getElementById('headerAvatar');
+                if (profileData.profileImage) {
+                    headerAvatar.innerHTML = `<img src="${profileData.profileImage}" alt="프로필">`;
+                } else {
+                    headerAvatar.innerHTML = '👤';
+                }
+            }
+        }
+
+        // 탭 전환
+        function initTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // 모든 탭 비활성화
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 선택한 탭 활성화
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // 해당 탭의 데이터 로드
+                    loadTabContent(tabId);
+                });
+            });
+        }
+
+        // 탭 컨텐츠 로드
+        function loadTabContent(tabId) {
+            switch(tabId) {
+                case 'news':
+                    loadNews();
+                    break;
+                case 'term':
+                    loadTodayTerm();
+                    break;
+                case 'newsletter':
+                    loadNewsletter();
+                    break;
+                case 'cardnews':
+                    loadCardNews();
+                    break;
+            }
+        }
+
+        // 뉴스 로드 (NewsAPI 사용)
+        async function loadNews() {
+            const newsGrid = document.getElementById('newsGrid');
+            const loading = document.getElementById('newsLoading');
+            
+            // 캐시된 데이터 확인
+            const now = Date.now();
+            if (newsData.length > 0 && (now - lastNewsUpdate) < NEWS_UPDATE_INTERVAL) {
+                displayNews(newsData);
+                return;
+            }
+
+            loading.style.display = 'block';
+            newsGrid.innerHTML = '';
+
+            try {
+                // 실제 API 호출 시도
+                const response = await fetch(`https://newsapi.org/v2/everything?q=경제 OR 투자 OR 주식 OR 금융&language=ko&sortBy=publishedAt&pageSize=20&apiKey=YOUR_API_KEY`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    newsData = data.articles;
+                    lastNewsUpdate = now;
+                    localStorage.setItem('cachedNews', JSON.stringify({data: newsData, timestamp: now}));
+                } else {
+                    throw new Error('API 호출 실패');
+                }
+            } catch (error) {
+                console.log('API 호출 실패, 가상 데이터 사용:', error);
+                // Fallback: 가상 뉴스 데이터
+                newsData = generateMockNews();
+                lastNewsUpdate = now;
+            }
+
+            loading.style.display = 'none';
+            displayNews(newsData);
+        }
+
+        // 뉴스 표시
+        function displayNews(articles) {
+            const newsGrid = document.getElementById('newsGrid');
+            newsGrid.innerHTML = '';
+
+            articles.forEach(article => {
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                newsCard.innerHTML = `
+                    <div class="news-image">📰</div>
+                    <div class="news-content">
+                        <h4 class="news-title">${article.title}</h4>
+                        <p class="news-summary">${article.description || article.summary}</p>
+                        <div class="news-meta">
+                            <span class="news-source">${article.source?.name || article.source}</span>
+                            <span class="news-time">${formatTime(article.publishedAt || article.time)}</span>
+                        </div>
+                    </div>
+                `;
+                newsCard.addEventListener('click', () => {
+                    if (article.url) {
+                        window.open(article.url, '_blank');
+                    }
+                });
+                newsGrid.appendChild(newsCard);
+            });
+        }
+
+        // 가상 뉴스 데이터 생성
+        function generateMockNews() {
+            return [
+                {
+                    title: "코스피, 외국인 매수세에 상승 출발",
+                    summary: "코스피가 외국인 투자자들의 매수세에 힘입어 상승세로 거래를 시작했습니다.",
+                    source: "한국경제",
+                    time: new Date().toISOString(),
+                    url: "#"
+                },
+                {
+                    title: "금리 동결 전망에 은행주 강세",
+                    summary: "한국은행의 기준금리 동결 전망이 나오면서 은행주들이 강세를 보이고 있습니다.",
+                    source: "매일경제",
+                    time: new Date(Date.now() - 1800000).toISOString(),
+                    url: "#"
+                },
+                {
+                    title: "반도체 업종, 해외 수주 증가로 주목",
+                    summary: "반도체 관련 기업들의 해외 수주가 늘어나면서 투자자들의 관심이 집중되고 있습니다.",
+                    source: "서울경제",
+                    time: new Date(Date.now() - 3600000).toISOString(),
+                    url: "#"
+                },
+                {
+                    title: "부동산 투자신탁(REITs) 수익률 상승",
+                    summary: "최근 부동산 투자신탁의 수익률이 상승하면서 투자자들의 문의가 증가하고 있습니다.",
+                    source: "투자매거진",
+                    time: new Date(Date.now() - 7200000).toISOString(),
+                    url: "#"
+                },
+                {
+                    title: "ESG 투자 열풍, 지속가능 성장 기업 주목",
+                    summary: "환경·사회·지배구조(ESG) 투자가 활성화되면서 지속가능 성장 기업들이 주목받고 있습니다.",
+                    source: "그린투데이",
+                    time: new Date(Date.now() - 10800000).toISOString(),
+                    url: "#"
+                },
+                {
+                    title: "암호화폐 시장 변동성 확대",
+                    summary: "비트코인을 비롯한 주요 암호화폐들의 변동성이 확대되면서 투자 주의가 요구됩니다.",
+                    source: "코인데스크",
+                    time: new Date(Date.now() - 14400000).toISOString(),
+                    url: "#"
+                }
+            ];
+        }
+
+        // 오늘의 금융용어 로드
+        async function loadTodayTerm() {
+            const termCard = document.getElementById('termCard');
+            const loading = document.getElementById('termLoading');
+            
+            // 캐시 확인
+            const today = new Date().toDateString();
+            const cached = localStorage.getItem('todayTerm');
+            if (cached) {
+                const termData = JSON.parse(cached);
+                if (termData.date === today) {
+                    displayTerm(termData.term);
+                    return;
+                }
+            }
+
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                const term = generateTodayTerm();
+                localStorage.setItem('todayTerm', JSON.stringify({date: today, term}));
+                loading.style.display = 'none';
+                displayTerm(term);
+            }, 1000);
+        }
+
+        // 금융용어 표시
+        function displayTerm(term) {
+            const termCard = document.getElementById('termCard');
+            termCard.innerHTML = `
+                <h3 class="term-title">${term.name}</h3>
+                <p class="term-definition">${term.definition}</p>
+                <div class="term-example">
+                    <strong>예시:</strong> ${term.example}
+                </div>
+            `;
+        }
+
+        // 오늘의 금융용어 생성
+        function generateTodayTerm() {
+            const terms = [
+                {
+                    name: "복리 (Compound Interest)",
+                    definition: "원금에 대한 이자가 다시 원금에 포함되어 이자가 이자를 낳는 방식으로 계산되는 이자입니다.",
+                    example: "100만원을 연 5% 복리로 투자하면, 1년 후 105만원, 2년 후 110만 2,500원이 됩니다."
+                },
+                {
+                    name: "분산투자 (Diversification)",
+                    definition: "투자 위험을 줄이기 위해 여러 종목이나 자산에 나누어 투자하는 전략입니다.",
+                    example: "주식 60%, 채권 30%, 현금 10%로 포트폴리오를 구성하는 것이 분산투자의 예시입니다."
+                },
+                {
+                    name: "P/E 비율 (Price to Earnings Ratio)",
+                    definition: "주가를 주당순이익으로 나눈 비율로, 주식의 가치를 평가하는 지표입니다.",
+                    example: "주가가 10,000원이고 주당순이익이 1,000원이면 P/E 비율은 10배입니다."
+                },
+                {
+                    name: "로보어드바이저 (Robo-Advisor)",
+                    definition: "인공지능과 알고리즘을 활용하여 자동으로 투자 포트폴리오를 관리해주는 서비스입니다.",
+                    example: "투자자의 위험성향을 분석하여 자동으로 ETF 포트폴리오를 구성하고 리밸런싱해줍니다."
+                }
+            ];
+            return terms[Math.floor(Math.random() * terms.length)];
+        }
+
+        // 뉴스레터 로드
+        async function loadNewsletter() {
+            const content = document.getElementById('newsletterContent');
+            const loading = document.getElementById('newsletterLoading');
+
+            loading.style.display = 'block';
+            content.innerHTML = '';
+
+            setTimeout(() => {
+                const newsletters = generateNewsletters();
+                loading.style.display = 'none';
+                content.innerHTML = newsletters.map(newsletter => `
+                    <div class="newsletter-card">
+                        <h4 class="newsletter-title">${newsletter.title}</h4>
+                        <div class="newsletter-content">${newsletter.content}</div>
+                    </div>
+                `).join('');
+            }, 1500);
+        }
+
+        // 뉴스레터 생성
+        function generateNewsletters() {
+            return [
+                {
+                    title: "📊 오늘의 시장 브리핑",
+                    content: "오늘 코스피는 외국인 투자자들의 매수세에 힘입어 0.8% 상승으로 마감했습니다. 특히 반도체와 바이오 업종이 강세를 보였으며, 원달러 환율은 1,320원대에서 거래되고 있습니다. 내일은 미국 FOMC 회의 결과 발표가 예정되어 있어 시장의 관심이 집중되고 있습니다."
+                },
+                {
+                    title: "💡 이번 주 투자 포인트",
+                    content: "이번 주는 3분기 실적 발표가 본격화되는 주입니다. 특히 대형 IT 기업들의 실적에 주목해야 하며, 정부의 부동산 정책 발표도 예정되어 있어 관련 종목들의 움직임을 살펴볼 필요가 있습니다. 또한 유가 상승이 지속되고 있어 에너지 관련 투자 기회를 검토해보시기 바랍니다."
+                }
+            ];
+        }
+
+        // 카드뉴스 로드
+        async function loadCardNews() {
+            const grid = document.getElementById('cardnewsGrid');
+            const loading = document.getElementById('cardnewsLoading');
+
+            loading.style.display = 'block';
+            grid.innerHTML = '';
+
+            setTimeout(() => {
+                const cardNews = generateCardNews();
+                loading.style.display = 'none';
+                grid.innerHTML = cardNews.map(card => `
+                    <div class="card-news-item">
+                        <div class="card-news-image">${card.icon}</div>
+                        <div class="card-news-content">
+                            <h5 class="card-news-title">${card.title}</h5>
+                            <p class="card-news-description">${card.description}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }, 1200);
+        }
+
+        // 카드뉴스 생성
+        function generateCardNews() {
+            return [
+                {
+                    icon: "📈",
+                    title: "투자 기초: 주식이란?",
+                    description: "회사의 소유권을 나타내는 증서로, 투자의 가장 기본적인 형태입니다."
+                },
+                {
+                    icon: "💰",
+                    title: "예적금 vs 투자",
+                    description: "안전한 예적금과 수익성 있는 투자, 어떻게 배분할까요?"
+                },
+                {
+                    icon: "🏦",
+                    title: "ETF 투자 가이드",
+                    description: "여러 종목에 분산투자할 수 있는 ETF의 장점과 선택법"
+                },
+                {
+                    icon: "📊",
+                    title: "차트 읽는 법",
+                    description: "기술적 분석의 기초, 캔들차트 읽는 방법을 알아보세요"
+                },
+                {
+                    icon: "🔍",
+                    title: "기업 분석하기",
+                    description: "재무제표를 통해 투자하기 좋은 기업을 찾는 방법"
+                },
+                {
+                    icon: "⚖️",
+                    title: "리스크 관리",
+                    description: "투자의 위험을 줄이는 다양한 전략들을 소개합니다"
+                }
+            ];
+        }
+
+        // 시간 포맷팅
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 60) {
+                return `${minutes}분 전`;
+            } else if (hours < 24) {
+                return `${hours}시간 전`;
+            } else {
+                return `${days}일 전`;
+            }
+        }
+
+        // 주기적 뉴스 업데이트
+        function startNewsUpdateInterval() {
+            setInterval(() => {
+                if (document.querySelector('.tab-btn[data-tab="news"]').classList.contains('active')) {
+                    loadNews();
+                }
+            }, NEWS_UPDATE_INTERVAL);
+        }
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+            initTabs();
+            loadNews(); // 기본적으로 뉴스 탭이 활성화되어 있으므로 뉴스 로드
+            startNewsUpdateInterval();
+        });
+    </script>
+</body>
+</html>

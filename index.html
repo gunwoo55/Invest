@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest - 모의투자 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-menu {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-list a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-list a:hover, .nav-list a.active {
+            background-color: #667eea;
+            color: white;
+        }
+
+        /* 메인 컨텐츠 */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 프로필 섹션 */
+        .profile-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .profile-image-section {
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border: 3px solid #e0e0e0;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image-placeholder {
+            color: #999;
+            font-size: 3rem;
+        }
+
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .profile-email {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* 빠른 메뉴 */
+        .quick-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 숨김 파일 입력 */
+        #imageInput {
+            display: none;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-list {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .profile-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .quick-menu {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 알림 메시지 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(300px);
+            transition: transform 0.3s;
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">💰 Invest</h1>
+                <div class="profile-header">
+                    <div class="profile-avatar" id="headerAvatar">
+                        👤
+                    </div>
+                    <span id="headerUserName">투자자님</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 네비게이션 -->
+    <nav class="nav-menu">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="index.html" class="active">홈</a></li>
+                <li><a href="a2.html">뉴스</a></li>
+                <li><a href="a3.html">교육</a></li>
+                <li><a href="a4.html">커뮤니티</a></li>
+                <li><a href="a5.html">투자/가계부</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 환영 섹션 -->
+            <section class="welcome-section">
+                <h2 class="welcome-title">안녕하세요! 투자 여정을 시작해보세요 🚀</h2>
+                <p class="welcome-subtitle">스마트한 투자 결정을 위한 모든 도구가 여기 있습니다.</p>
+            </section>
+
+            <!-- 프로필 섹션 -->
+            <section class="profile-section">
+                <h3 style="margin-bottom: 1.5rem;">프로필 관리</h3>
+                <div class="profile-container">
+                    <div class="profile-image-section">
+                        <div class="profile-image" id="profileImage">
+                            <div class="profile-image-placeholder">👤</div>
+                        </div>
+                        <button class="upload-btn" onclick="selectImage()">
+                            프로필 사진 변경
+                        </button>
+                        <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+                    </div>
+                    <div class="profile-info">
+                        <h4 class="profile-name" id="profileName">투자자님</h4>
+                        <p class="profile-email" id="profileEmail">investor@example.com</p>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalAssets">₩0</div>
+                                <div class="stat-label">총 자산</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalProfit">₩0</div>
+                                <div class="stat-label">총 수익</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="profitRate">0%</div>
+                                <div class="stat-label">수익률</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 빠른 메뉴 -->
+            <section class="quick-menu">
+                <a href="a2.html" class="menu-card">
+                    <div class="menu-icon">📰</div>
+                    <h4 class="menu-title">금융 뉴스</h4>
+                    <p class="menu-description">실시간 경제 뉴스와 AI 분석 리포트</p>
+                </a>
+                <a href="a3.html" class="menu-card">
+                    <div class="menu-icon">📚</div>
+                    <h4 class="menu-title">투자 교육</h4>
+                    <p class="menu-description">초보자를 위한 투자 가이드</p>
+                </a>
+                <a href="a4.html" class="menu-card">
+                    <div class="menu-icon">💬</div>
+                    <h4 class="menu-title">커뮤니티</h4>
+                    <p class="menu-description">투자자들과 정보 공유</p>
+                </a>
+                <a href="a5.html" class="menu-card">
+                    <div class="menu-icon">📈</div>
+                    <h4 class="menu-title">모의투자</h4>
+                    <p class="menu-description">실전 같은 모의투자 체험</p>
+                </a>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // 프로필 데이터 초기화
+        let profileData = {
+            name: '투자자님',
+            email: 'investor@example.com',
+            profileImage: null,
+            totalAssets: 0,
+            totalProfit: 0,
+            profitRate: 0
+        };
+
+        // 로컬스토리지에서 프로필 데이터 로드
+        function loadProfileData() {
+            const saved = localStorage.getItem('userProfile');
+            if (saved) {
+                profileData = { ...profileData, ...JSON.parse(saved) };
+            }
+            updateProfileDisplay();
+        }
+
+        // 프로필 데이터 저장
+        function saveProfileData() {
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+        }
+
+        // 프로필 표시 업데이트
+        function updateProfileDisplay() {
+            // 헤더 업데이트
+            document.getElementById('headerUserName').textContent = profileData.name;
+            const headerAvatar = document.getElementById('headerAvatar');
+            if (profileData.profileImage) {
+                headerAvatar.innerHTML = `<img src="${profileData.profileImage}" alt="프로필">`;
+            } else {
+                headerAvatar.innerHTML = '👤';
+            }
+
+            // 프로필 섹션 업데이트
+            document.getElementById('profileName').textContent = profileData.name;
+            document.getElementById('profileEmail').textContent = profileData.email;
+            const profileImage = document.getElementById('profileImage');
+            if (profileData.profileImage) {
+                profileImage.innerHTML = `<img src="${profileData.profileImage}" alt="프로필">`;
+            } else {
+                profileImage.innerHTML = '<div class="profile-image-placeholder">👤</div>';
+            }
+
+            // 통계 업데이트
+            document.getElementById('totalAssets').textContent = formatCurrency(profileData.totalAssets);
+            document.getElementById('totalProfit').textContent = formatCurrency(profileData.totalProfit);
+            document.getElementById('profitRate').textContent = profileData.profitRate.toFixed(2) + '%';
+        }
+
+        // 통화 포맷팅
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency: 'KRW'
+            }).format(amount);
+        }
+
+        // 이미지 선택 트리거
+        function selectImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        // 이미지 업로드 처리
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 파일 형식 검증
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showNotification('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.', 'error');
+                return;
+            }
+
+            // 파일 크기 검증 (2MB 제한)
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            if (file.size > maxSize) {
+                showNotification('이미지 크기는 2MB를 초과할 수 없습니다.', 'error');
+                return;
+            }
+
+            // 이미지를 base64로 변환
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result;
+                
+                // 프로필 데이터 업데이트
+                profileData.profileImage = base64String;
+                saveProfileData();
+                updateProfileDisplay();
+                
+                showNotification('프로필 사진이 성공적으로 업데이트되었습니다!', 'success');
+            };
+
+            reader.onerror = function() {
+                showNotification('이미지 업로드 중 오류가 발생했습니다.', 'error');
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // 알림 메시지 표시
+        function showNotification(message, type = 'success') {
+            // 기존 알림 제거
+            const existing = document.querySelector('.notification');
+            if (existing) {
+                existing.remove();
+            }
+
+            // 새 알림 생성
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // 애니메이션으로 표시
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            // 3초 후 자동 제거
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 투자 데이터 시뮬레이션 (임시)
+        function simulateInvestmentData() {
+            profileData.totalAssets = Math.floor(Math.random() * 10000000) + 1000000;
+            profileData.totalProfit = Math.floor(Math.random() * 1000000) - 500000;
+            profileData.profitRate = (profileData.totalProfit / (profileData.totalAssets - profileData.totalProfit)) * 100;
+            saveProfileData();
+            updateProfileDisplay();
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+            
+            // 임시 데이터 생성 (실제 구현에서는 제거)
+            if (profileData.totalAssets === 0) {
+                simulateInvestmentData();
+            }
+        });
+    </script>
+</body>
+</html>
