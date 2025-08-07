@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 투자</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .investment-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .category-card.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .category-card i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .category-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .investment-list {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .investment-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .investment-item:last-child {
+            border-bottom: none;
+        }
+
+        .investment-item:hover {
+            background-color: #f8f9ff;
+        }
+
+        .investment-info {
+            flex: 1;
+        }
+
+        .investment-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .investment-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .investment-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .investment-risk {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .investment-period {
+            color: #666;
+        }
+
+        .investment-return {
+            text-align: right;
+        }
+
+        .return-rate {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .return-period {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .market-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .market-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .market-indices {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .market-index {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .index-name {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .index-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .index-change {
+            font-size: 12px;
+        }
+
+        .positive {
+            color: #a8e6cf;
+        }
+
+        .negative {
+            color: #ffaaa5;
+        }
+
+        .recommendation-banner {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-text {
+            font-size: 14px;
+            color: #bf360c;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>투자</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 시장 현황 -->
+            <div class="market-summary">
+                <div class="market-title">오늘의 시장 현황</div>
+                <div class="market-indices">
+                    <div class="market-index">
+                        <div class="index-name">코스피</div>
+                        <div class="index-value">2,485.67</div>
+                        <div class="index-change positive">+0.85%</div>
+                    </div>
+                    <div class="market-index">
+                        <div class="index-name">코스닥</div>
+                        <div class="index-value">847.32</div>
+                        <div class="index-change negative">-0.42%</div>
+                    </div>
+                    <div class="market-index">
+                        <div class="index-name">S&P 500</div>
+                        <div class="index-value">4,378.25</div>
+                        <div class="index-change positive">+1.23%</div>
+                    </div>
+                    <div class="market-index">
+                        <div class="index-name">비트코인</div>
+                        <div class="index-value">$43,250</div>
+                        <div class="index-change positive">+2.45%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 추천 투자 -->
+            <div class="recommendation-banner">
+                <div class="recommendation-title">
+                    <i class="fas fa-lightbulb"></i> 오늘의 투자 추천
+                </div>
+                <div class="recommendation-text">
+                    현재 시장 상황을 고려할 때, 분산 투자를 통한 위험 관리가 중요합니다. 장기 투자 관점에서 우량 기업의 주식과 안정적인 채권의 조합을 권장합니다.
+                </div>
+            </div>
+
+            <!-- 투자 카테고리 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    투자 카테고리
+                </div>
+                <div class="investment-categories">
+                    <div class="category-card active" onclick="selectCategory('all')">
+                        <i class="fas fa-globe"></i>
+                        <h3>전체</h3>
+                        <p>모든 투자상품</p>
+                    </div>
+                    <div class="category-card" onclick="selectCategory('stocks')">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>주식</h3>
+                        <p>국내외 주식</p>
+                    </div>
+                    <div class="category-card" onclick="selectCategory('funds')">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>펀드</h3>
+                        <p>투자신탁</p>
+                    </div>
+                    <div class="category-card" onclick="selectCategory('bonds')">
+                        <i class="fas fa-university"></i>
+                        <h3>채권</h3>
+                        <p>안전자산</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 필터 탭 -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterByRisk('all')">전체</div>
+                <div class="filter-tab" onclick="filterByRisk('low')">안전</div>
+                <div class="filter-tab" onclick="filterByRisk('medium')">중위험</div>
+                <div class="filter-tab" onclick="filterByRisk('high')">고수익</div>
+            </div>
+
+            <!-- 투자 상품 목록 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-list"></i>
+                    추천 투자 상품
+                </div>
+                <div id="investmentList" class="investment-list">
+                    <!-- 주식 상품 -->
+                    <div class="investment-item" data-category="stocks" data-risk="medium">
+                        <div class="investment-info">
+                            <div class="investment-name">삼성전자</div>
+                            <div class="investment-description">국내 대표 반도체 기업</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">중위험</span>
+                                <span class="investment-period">장기투자 권장</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+12.5%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <div class="investment-item" data-category="stocks" data-risk="high">
+                        <div class="investment-info">
+                            <div class="investment-name">Apple Inc.</div>
+                            <div class="investment-description">글로벌 기술 기업</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">고위험</span>
+                                <span class="investment-period">중장기 투자</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+18.7%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <!-- 펀드 상품 -->
+                    <div class="investment-item" data-category="funds" data-risk="medium">
+                        <div class="investment-info">
+                            <div class="investment-name">미래에셋 글로벌펀드</div>
+                            <div class="investment-description">글로벌 분산투자 펀드</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">중위험</span>
+                                <span class="investment-period">3년 이상</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+9.8%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <div class="investment-item" data-category="funds" data-risk="low">
+                        <div class="investment-info">
+                            <div class="investment-name">채권혼합형 펀드</div>
+                            <div class="investment-description">안정성 중심 펀드</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">저위험</span>
+                                <span class="investment-period">1년 이상</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+4.2%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <!-- 채권 상품 -->
+                    <div class="investment-item" data-category="bonds" data-risk="low">
+                        <div class="investment-info">
+                            <div class="investment-name">국고채 3년</div>
+                            <div class="investment-description">정부 보증 안전자산</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">저위험</span>
+                                <span class="investment-period">3년 만기</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+3.5%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <div class="investment-item" data-category="bonds" data-risk="low">
+                        <div class="investment-info">
+                            <div class="investment-name">회사채 AA등급</div>
+                            <div class="investment-description">우량기업 회사채</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">저위험</span>
+                                <span class="investment-period">2년 만기</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+4.8%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <!-- 추가 주식 상품 -->
+                    <div class="investment-item" data-category="stocks" data-risk="high">
+                        <div class="investment-info">
+                            <div class="investment-name">Tesla Inc.</div>
+                            <div class="investment-description">전기차 선도 기업</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">고위험</span>
+                                <span class="investment-period">장기투자</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+25.3%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+
+                    <div class="investment-item" data-category="stocks" data-risk="medium">
+                        <div class="investment-info">
+                            <div class="investment-name">NAVER</div>
+                            <div class="investment-description">국내 대표 IT 기업</div>
+                            <div class="investment-meta">
+                                <span class="investment-risk">중위험</span>
+                                <span class="investment-period">중장기 투자</span>
+                            </div>
+                        </div>
+                        <div class="investment-return">
+                            <div class="return-rate">+14.2%</div>
+                            <div class="return-period">연수익률</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let currentCategory = 'all';
+        let currentRisk = 'all';
+
+        // 카테고리 선택
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            // 카테고리 카드 active 상태 변경
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.category-card').classList.add('active');
+            
+            filterInvestments();
+        }
+
+        // 위험도별 필터
+        function filterByRisk(risk) {
+            currentRisk = risk;
+            
+            // 필터 탭 active 상태 변경
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            filterInvestments();
+        }
+
+        // 투자상품 필터링
+        function filterInvestments() {
+            const items = document.querySelectorAll('.investment-item');
+            
+            items.forEach(item => {
+                const itemCategory = item.dataset.category;
+                const itemRisk = item.dataset.risk;
+                
+                let showItem = true;
+                
+                // 카테고리 필터
+                if (currentCategory !== 'all' && itemCategory !== currentCategory) {
+                    showItem = false;
+                }
+                
+                // 위험도 필터
+                if (currentRisk !== 'all' && itemRisk !== currentRisk) {
+                    showItem = false;
+                }
+                
+                item.style.display = showItem ? 'flex' : 'none';
+            });
+            
+            // 필터 결과가 없는 경우 메시지 표시
+            const visibleItems = document.querySelectorAll('.investment-item[style="display: flex"], .investment-item:not([style*="display: none"])');
+            if (visibleItems.length === 0) {
+                showEmptyState();
+            } else {
+                hideEmptyState();
+            }
+        }
+
+        // 빈 상태 표시
+        function showEmptyState() {
+            let emptyState = document.getElementById('emptyState');
+            if (!emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.id = 'emptyState';
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <p>선택한 조건에 맞는<br>투자상품이 없습니다.</p>
+                `;
+                document.getElementById('investmentList').appendChild(emptyState);
+            }
+            emptyState.style.display = 'block';
+        }
+
+        // 빈 상태 숨기기
+        function hideEmptyState() {
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // 투자상품 클릭 이벤트
+        document.addEventListener('click', function(e) {
+            const investmentItem = e.target.closest('.investment-item');
+            if (investmentItem && !investmentItem.id) { // emptyState가 아닌 경우만
+                const name = investmentItem.querySelector('.investment-name').textContent;
+                const description = investmentItem.querySelector('.investment-description').textContent;
+                const returnRate = investmentItem.querySelector('.return-rate').textContent;
+                
+                alert(`${name}\n${description}\n예상 수익률: ${returnRate}\n\n자세한 투자는 가계부 페이지에서 가능합니다.`);
+            }
+        });
+
+        // 뒤로 가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 시장 데이터 업데이트 시뮬레이션
+            setInterval(updateMarketData, 10000); // 10초마다 업데이트
+        });
+
+        // 시장 데이터 업데이트 (시뮬레이션)
+        function updateMarketData() {
+            const indices = document.querySelectorAll('.market-index');
+            
+            indices.forEach(index => {
+                const changeElement = index.querySelector('.index-change');
+                const currentText = changeElement.textContent;
+                const isPositive = Math.random() > 0.5;
+                const changeValue = (Math.random() * 2).toFixed(2);
+                
+                changeElement.textContent = `${isPositive ? '+' : '-'}${changeValue}%`;
+                changeElement.className = `index-change ${isPositive ? 'positive' : 'negative'}`;
+            });
+        }
+    </script>
+</body>
+</html>

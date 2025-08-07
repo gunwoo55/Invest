@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 투자 게임</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .game-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .game-mode {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .game-mode:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .game-mode.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .game-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .game-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .game-difficulty {
+            font-size: 12px;
+            color: white;
+            background: #667eea;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .game-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .game-rewards {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .reward-badge {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-left: auto;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .achievement-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, #fff9c4 0%, #f9f7d9 100%);
+            border: 2px solid #ffd700;
+        }
+
+        .achievement-card.locked {
+            background: #f8f9fa;
+            color: #999;
+        }
+
+        .achievement-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon.unlocked {
+            color: #ffd700;
+        }
+
+        .achievement-icon.locked {
+            color: #ccc;
+        }
+
+        .achievement-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ccc;
+            font-size: 16px;
+        }
+
+        .current-game {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .current-game-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .leaderboard-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .rank-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .rank-1 { background: #ffd700; color: white; }
+        .rank-2 { background: #c0c0c0; color: white; }
+        .rank-3 { background: #cd7f32; color: white; }
+        .rank-other { background: #e9ecef; color: #495057; }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .player-score {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .daily-challenge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .challenge-timer {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .challenge-reward {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>투자 게임</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 게임 통계 -->
+            <div class="game-stats">
+                <h3>나의 게임 현황</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalScore">1,250</div>
+                        <div class="stat-label">총 점수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="gamesPlayed">15</div>
+                        <div class="stat-label">플레이 횟수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="winRate">73%</div>
+                        <div class="stat-label">승률</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 현재 진행 중인 게임 -->
+            <div id="currentGame" class="current-game" style="display: none;">
+                <div class="current-game-title">
+                    <i class="fas fa-play-circle"></i>
+                    현재 진행 중: <span id="currentGameName"></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="gameProgress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="progressText">0% 완료</div>
+            </div>
+
+            <!-- 일일 챌린지 -->
+            <div class="daily-challenge">
+                <div class="challenge-timer">
+                    <i class="fas fa-clock"></i>
+                    일일 챌린지 • <span id="challengeTimer">23:45:12</span> 남음
+                </div>
+                <h3>주식 시장 예측 게임</h3>
+                <p>다음 날 코스피 지수 방향을 맞춰보세요!</p>
+                <div class="challenge-reward">
+                    보상: 경험치 +50, 게임 머니 +1,000원
+                </div>
+                <button class="play-btn" onclick="startDailyChallenge()">
+                    <i class="fas fa-trophy"></i> 챌린지 시작
+                </button>
+            </div>
+
+            <!-- 게임 모드 -->
+            <section class="achievement-section">
+                <div class="section-title">
+                    <i class="fas fa-gamepad"></i>
+                    게임 모드
+                </div>
+                <div class="game-modes">
+                    <div class="game-mode" onclick="selectGame('stock-trading')">
+                        <div class="game-header">
+                            <div class="game-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="game-info">
+                                <div class="game-title">주식 트레이딩 시뮬레이터</div>
+                                <div class="game-difficulty">초급</div>
+                            </div>
+                            <button class="play-btn">플레이</button>
+                        </div>
+                        <div class="game-description">
+                            실시간 주식 차트를 보고 매수/매도 타이밍을 맞춰보세요. 기초적인 차트 분석 능력을 기를 수 있습니다.
+                        </div>
+                        <div class="game-rewards">
+                            <span class="reward-badge">경험치 +20</span>
+                            <span class="reward-badge">게임머니 +500</span>
+                        </div>
+                    </div>
+
+                    <div class="game-mode" onclick="selectGame('portfolio-manager')">
+                        <div class="game-header">
+                            <div class="game-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="game-info">
+                                <div class="game-title">포트폴리오 매니저</div>
+                                <div class="game-difficulty">중급</div>
+                            </div>
+                            <button class="play-btn">플레이</button>
+                        </div>
+                        <div class="game-description">
+                            다양한 자산에 분산투자하여 최적의 포트폴리오를 구성해보세요. 리스크 관리와 자산 배분을 학습합니다.
+                        </div>
+                        <div class="game-rewards">
+                            <span class="reward-badge">경험치 +35</span>
+                            <span class="reward-badge">게임머니 +800</span>
+                        </div>
+                    </div>
+
+                    <div class="game-mode" onclick="selectGame('market-predictor')">
+                        <div class="game-header">
+                            <div class="game-icon">
+                                <i class="fas fa-crystal-ball"></i>
+                            </div>
+                            <div class="game-info">
+                                <div class="game-title">시장 예측 게임</div>
+                                <div class="game-difficulty">고급</div>
+                            </div>
+                            <button class="play-btn">플레이</button>
+                        </div>
+                        <div class="game-description">
+                            경제 뉴스와 지표를 분석하여 시장의 방향을 예측해보세요. 거시경제 분석 능력을 향상시킬 수 있습니다.
+                        </div>
+                        <div class="game-rewards">
+                            <span class="reward-badge">경험치 +50</span>
+                            <span class="reward-badge">게임머니 +1,200</span>
+                        </div>
+                    </div>
+
+                    <div class="game-mode" onclick="selectGame('risk-assessment')">
+                        <div class="game-header">
+                            <div class="game-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="game-info">
+                                <div class="game-title">리스크 평가 퀴즈</div>
+                                <div class="game-difficulty">초급</div>
+                            </div>
+                            <button class="play-btn">플레이</button>
+                        </div>
+                        <div class="game-description">
+                            다양한 투자 상황에서의 위험도를 평가하고 적절한 대응 방법을 선택해보세요. 위험 관리 능력을 기릅니다.
+                        </div>
+                        <div class="game-rewards">
+                            <span class="reward-badge">경험치 +15</span>
+                            <span class="reward-badge">게임머니 +300</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 업적 -->
+            <section class="achievement-section">
+                <div class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    업적
+                </div>
+                <div class="achievement-grid">
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-icon unlocked">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="achievement-name">첫 걸음</div>
+                        <div class="achievement-desc">첫 게임 완료</div>
+                    </div>
+
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-icon unlocked">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="achievement-name">트레이더</div>
+                        <div class="achievement-desc">10회 거래 완료</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon locked">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="achievement-name">다이아몬드 핸드</div>
+                        <div class="achievement-desc">30일 연속 플레이</div>
+                        <div class="lock-overlay">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon locked">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="achievement-name">투자 마스터</div>
+                        <div class="achievement-desc">모든 게임 클리어</div>
+                        <div class="lock-overlay">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-icon unlocked">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="achievement-name">연승왕</div>
+                        <div class="achievement-desc">5연승 달성</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon locked">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="achievement-name">핫스트릭</div>
+                        <div class="achievement-desc">10연승 달성</div>
+                        <div class="lock-overlay">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 리더보드 -->
+            <section class="achievement-section">
+                <div class="section-title">
+                    <i class="fas fa-ranking-star"></i>
+                    이번 주 리더보드
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-badge rank-1">1</div>
+                    <div class="player-info">
+                        <div class="player-name">투자왕</div>
+                        <div class="player-score">3,890점</div>
+                    </div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-badge rank-2">2</div>
+                    <div class="player-info">
+                        <div class="player-name">주식고수</div>
+                        <div class="player-score">3,245점</div>
+                    </div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-badge rank-3">3</div>
+                    <div class="player-info">
+                        <div class="player-name">워렌버핏2</div>
+                        <div class="player-score">2,987점</div>
+                    </div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank-badge rank-other">15</div>
+                    <div class="player-info">
+                        <div class="player-name">나 (투자초보자)</div>
+                        <div class="player-score">1,250점</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let gameData = {
+            totalScore: 1250,
+            gamesPlayed: 15,
+            wins: 11,
+            currentGame: null,
+            achievements: ['first-step', 'trader', 'streak-5'],
+            gameProgress: {}
+        };
+
+        // 게임 선택
+        function selectGame(gameType) {
+            const gameNames = {
+                'stock-trading': '주식 트레이딩 시뮬레이터',
+                'portfolio-manager': '포트폴리오 매니저',
+                'market-predictor': '시장 예측 게임',
+                'risk-assessment': '리스크 평가 퀴즈'
+            };
+
+            const gameName = gameNames[gameType];
+            
+            if (confirm(`${gameName}을(를) 시작하시겠습니까?`)) {
+                startGame(gameType, gameName);
+            }
+        }
+
+        // 게임 시작
+        function startGame(gameType, gameName) {
+            gameData.currentGame = gameType;
+            
+            // 현재 게임 UI 표시
+            document.getElementById('currentGame').style.display = 'block';
+            document.getElementById('currentGameName').textContent = gameName;
+            
+            // 게임별 시뮬레이션
+            switch(gameType) {
+                case 'stock-trading':
+                    simulateStockTrading();
+                    break;
+                case 'portfolio-manager':
+                    simulatePortfolioManager();
+                    break;
+                case 'market-predictor':
+                    simulateMarketPredictor();
+                    break;
+                case 'risk-assessment':
+                    simulateRiskAssessment();
+                    break;
+            }
+        }
+
+        // 주식 트레이딩 시뮬레이션
+        function simulateStockTrading() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    endGame('stock-trading', 85); // 85점 획득
+                }
+                updateGameProgress(progress);
+            }, 1000);
+        }
+
+        // 포트폴리오 매니저 시뮬레이션
+        function simulatePortfolioManager() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    endGame('portfolio-manager', 92);
+                }
+                updateGameProgress(progress);
+            }, 1200);
+        }
+
+        // 시장 예측 게임 시뮬레이션
+        function simulateMarketPredictor() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    endGame('market-predictor', 78);
+                }
+                updateGameProgress(progress);
+            }, 1500);
+        }
+
+        // 리스크 평가 퀴즈 시뮬레이션
+        function simulateRiskAssessment() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    endGame('risk-assessment', 95);
+                }
+                updateGameProgress(progress);
+            }, 800);
+        }
+
+        // 게임 진행률 업데이트
+        function updateGameProgress(progress) {
+            document.getElementById('gameProgress').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '% 완료';
+        }
+
+        // 게임 종료
+        function endGame(gameType, score) {
+            gameData.currentGame = null;
+            gameData.gamesPlayed++;
+            gameData.totalScore += score;
+            
+            if (score >= 80) {
+                gameData.wins++;
+            }
+            
+            // UI 업데이트
+            updateGameStats();
+            document.getElementById('currentGame').style.display = 'none';
+            
+            // 결과 표시
+            const rewards = calculateRewards(gameType, score);
+            alert(`게임 완료!\n\n점수: ${score}점\n획득 경험치: +${rewards.exp}\n게임머니: +${rewards.money}원`);
+            
+            // 업적 체크
+            checkAchievements();
+        }
+
+        // 보상 계산
+        function calculateRewards(gameType, score) {
+            const baseRewards = {
+                'stock-trading': { exp: 20, money: 500 },
+                'portfolio-manager': { exp: 35, money: 800 },
+                'market-predictor': { exp: 50, money: 1200 },
+                'risk-assessment': { exp: 15, money: 300 }
+            };
+            
+            const base = baseRewards[gameType];
+            const multiplier = score >= 90 ? 1.5 : score >= 80 ? 1.2 : 1.0;
+            
+            return {
+                exp: Math.round(base.exp * multiplier),
+                money: Math.round(base.money * multiplier)
+            };
+        }
+
+        // 게임 통계 업데이트
+        function updateGameStats() {
+            const winRate = Math.round((gameData.wins / gameData.gamesPlayed) * 100);
+            
+            document.getElementById('totalScore').textContent = gameData.totalScore.toLocaleString();
+            document.getElementById('gamesPlayed').textContent = gameData.gamesPlayed;
+            document.getElementById('winRate').textContent = winRate + '%';
+        }
+
+        // 업적 체크
+        function checkAchievements() {
+            // 예시 업적 로직
+            if (gameData.gamesPlayed >= 1 && !gameData.achievements.includes('first-step')) {
+                gameData.achievements.push('first-step');
+                alert('🏆 업적 달성: 첫 걸음!');
+            }
+            
+            if (gameData.gamesPlayed >= 10 && !gameData.achievements.includes('trader')) {
+                gameData.achievements.push('trader');
+                alert('🏆 업적 달성: 트레이더!');
+            }
+        }
+
+        // 일일 챌린지 시작
+        function startDailyChallenge() {
+            if (confirm('일일 챌린지를 시작하시겠습니까?\n\n오늘의 문제: 내일 코스피 지수는 오를까요, 내릴까요?')) {
+                const prediction = confirm('상승하려면 확인, 하락하려면 취소를 누르세요.');
+                
+                // 랜덤 결과 (50% 확률)
+                const isCorrect = Math.random() > 0.5;
+                const actualResult = Math.random() > 0.5 ? '상승' : '하락';
+                const userPrediction = prediction ? '상승' : '하락';
+                
+                setTimeout(() => {
+                    if ((prediction && actualResult === '상승') || (!prediction && actualResult === '하락')) {
+                        alert(`🎉 정답입니다!\n\n예측: ${userPrediction}\n실제: ${actualResult}\n\n보상을 받았습니다:\n• 경험치 +50\n• 게임머니 +1,000원`);
+                        gameData.totalScore += 50;
+                        updateGameStats();
+                    } else {
+                        alert(`❌ 틀렸습니다.\n\n예측: ${userPrediction}\n실제: ${actualResult}\n\n내일 다시 도전해보세요!`);
+                    }
+                }, 2000);
+            }
+        }
+
+        // 챌린지 타이머 업데이트
+        function updateChallengeTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('challengeTimer').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 뒤로 가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGameStats();
+            updateChallengeTimer();
+            
+            // 1초마다 타이머 업데이트
+            setInterval(updateChallengeTimer, 1000);
+            
+            // 게임 데이터 로드
+            const savedGameData = localStorage.getItem('fineUGameData');
+            if (savedGameData) {
+                gameData = { ...gameData, ...JSON.parse(savedGameData) };
+                updateGameStats();
+            }
+            
+            // 게임 데이터 저장
+            localStorage.setItem('fineUGameData', JSON.stringify(gameData));
+        });
+    </script>
+</body>
+</html>

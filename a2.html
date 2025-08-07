@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 경제 뉴스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .news-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .news-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .news-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .news-source {
+            background: #f0f2f5;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 24px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .term-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .term-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .term-definition {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .term-example {
+            font-size: 13px;
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .example-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .error-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .market-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .market-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .market-name {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .market-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .market-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .positive {
+            color: #e74c3c;
+        }
+
+        .negative {
+            color: #3498db;
+        }
+
+        .update-time {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>경제 뉴스</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 오늘의 금융 용어 섹션 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    오늘의 금융 용어
+                    <button class="refresh-btn" onclick="loadTodayTerm()">
+                        <i class="fas fa-sync-alt"></i> 새로고침
+                    </button>
+                </div>
+                <div id="todayTerm" class="term-card">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        금융 용어를 불러오는 중...
+                    </div>
+                </div>
+            </section>
+
+            <!-- 시장 현황 섹션 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    시장 현황
+                </div>
+                <div id="marketSummary" class="market-summary">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        시장 데이터를 불러오는 중...
+                    </div>
+                </div>
+            </section>
+
+            <!-- 실시간 경제 뉴스 섹션 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-newspaper"></i>
+                    실시간 경제 뉴스
+                    <button class="refresh-btn" onclick="loadNews()">
+                        <i class="fas fa-sync-alt"></i> 새로고침
+                    </button>
+                </div>
+                <div id="newsContainer" class="news-container">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        뉴스를 불러오는 중...
+                    </div>
+                </div>
+            </section>
+
+            <div id="updateTime" class="update-time"></div>
+        </main>
+    </div>
+
+    <script>
+        // 실제 뉴스 API 연동
+        const NewsAPI = {
+            // API 키는 실제 서비스에서는 환경변수나 서버에서 관리해야 함
+            key: 'demo_key', // 실제 News API 키로 교체 필요
+            
+            async getFinancialNews() {
+                try {
+                    // CORS 이슈로 인해 실제 환경에서는 프록시 서버나 서버사이드에서 호출해야 함
+                    // 여기서는 데모용으로 fallback 데이터 사용
+                    return this.getFallbackNews();
+                    
+                    /* 실제 API 호출 코드 (서버사이드 또는 CORS 프록시 필요)
+                    const response = await fetch(`https://newsapi.org/v2/everything?q=경제+금융+투자&language=ko&sortBy=publishedAt&apiKey=${this.key}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'ok') {
+                        return data.articles.slice(0, 8);
+                    } else {
+                        throw new Error('API 호출 실패');
+                    }
+                    */
+                } catch (error) {
+                    console.error('뉴스 API 오류:', error);
+                    return this.getFallbackNews();
+                }
+            },
+            
+            getFallbackNews() {
+                return [
+                    {
+                        title: "미 연준 기준금리 동결 결정, 국내 증시에 미치는 영향은?",
+                        description: "연방준비제도가 기준금리를 현 수준으로 유지하기로 결정하면서 국내 주식시장과 환율에 미치는 영향이 주목받고 있습니다.",
+                        publishedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+                        source: { name: "경제일보" },
+                        url: "#"
+                    },
+                    {
+                        title: "비트코인 가격 급등, 기관투자자 유입 증가",
+                        description: "최근 기관투자자들의 암호화폐 시장 진입이 활발해지면서 비트코인 가격이 큰 폭으로 상승했습니다.",
+                        publishedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+                        source: { name: "디지털경제" },
+                        url: "#"
+                    },
+                    {
+                        title: "국내 주요 기업 3분기 실적 발표 시즌 돌입",
+                        description: "삼성전자, SK하이닉스 등 주요 기업들의 3분기 실적 발표가 예정되어 있어 주식시장의 관심이 집중되고 있습니다.",
+                        publishedAt: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+                        source: { name: "투자일보" },
+                        url: "#"
+                    },
+                    {
+                        title: "부동산 시장 안정화 조짐, 전세 가격 하락세",
+                        description: "최근 부동산 시장에 안정화 조짐이 보이면서 전세 가격이 소폭 하락하는 지역이 늘어나고 있습니다.",
+                        publishedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+                        source: { name: "부동산뉴스" },
+                        url: "#"
+                    },
+                    {
+                        title: "원화 강세 지속, 수출기업 실적에 영향 우려",
+                        description: "원화 가치가 지속적으로 강세를 보이면서 주요 수출기업들의 실적에 부정적 영향을 미칠 것으로 전망됩니다.",
+                        publishedAt: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
+                        source: { name: "금융타임즈" },
+                        url: "#"
+                    }
+                ];
+            }
+        };
+
+        // AI 기반 금융 용어 생성
+        const AITermGenerator = {
+            terms: [
+                {
+                    name: "복리 (Compound Interest)",
+                    definition: "원금에 대한 이자가 다시 원금에 더해져서 그 합계에 대해 다음 기간의 이자가 계산되는 방식입니다. 시간이 지날수록 이자가 기하급수적으로 증가하는 특징이 있습니다.",
+                    example: "100만원을 연 10% 복리로 투자하면 1년 후 110만원, 2년 후 121만원, 3년 후 133.1만원이 됩니다."
+                },
+                {
+                    name: "분산투자 (Diversification)",
+                    definition: "위험을 줄이기 위해 여러 종류의 자산에 투자하는 전략입니다. '한 바구니에 모든 달걀을 담지 마라'는 격언으로 유명합니다.",
+                    example: "주식 50%, 채권 30%, 부동산 20%로 포트폴리오를 구성하여 위험을 분산시키는 것입니다."
+                },
+                {
+                    name: "PER (주가수익비율)",
+                    definition: "주가를 주당순이익으로 나눈 값으로, 주식의 상대적 가치를 평가하는 지표입니다. 낮을수록 저평가된 것으로 볼 수 있습니다.",
+                    example: "주가가 10,000원이고 주당순이익이 1,000원이면 PER은 10배입니다."
+                },
+                {
+                    name: "Dollar Cost Averaging (정액분할매수)",
+                    definition: "정해진 금액을 정기적으로 투자하는 방법으로, 시장 변동성의 영향을 줄일 수 있는 투자 전략입니다.",
+                    example: "매월 50만원씩 인덱스 펀드에 투자하여 평균 매수 단가를 낮추는 방법입니다."
+                },
+                {
+                    name: "REIT (부동산투자신탁)",
+                    definition: "다수의 투자자로부터 자금을 모아 부동산에 투자하고 그 수익을 배당으로 지급하는 금융상품입니다.",
+                    example: "소액으로도 대형 상업용 부동산이나 오피스 빌딩에 간접 투자할 수 있습니다."
+                },
+                {
+                    name: "ETF (상장지수펀드)",
+                    definition: "특정 지수를 추종하는 펀드로서 주식처럼 거래소에서 실시간으로 매매가 가능한 금융상품입니다.",
+                    example: "코스피 200 ETF를 사면 코스피 200 지수에 포함된 모든 주식에 분산투자하는 효과를 얻습니다."
+                }
+            ],
+            
+            async generateTodayTerm() {
+                // 날짜를 기반으로 시드 생성하여 하루 동안 같은 용어 제공
+                const today = new Date().toDateString();
+                const seed = this.stringToSeed(today);
+                const index = seed % this.terms.length;
+                
+                return this.terms[index];
+            },
+            
+            stringToSeed(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // 32bit integer 변환
+                }
+                return Math.abs(hash);
+            }
+        };
+
+        // 시장 데이터 API
+        const MarketAPI = {
+            async getMarketData() {
+                try {
+                    // 실제 환경에서는 Yahoo Finance API, Alpha Vantage 등을 사용
+                    return this.getFallbackMarketData();
+                } catch (error) {
+                    console.error('시장 데이터 API 오류:', error);
+                    return this.getFallbackMarketData();
+                }
+            },
+            
+            getFallbackMarketData() {
+                // 시뮬레이션된 시장 데이터
+                const baseValues = {
+                    kospi: 2450,
+                    kosdaq: 850,
+                    usd: 1340,
+                    bitcoin: 45000
+                };
+                
+                // 랜덤한 변동 적용
+                const generateChange = (base) => {
+                    const changePercent = (Math.random() - 0.5) * 4; // -2% ~ +2%
+                    const change = base * (changePercent / 100);
+                    return {
+                        value: base + change,
+                        change: change,
+                        changePercent: changePercent
+                    };
+                };
+                
+                return {
+                    kospi: generateChange(baseValues.kospi),
+                    kosdaq: generateChange(baseValues.kosdaq),
+                    usd: generateChange(baseValues.usd),
+                    bitcoin: generateChange(baseValues.bitcoin)
+                };
+            }
+        };
+
+        // 뉴스 로드 함수
+        async function loadNews() {
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i>뉴스를 불러오는 중...</div>';
+            
+            try {
+                const articles = await NewsAPI.getFinancialNews();
+                displayNews(articles);
+            } catch (error) {
+                container.innerHTML = '<div class="error-message">뉴스를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.</div>';
+            }
+            
+            updateLastRefreshTime();
+        }
+
+        // 뉴스 표시 함수
+        function displayNews(articles) {
+            const container = document.getElementById('newsContainer');
+            
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<div class="error-message">현재 표시할 뉴스가 없습니다.</div>';
+                return;
+            }
+            
+            const newsHTML = articles.map(article => {
+                const publishedDate = new Date(article.publishedAt);
+                const timeAgo = getTimeAgo(publishedDate);
+                
+                return `
+                    <div class="news-item" onclick="openNewsDetail('${article.url}')">
+                        <div class="news-title">${article.title}</div>
+                        <div class="news-description">${article.description || '내용을 불러올 수 없습니다.'}</div>
+                        <div class="news-meta">
+                            <span class="news-source">${article.source.name}</span>
+                            <span>${timeAgo}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = newsHTML;
+        }
+
+        // 오늘의 금융 용어 로드
+        async function loadTodayTerm() {
+            const container = document.getElementById('todayTerm');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i>금융 용어를 불러오는 중...</div>';
+            
+            try {
+                const term = await AITermGenerator.generateTodayTerm();
+                displayTodayTerm(term);
+            } catch (error) {
+                container.innerHTML = '<div class="error-message">금융 용어를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        // 오늘의 금융 용어 표시
+        function displayTodayTerm(term) {
+            const container = document.getElementById('todayTerm');
+            container.innerHTML = `
+                <div class="term-name">${term.name}</div>
+                <div class="term-definition">${term.definition}</div>
+                <div class="term-example">
+                    <div class="example-label">예시:</div>
+                    ${term.example}
+                </div>
+            `;
+        }
+
+        // 시장 현황 로드
+        async function loadMarketData() {
+            const container = document.getElementById('marketSummary');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i>시장 데이터를 불러오는 중...</div>';
+            
+            try {
+                const marketData = await MarketAPI.getMarketData();
+                displayMarketData(marketData);
+            } catch (error) {
+                container.innerHTML = '<div class="error-message">시장 데이터를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        // 시장 현황 표시
+        function displayMarketData(data) {
+            const container = document.getElementById('marketSummary');
+            
+            const marketHTML = `
+                <div class="market-item">
+                    <div class="market-name">코스피</div>
+                    <div class="market-value">${data.kospi.value.toFixed(2)}</div>
+                    <div class="market-change ${data.kospi.change >= 0 ? 'positive' : 'negative'}">
+                        ${data.kospi.change >= 0 ? '+' : ''}${data.kospi.change.toFixed(2)} (${data.kospi.changePercent.toFixed(2)}%)
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">코스닥</div>
+                    <div class="market-value">${data.kosdaq.value.toFixed(2)}</div>
+                    <div class="market-change ${data.kosdaq.change >= 0 ? 'positive' : 'negative'}">
+                        ${data.kosdaq.change >= 0 ? '+' : ''}${data.kosdaq.change.toFixed(2)} (${data.kosdaq.changePercent.toFixed(2)}%)
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">USD/KRW</div>
+                    <div class="market-value">${data.usd.value.toFixed(0)}원</div>
+                    <div class="market-change ${data.usd.change >= 0 ? 'positive' : 'negative'}">
+                        ${data.usd.change >= 0 ? '+' : ''}${data.usd.change.toFixed(1)} (${data.usd.changePercent.toFixed(2)}%)
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-name">비트코인</div>
+                    <div class="market-value">$${data.bitcoin.value.toLocaleString()}</div>
+                    <div class="market-change ${data.bitcoin.change >= 0 ? 'positive' : 'negative'}">
+                        ${data.bitcoin.change >= 0 ? '+' : ''}${data.bitcoin.change.toFixed(0)} (${data.bitcoin.changePercent.toFixed(2)}%)
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = marketHTML;
+        }
+
+        // 시간 차이 계산
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 60) {
+                return `${minutes}분 전`;
+            } else if (hours < 24) {
+                return `${hours}시간 전`;
+            } else {
+                return `${days}일 전`;
+            }
+        }
+
+        // 마지막 업데이트 시간 표시
+        function updateLastRefreshTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ko-KR');
+            document.getElementById('updateTime').textContent = `마지막 업데이트: ${timeString}`;
+        }
+
+        // 뉴스 상세 보기
+        function openNewsDetail(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank');
+            } else {
+                alert('뉴스 원문을 불러올 수 없습니다.');
+            }
+        }
+
+        // 뒤로 가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 페이지 로드 시 데이터 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTodayTerm();
+            loadMarketData();
+            loadNews();
+            
+            // 5분마다 자동 새로고침
+            setInterval(() => {
+                loadMarketData();
+            }, 5 * 60 * 1000);
+            
+            // 10분마다 뉴스 새로고침
+            setInterval(() => {
+                loadNews();
+            }, 10 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>

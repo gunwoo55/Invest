@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 더보기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .menu-list {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .menu-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: #f8f9ff;
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+
+        .menu-content {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .menu-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .menu-arrow {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .user-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .user-level {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-card i {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .menu-icon-container {
+            position: relative;
+        }
+
+        .version-info {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .coming-soon {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px dashed #dee2e6;
+        }
+
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+
+        .menu-item-with-toggle {
+            justify-content: space-between;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>더보기</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 사용자 정보 카드 -->
+            <div class="user-info-card">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-name">투자 초보자</div>
+                <div class="user-level">레벨 1 • 투자 경험 3개월</div>
+            </div>
+
+            <!-- 통계 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">투자 상품</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12%</div>
+                    <div class="stat-label">수익률</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">학습 완료</div>
+                </div>
+            </div>
+
+            <!-- 기능 바로가기 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-rocket"></i>
+                    빠른 기능
+                </div>
+                <div class="feature-grid">
+                    <a href="a5.html" class="feature-card">
+                        <i class="fas fa-calculator"></i>
+                        <h3>투자 계산기</h3>
+                        <p>수익률 시뮬레이션</p>
+                    </a>
+                    <a href="a2.html" class="feature-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>투자 교육</h3>
+                        <p>기초부터 고급까지</p>
+                    </a>
+                    <div class="feature-card coming-soon">
+                        <i class="fas fa-users"></i>
+                        <h3>커뮤니티</h3>
+                        <p>출시 예정</p>
+                    </div>
+                    <div class="feature-card coming-soon">
+                        <i class="fas fa-bell"></i>
+                        <h3>알림 설정</h3>
+                        <p>출시 예정</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 계정 및 설정 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-cog"></i>
+                    계정 및 설정
+                </div>
+                <div class="menu-list">
+                    <div class="menu-item" onclick="openProfile()">
+                        <div class="menu-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">프로필 수정</div>
+                            <div class="menu-description">개인정보 및 투자 성향 설정</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item menu-item-with-toggle" onclick="toggleNotifications()">
+                        <div style="display: flex; align-items: center;">
+                            <div class="menu-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="menu-content">
+                                <div class="menu-title">알림 설정</div>
+                                <div class="menu-description">투자 알림 및 뉴스 푸시</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" id="notificationToggle"></div>
+                    </div>
+
+                    <div class="menu-item" onclick="openSecurity()">
+                        <div class="menu-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">보안 설정</div>
+                            <div class="menu-description">비밀번호 및 생체인증 설정</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item menu-item-with-toggle" onclick="toggleDarkMode()">
+                        <div style="display: flex; align-items: center;">
+                            <div class="menu-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="menu-content">
+                                <div class="menu-title">다크 모드</div>
+                                <div class="menu-description">어두운 테마 사용</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="darkModeToggle"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 고객 지원 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-headset"></i>
+                    고객 지원
+                </div>
+                <div class="menu-list">
+                    <div class="menu-item" onclick="openFAQ()">
+                        <div class="menu-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">자주 묻는 질문</div>
+                            <div class="menu-description">궁금한 점을 빠르게 해결</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" onclick="contactSupport()">
+                        <div class="menu-icon-container">
+                            <div class="menu-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="notification-badge">3</div>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">고객센터 문의</div>
+                            <div class="menu-description">1:1 상담 및 문의사항</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" onclick="sendFeedback()">
+                        <div class="menu-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">앱 평가하기</div>
+                            <div class="menu-description">소중한 의견을 들려주세요</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 정보 -->
+            <section class="section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    정보
+                </div>
+                <div class="menu-list">
+                    <div class="menu-item" onclick="showTerms()">
+                        <div class="menu-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">이용약관</div>
+                            <div class="menu-description">서비스 이용 약관 및 정책</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" onclick="showPrivacy()">
+                        <div class="menu-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">개인정보처리방침</div>
+                            <div class="menu-description">개인정보 보호 및 처리방침</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" onclick="showVersion()">
+                        <div class="menu-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="menu-content">
+                            <div class="menu-title">앱 정보</div>
+                            <div class="menu-description">버전 정보 및 업데이트</div>
+                        </div>
+                        <div class="menu-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 버전 정보 -->
+            <div class="version-info">
+                FINE U v1.0.0<br>
+                © 2024 FINE U. All rights reserved.
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 프로필 수정
+        function openProfile() {
+            alert('프로필 수정 페이지로 이동합니다.\n(구현 예정)');
+        }
+
+        // 알림 설정 토글
+        function toggleNotifications() {
+            const toggle = document.getElementById('notificationToggle');
+            toggle.classList.toggle('active');
+            
+            const isActive = toggle.classList.contains('active');
+            localStorage.setItem('notifications', isActive);
+            
+            if (isActive) {
+                alert('알림이 활성화되었습니다.');
+            } else {
+                alert('알림이 비활성화되었습니다.');
+            }
+        }
+
+        // 보안 설정
+        function openSecurity() {
+            alert('보안 설정 페이지로 이동합니다.\n- 비밀번호 변경\n- 생체인증 설정\n- 로그인 이력 확인\n(구현 예정)');
+        }
+
+        // 다크 모드 토글
+        function toggleDarkMode() {
+            const toggle = document.getElementById('darkModeToggle');
+            toggle.classList.toggle('active');
+            
+            const isActive = toggle.classList.contains('active');
+            localStorage.setItem('darkMode', isActive);
+            
+            if (isActive) {
+                alert('다크 모드가 활성화되었습니다.\n(UI 변경은 다음 업데이트에서 적용됩니다)');
+            } else {
+                alert('라이트 모드로 변경되었습니다.');
+            }
+        }
+
+        // 자주 묻는 질문
+        function openFAQ() {
+            const faqText = `자주 묻는 질문
+
+Q: 모의투자는 어떻게 작동하나요?
+A: 실제 시장 데이터를 바탕으로 가상의 돈으로 투자 연습을 할 수 있습니다.
+
+Q: 실제 투자와 연동되나요?
+A: 아니요, 모의투자는 학습 목적으로만 사용됩니다.
+
+Q: 데이터는 안전하게 보관되나요?
+A: 모든 데이터는 암호화되어 안전하게 보관됩니다.
+
+Q: 투자 조언을 받을 수 있나요?
+A: 교육 콘텐츠는 제공하지만, 개별 투자 조언은 제공하지 않습니다.
+
+더 많은 질문은 고객센터로 문의해주세요.`;
+            
+            alert(faqText);
+        }
+
+        // 고객센터 문의
+        function contactSupport() {
+            alert('고객센터 문의\n\n📞 전화: 1588-1234\n📧 이메일: support@fineu.co.kr\n⏰ 운영시간: 평일 9:00-18:00\n\n채팅 상담은 앱 내에서 이용 가능합니다.');
+        }
+
+        // 피드백 보내기
+        function sendFeedback() {
+            const rating = prompt('FINE U 앱을 평가해주세요 (1-5점):');
+            if (rating && rating >= 1 && rating <= 5) {
+                const feedback = prompt('추가 의견이 있으시면 작성해주세요:');
+                alert(`평가해주셔서 감사합니다!\n평점: ${rating}점\n\n소중한 의견을 반영하여 더 나은 서비스를 제공하겠습니다.`);
+            }
+        }
+
+        // 이용약관
+        function showTerms() {
+            alert('FINE U 이용약관\n\n제1조 (목적)\n본 약관은 FINE U 서비스 이용에 관한 조건과 절차를 규정합니다.\n\n제2조 (서비스 내용)\n- 모의투자 시뮬레이션\n- 투자 교육 콘텐츠\n- 가계부 관리\n\n자세한 내용은 앱 설정에서 확인하실 수 있습니다.');
+        }
+
+        // 개인정보처리방침
+        function showPrivacy() {
+            alert('개인정보처리방침\n\n1. 수집하는 개인정보\n- 회원가입 정보 (이메일, 닉네임)\n- 서비스 이용 기록\n\n2. 개인정보 이용목적\n- 서비스 제공 및 운영\n- 고객 지원\n\n3. 개인정보 보관기간\n- 회원탈퇴 시까지\n\n자세한 내용은 홈페이지에서 확인하실 수 있습니다.');
+        }
+
+        // 앱 정보
+        function showVersion() {
+            alert('FINE U 앱 정보\n\n버전: v1.0.0\n최근 업데이트: 2024.01.15\n\n주요 기능:\n✓ 프로필 사진 업로드\n✓ 실시간 뉴스 연동\n✓ 모의투자 시스템\n✓ 가계부 자동 연동\n\n새로운 업데이트가 있으면 알림으로 안내해드립니다.');
+        }
+
+        // 뒤로 가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 페이지 로드 시 설정 복원
+        document.addEventListener('DOMContentLoaded', function() {
+            // 알림 설정 복원
+            const notificationsSetting = localStorage.getItem('notifications');
+            if (notificationsSetting === 'false') {
+                document.getElementById('notificationToggle').classList.remove('active');
+            }
+
+            // 다크 모드 설정 복원
+            const darkModeSetting = localStorage.getItem('darkMode');
+            if (darkModeSetting === 'true') {
+                document.getElementById('darkModeToggle').classList.add('active');
+            }
+
+            // 사용자 프로필 이미지 동기화
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const userAvatar = document.querySelector('.user-avatar');
+                userAvatar.innerHTML = `<img src="${savedImage}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="프로필">`;
+            }
+        });
+    </script>
+</body>
+</html>

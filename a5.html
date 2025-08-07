@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 가계부 & 모의투자</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .balance-title {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .balance-change {
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .income {
+            color: #a8e6cf;
+        }
+
+        .expense {
+            color: #ffaaa5;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover,
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .investment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .investment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .investment-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .investment-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .investment-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .investment-return {
+            font-size: 14px;
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .investment-price {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .transaction-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .transaction-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-category {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .transaction-memo {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .transaction-amount {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .transaction-date {
+            font-size: 11px;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        .transaction-actions {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 24px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .portfolio-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .portfolio-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .portfolio-item:last-child {
+            border-bottom: none;
+        }
+
+        .portfolio-name {
+            font-weight: 600;
+        }
+
+        .portfolio-amount {
+            text-align: right;
+        }
+
+        .portfolio-shares {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>가계부 & 모의투자</h1>
+            <div style="width: 40px;"></div>
+        </header>
+
+        <main class="main-content">
+            <!-- 탭 메뉴 -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('budget')">가계부</div>
+                <div class="tab" onclick="switchTab('investment')">모의투자</div>
+            </div>
+
+            <!-- 가계부 탭 -->
+            <div id="budgetTab" class="tab-content active">
+                <!-- 잔액 카드 -->
+                <div class="balance-card">
+                    <div class="balance-title">현재 잔액</div>
+                    <div class="balance-amount" id="totalBalance">₩0</div>
+                    <div class="balance-change">
+                        <span class="income">수입: <span id="monthlyIncome">₩0</span></span>
+                        <span class="expense">지출: <span id="monthlyExpense">₩0</span></span>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="openTransactionModal('income')">
+                        <i class="fas fa-plus"></i> 수입 추가
+                    </button>
+                    <button class="action-btn" onclick="openTransactionModal('expense')">
+                        <i class="fas fa-minus"></i> 지출 추가
+                    </button>
+                </div>
+
+                <!-- 거래 내역 -->
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-list"></i>
+                        최근 거래 내역
+                    </div>
+                    <div id="transactionList" class="transaction-list">
+                        <div class="empty-state">
+                            <i class="fas fa-receipt"></i>
+                            <p>거래 내역이 없습니다.<br>수입이나 지출을 추가해보세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 모의투자 탭 -->
+            <div id="investmentTab" class="tab-content">
+                <!-- 투자 잔액 -->
+                <div class="balance-card">
+                    <div class="balance-title">투자 포트폴리오</div>
+                    <div class="balance-amount" id="portfolioValue">₩0</div>
+                    <div class="balance-change">
+                        <span id="portfolioReturn" class="income">+₩0 (0%)</span>
+                    </div>
+                </div>
+
+                <!-- 투자 상품 -->
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        투자 상품
+                    </div>
+                    <div id="investmentGrid" class="investment-grid">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            투자 상품 정보를 불러오는 중...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 포트폴리오 현황 -->
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-briefcase"></i>
+                        내 포트폴리오
+                    </div>
+                    <div id="portfolioSummary" class="portfolio-summary">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>투자한 상품이 없습니다.<br>투자를 시작해보세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 거래 추가 모달 -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <h2 id="modalTitle">거래 추가</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="amount">금액</label>
+                    <input type="number" id="amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">카테고리</label>
+                    <select id="category" required>
+                        <option value="">선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="memo">메모</label>
+                    <input type="text" id="memo">
+                </div>
+                <div class="form-group">
+                    <label for="date">날짜</label>
+                    <input type="date" id="date" required>
+                </div>
+                <button type="submit" class="submit-btn">추가</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 투자 모달 -->
+    <div id="investmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInvestmentModal()">&times;</span>
+            <h2 id="investmentModalTitle">투자하기</h2>
+            <div id="investmentDetails"></div>
+            <form id="investmentForm">
+                <div class="form-group">
+                    <label for="investAmount">투자 금액</label>
+                    <input type="number" id="investAmount" required min="10000" step="10000">
+                </div>
+                <button type="submit" class="submit-btn">투자하기</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentUser = {
+            balance: 0,
+            transactions: [],
+            portfolio: [],
+            monthlyIncome: 0,
+            monthlyExpense: 0
+        };
+
+        let currentTransactionType = 'income';
+        let editingTransactionId = null;
+        let selectedInvestment = null;
+
+        // 실시간 투자 API
+        const InvestmentAPI = {
+            async getStockPrice(symbol) {
+                try {
+                    // 실제 환경에서는 Yahoo Finance API 사용
+                    // const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
+                    // CORS 이슈로 인해 시뮬레이션 데이터 사용
+                    return this.getFallbackPrice(symbol);
+                } catch (error) {
+                    console.error('주식 API 오류:', error);
+                    return this.getFallbackPrice(symbol);
+                }
+            },
+            
+            async getCryptoPrice(coin) {
+                try {
+                    // 실제 환경에서는 CoinGecko API 사용
+                    // const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=krw&include_24hr_change=true`);
+                    return this.getFallbackCryptoPrice(coin);
+                } catch (error) {
+                    console.error('암호화폐 API 오류:', error);
+                    return this.getFallbackCryptoPrice(coin);
+                }
+            },
+            
+            getFallbackPrice(symbol) {
+                const prices = {
+                    'AAPL': { price: 175.5, change: 2.3, changePercent: 1.33 },
+                    'TSLA': { price: 245.8, change: -3.2, changePercent: -1.29 },
+                    'NVDA': { price: 420.2, change: 15.7, changePercent: 3.88 },
+                    'MSFT': { price: 338.1, change: 1.9, changePercent: 0.57 }
+                };
+                
+                return prices[symbol] || { price: 100, change: 0, changePercent: 0 };
+            },
+            
+            getFallbackCryptoPrice(coin) {
+                const prices = {
+                    'bitcoin': { price: 58500000, change: 2.5 }, // KRW
+                    'ethereum': { price: 3850000, change: -1.2 },
+                    'ripple': { price: 820, change: 0.8 },
+                    'cardano': { price: 650, change: -0.5 }
+                };
+                
+                return prices[coin] || { price: 100000, change: 0 };
+            }
+        };
+
+        // 투자 상품 데이터
+        const investmentProducts = [
+            {
+                id: 'savings_1',
+                name: '고금리 적금',
+                type: 'savings',
+                rate: '연 4.5%',
+                icon: 'fas fa-piggy-bank',
+                minAmount: 100000,
+                description: '12개월 만기 고금리 적금'
+            },
+            {
+                id: 'fund_1',
+                name: '글로벌 주식펀드',
+                type: 'fund',
+                rate: '연 8.2%',
+                icon: 'fas fa-globe',
+                minAmount: 50000,
+                description: '글로벌 우량주 분산투자'
+            },
+            {
+                id: 'stock_apple',
+                name: 'Apple Inc.',
+                type: 'stock',
+                symbol: 'AAPL',
+                icon: 'fab fa-apple',
+                minAmount: 10000,
+                description: '애플 주식'
+            },
+            {
+                id: 'crypto_bitcoin',
+                name: '비트코인',
+                type: 'crypto',
+                symbol: 'bitcoin',
+                icon: 'fab fa-bitcoin',
+                minAmount: 10000,
+                description: '대표 암호화폐'
+            }
+        ];
+
+        // 카테고리 설정
+        const categories = {
+            income: ['급여', '용돈', '부수입', '이자', '배당', '기타수입'],
+            expense: ['식비', '교통비', '문화생활', '쇼핑', '의료비', '교육비', '기타지출']
+        };
+
+        // 탭 전환
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            if (tabName === 'investment') {
+                loadInvestmentProducts();
+            }
+        }
+
+        // 거래 추가 모달 열기
+        function openTransactionModal(type) {
+            currentTransactionType = type;
+            editingTransactionId = null;
+            
+            document.getElementById('modalTitle').textContent = 
+                type === 'income' ? '수입 추가' : '지출 추가';
+            
+            const categorySelect = document.getElementById('category');
+            categorySelect.innerHTML = '<option value="">선택하세요</option>';
+            categories[type].forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            
+            document.getElementById('transactionForm').reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        // 거래 수정 모달 열기
+        function editTransaction(transactionId) {
+            const transaction = currentUser.transactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+            
+            editingTransactionId = transactionId;
+            currentTransactionType = transaction.type;
+            
+            document.getElementById('modalTitle').textContent = '거래 수정';
+            
+            const categorySelect = document.getElementById('category');
+            categorySelect.innerHTML = '<option value="">선택하세요</option>';
+            categories[transaction.type].forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            
+            document.getElementById('amount').value = transaction.amount;
+            document.getElementById('category').value = transaction.category;
+            document.getElementById('memo').value = transaction.memo || '';
+            document.getElementById('date').value = transaction.date.split('T')[0];
+            
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        // 거래 삭제
+        function deleteTransaction(transactionId) {
+            if (confirm('이 거래 내역을 삭제하시겠습니까?')) {
+                const index = currentUser.transactions.findIndex(t => t.id === transactionId);
+                if (index > -1) {
+                    currentUser.transactions.splice(index, 1);
+                    saveUserData();
+                    updateAllUI();
+                    alert('거래 내역이 삭제되었습니다.');
+                }
+            }
+        }
+
+        // 거래 추가 모달 닫기
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').style.display = 'none';
+        }
+
+        // 투자 모달 열기
+        function openInvestmentModal(productId) {
+            selectedInvestment = investmentProducts.find(p => p.id === productId);
+            if (!selectedInvestment) return;
+            
+            document.getElementById('investmentModalTitle').textContent = 
+                `${selectedInvestment.name} 투자`;
+            
+            document.getElementById('investmentDetails').innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="${selectedInvestment.icon}" style="font-size: 48px; color: #667eea; margin-bottom: 10px;"></i>
+                    <h3>${selectedInvestment.name}</h3>
+                    <p style="color: #666; margin: 10px 0;">${selectedInvestment.description}</p>
+                    <p style="color: #e74c3c; font-weight: 600;">${selectedInvestment.rate || '시장가격'}</p>
+                    <p style="font-size: 12px; color: #999;">최소 투자금액: ${selectedInvestment.minAmount.toLocaleString()}원</p>
+                </div>
+            `;
+            
+            document.getElementById('investAmount').min = selectedInvestment.minAmount;
+            document.getElementById('investAmount').value = selectedInvestment.minAmount;
+            
+            document.getElementById('investmentModal').style.display = 'block';
+        }
+
+        // 투자 모달 닫기
+        function closeInvestmentModal() {
+            document.getElementById('investmentModal').style.display = 'none';
+        }
+
+        // 투자 상품 로드
+        async function loadInvestmentProducts() {
+            const container = document.getElementById('investmentGrid');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i>투자 상품 정보를 불러오는 중...</div>';
+            
+            try {
+                // 실시간 가격 정보 로드
+                for (let product of investmentProducts) {
+                    if (product.type === 'stock') {
+                        const priceData = await InvestmentAPI.getStockPrice(product.symbol);
+                        product.currentPrice = priceData.price;
+                        product.change = priceData.change;
+                        product.changePercent = priceData.changePercent;
+                    } else if (product.type === 'crypto') {
+                        const priceData = await InvestmentAPI.getCryptoPrice(product.symbol);
+                        product.currentPrice = priceData.price;
+                        product.change = priceData.change;
+                    }
+                }
+                
+                displayInvestmentProducts();
+            } catch (error) {
+                container.innerHTML = '<div class="error-message">투자 상품 정보를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        // 투자 상품 표시
+        function displayInvestmentProducts() {
+            const container = document.getElementById('investmentGrid');
+            
+            const productsHTML = investmentProducts.map(product => {
+                let priceInfo = '';
+                if (product.type === 'stock' || product.type === 'crypto') {
+                    const changeClass = product.change >= 0 ? 'positive' : 'negative';
+                    const changeSymbol = product.change >= 0 ? '+' : '';
+                    priceInfo = `
+                        <div class="investment-price">
+                            ${product.type === 'crypto' ? '₩' : '$'}${product.currentPrice?.toLocaleString() || 'N/A'}
+                        </div>
+                        <div class="investment-return ${changeClass}">
+                            ${changeSymbol}${product.change?.toFixed(2) || '0'}${product.type === 'stock' ? '%' : ''}
+                        </div>
+                    `;
+                } else {
+                    priceInfo = `<div class="investment-return">${product.rate}</div>`;
+                }
+                
+                return `
+                    <div class="investment-card" onclick="openInvestmentModal('${product.id}')">
+                        <div class="investment-icon">
+                            <i class="${product.icon}"></i>
+                        </div>
+                        <div class="investment-name">${product.name}</div>
+                        ${priceInfo}
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = productsHTML;
+        }
+
+        // 투자 실행
+        function executeInvestment(type, product, amount) {
+            const investment = {
+                id: Date.now(),
+                productId: product.id,
+                name: product.name,
+                type: type,
+                amount: amount,
+                shares: product.currentPrice ? amount / product.currentPrice : amount,
+                purchasePrice: product.currentPrice || amount,
+                purchaseDate: new Date().toISOString(),
+                currentValue: amount
+            };
+            
+            currentUser.portfolio.push(investment);
+            currentUser.balance -= amount;
+            
+            // 가계부에 자동 등록
+            const transaction = {
+                id: Date.now() + 1,
+                type: 'expense',
+                amount: amount,
+                category: '투자',
+                memo: `${product.name} 투자`,
+                date: new Date().toISOString(),
+                autoGenerated: true
+            };
+            
+            currentUser.transactions.push(transaction);
+            saveUserData();
+            updateAllUI();
+            
+            return investment;
+        }
+
+        // 거래 내역 업데이트
+        function updateTransactionList() {
+            const container = document.getElementById('transactionList');
+            
+            if (currentUser.transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>거래 내역이 없습니다.<br>수입이나 지출을 추가해보세요.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedTransactions = currentUser.transactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 20); // 최근 20개만 표시
+            
+            const transactionsHTML = sortedTransactions.map(transaction => {
+                const date = new Date(transaction.date);
+                const dateStr = date.toLocaleDateString('ko-KR');
+                const amountClass = transaction.type === 'income' ? 'positive' : 'negative';
+                const amountSymbol = transaction.type === 'income' ? '+' : '-';
+                
+                return `
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-category">${transaction.category}</div>
+                            <div class="transaction-memo">${transaction.memo || ''}</div>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div>
+                                <div class="transaction-amount ${amountClass}">
+                                    ${amountSymbol}₩${transaction.amount.toLocaleString()}
+                                </div>
+                                <div class="transaction-date">${dateStr}</div>
+                            </div>
+                            ${!transaction.autoGenerated ? `
+                                <div class="transaction-actions">
+                                    <button class="edit-btn" onclick="editTransaction(${transaction.id})" title="수정">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn" onclick="deleteTransaction(${transaction.id})" title="삭제">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = transactionsHTML;
+        }
+
+        // 포트폴리오 업데이트
+        function updatePortfolioSummary() {
+            const container = document.getElementById('portfolioSummary');
+            
+            if (currentUser.portfolio.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>투자한 상품이 없습니다.<br>투자를 시작해보세요.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const portfolioHTML = currentUser.portfolio.map(investment => {
+                const totalValue = investment.currentValue;
+                const profit = totalValue - investment.amount;
+                const profitPercent = (profit / investment.amount) * 100;
+                const profitClass = profit >= 0 ? 'positive' : 'negative';
+                
+                return `
+                    <div class="portfolio-item">
+                        <div>
+                            <div class="portfolio-name">${investment.name}</div>
+                            <div class="portfolio-shares">${investment.shares.toFixed(4)} 주/개</div>
+                        </div>
+                        <div class="portfolio-amount">
+                            <div>₩${totalValue.toLocaleString()}</div>
+                            <div class="${profitClass}" style="font-size: 12px;">
+                                ${profit >= 0 ? '+' : ''}₩${profit.toLocaleString()} (${profitPercent.toFixed(2)}%)
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = portfolioHTML;
+        }
+
+        // 잔액 및 통계 업데이트
+        function updateBalanceAndStats() {
+            // 월간 수입/지출 계산
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            let monthlyIncome = 0;
+            let monthlyExpense = 0;
+            
+            currentUser.transactions.forEach(transaction => {
+                const transactionDate = new Date(transaction.date);
+                if (transactionDate.getMonth() === currentMonth && 
+                    transactionDate.getFullYear() === currentYear) {
+                    if (transaction.type === 'income') {
+                        monthlyIncome += transaction.amount;
+                    } else {
+                        monthlyExpense += transaction.amount;
+                    }
+                }
+            });
+            
+            currentUser.monthlyIncome = monthlyIncome;
+            currentUser.monthlyExpense = monthlyExpense;
+            
+            // 포트폴리오 가치 계산
+            const portfolioValue = currentUser.portfolio.reduce((sum, investment) => {
+                return sum + investment.currentValue;
+            }, 0);
+            
+            const portfolioReturn = currentUser.portfolio.reduce((sum, investment) => {
+                return sum + (investment.currentValue - investment.amount);
+            }, 0);
+            
+            const portfolioReturnPercent = portfolioValue > 0 ? 
+                (portfolioReturn / (portfolioValue - portfolioReturn)) * 100 : 0;
+            
+            // UI 업데이트
+            document.getElementById('totalBalance').textContent = 
+                `₩${currentUser.balance.toLocaleString()}`;
+            document.getElementById('monthlyIncome').textContent = 
+                `₩${monthlyIncome.toLocaleString()}`;
+            document.getElementById('monthlyExpense').textContent = 
+                `₩${monthlyExpense.toLocaleString()}`;
+            
+            document.getElementById('portfolioValue').textContent = 
+                `₩${portfolioValue.toLocaleString()}`;
+            
+            const portfolioReturnElement = document.getElementById('portfolioReturn');
+            portfolioReturnElement.textContent = 
+                `${portfolioReturn >= 0 ? '+' : ''}₩${portfolioReturn.toLocaleString()} (${portfolioReturnPercent.toFixed(2)}%)`;
+            portfolioReturnElement.className = portfolioReturn >= 0 ? 'income' : 'expense';
+        }
+
+        // 전체 UI 업데이트
+        function updateAllUI() {
+            updateBalanceAndStats();
+            updateTransactionList();
+            updatePortfolioSummary();
+        }
+
+        // 데이터 저장
+        function saveUserData() {
+            localStorage.setItem('fineUUserData', JSON.stringify(currentUser));
+        }
+
+        // 데이터 로드
+        function loadUserData() {
+            const savedData = localStorage.getItem('fineUUserData');
+            if (savedData) {
+                currentUser = { ...currentUser, ...JSON.parse(savedData) };
+            }
+            updateAllUI();
+        }
+
+        // 뒤로 가기
+        function goBack() {
+            window.history.back();
+        }
+
+        // 이벤트 리스너
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const amount = parseInt(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const memo = document.getElementById('memo').value;
+            const date = document.getElementById('date').value;
+            
+            if (editingTransactionId) {
+                // 수정
+                const transaction = currentUser.transactions.find(t => t.id === editingTransactionId);
+                if (transaction) {
+                    transaction.amount = amount;
+                    transaction.category = category;
+                    transaction.memo = memo;
+                    transaction.date = date + 'T00:00:00.000Z';
+                }
+            } else {
+                // 새로 추가
+                const transaction = {
+                    id: Date.now(),
+                    type: currentTransactionType,
+                    amount: amount,
+                    category: category,
+                    memo: memo,
+                    date: date + 'T00:00:00.000Z',
+                    autoGenerated: false
+                };
+                
+                currentUser.transactions.push(transaction);
+                
+                // 잔액 업데이트
+                if (currentTransactionType === 'income') {
+                    currentUser.balance += amount;
+                } else {
+                    currentUser.balance -= amount;
+                }
+            }
+            
+            saveUserData();
+            updateAllUI();
+            closeTransactionModal();
+        });
+
+        document.getElementById('investmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const amount = parseInt(document.getElementById('investAmount').value);
+            
+            if (amount > currentUser.balance) {
+                alert('잔액이 부족합니다.');
+                return;
+            }
+            
+            if (selectedInvestment) {
+                executeInvestment('investment', selectedInvestment, amount);
+                alert(`${selectedInvestment.name}에 ${amount.toLocaleString()}원 투자가 완료되었습니다!\n가계부에 자동 등록되었습니다.`);
+                closeInvestmentModal();
+            }
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const transactionModal = document.getElementById('transactionModal');
+            const investmentModal = document.getElementById('investmentModal');
+            
+            if (event.target == transactionModal) {
+                transactionModal.style.display = 'none';
+            }
+            if (event.target == investmentModal) {
+                investmentModal.style.display = 'none';
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            
+            // 투자 상품 가격 주기적 업데이트 (30초마다)
+            setInterval(() => {
+                if (document.getElementById('investmentTab').classList.contains('active')) {
+                    loadInvestmentProducts();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
