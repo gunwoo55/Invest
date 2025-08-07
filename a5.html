@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자 - FINE U</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #eee;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .product-card.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .product-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .product-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .list-header {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .item-code {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .item-price {
+            text-align: right;
+        }
+        
+        .current-price {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .price-change {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .price-change.positive {
+            color: #dc3545;
+        }
+        
+        .price-change.negative {
+            color: #0d6efd;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .portfolio-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .summary-item:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>💰 투자</h1>
+            <p class="subtitle">모의투자로 경험을 쌓아보세요</p>
+            <div class="profile-icon" onclick="goToProfile()">
+                <img id="headerProfileImg" style="display: none;" alt="프로필">
+                <span class="default-icon" id="headerDefaultIcon">👤</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- 잔고 정보 -->
+            <div class="balance-card">
+                <div class="balance-amount" id="balance">₩10,000,000</div>
+                <div class="balance-label">투자 가능 금액</div>
+            </div>
+
+            <!-- 내 포트폴리오 요약 -->
+            <div class="portfolio-summary">
+                <h3>📊 내 포트폴리오</h3>
+                <div class="summary-item">
+                    <span>총 투자금액</span>
+                    <span id="totalInvested">₩0</span>
+                </div>
+                <div class="summary-item">
+                    <span>현재 평가금액</span>
+                    <span id="currentValue">₩0</span>
+                </div>
+                <div class="summary-item">
+                    <span>수익/손실</span>
+                    <span id="profitLoss">₩0 (0.00%)</span>
+                </div>
+            </div>
+
+            <!-- 투자 상품 카테고리 -->
+            <div class="product-grid">
+                <div class="product-card active" onclick="selectCategory('stocks')">
+                    <div class="product-icon">📈</div>
+                    <div class="product-name">주식</div>
+                </div>
+                <div class="product-card" onclick="selectCategory('crypto')">
+                    <div class="product-icon">₿</div>
+                    <div class="product-name">암호화폐</div>
+                </div>
+                <div class="product-card" onclick="selectCategory('bonds')">
+                    <div class="product-icon">📜</div>
+                    <div class="product-name">채권</div>
+                </div>
+                <div class="product-card" onclick="selectCategory('etf')">
+                    <div class="product-icon">📊</div>
+                    <div class="product-name">ETF</div>
+                </div>
+                <div class="product-card" onclick="selectCategory('savings')">
+                    <div class="product-icon">🏦</div>
+                    <div class="product-name">예적금</div>
+                </div>
+                <div class="product-card" onclick="selectCategory('commodities')">
+                    <div class="product-icon">🥇</div>
+                    <div class="product-name">귀금속</div>
+                </div>
+            </div>
+
+            <!-- 투자 상품 리스트 -->
+            <div class="product-list">
+                <div class="list-header" id="listHeader">📈 주식</div>
+                <div id="productContainer">
+                    <!-- 상품 목록이 여기에 로드됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 투자 모달 -->
+        <div id="investModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header" id="modalTitle">투자하기</div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label>투자 금액</label>
+                        <input type="number" id="investAmount" placeholder="투자할 금액을 입력하세요">
+                    </div>
+                    <div class="input-group">
+                        <label>수량</label>
+                        <input type="number" id="investQuantity" placeholder="수량을 입력하세요">
+                    </div>
+                    <div style="font-size: 14px; color: #666; text-align: center;">
+                        예상 총 투자금액: <span id="expectedTotal">₩0</span>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+                    <button class="btn" onclick="executeInvestment()">투자하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                홈
+            </a>
+            <a href="a1.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                포트폴리오
+            </a>
+            <a href="a2.html" class="nav-item">
+                <span class="nav-icon">📰</span>
+                뉴스
+            </a>
+            <a href="a3.html" class="nav-item">
+                <span class="nav-icon">📚</span>
+                학습
+            </a>
+            <a href="a4.html" class="nav-item">
+                <span class="nav-icon">💳</span>
+                가계부
+            </a>
+            <a href="a5.html" class="nav-item active">
+                <span class="nav-icon">💰</span>
+                투자
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        let currentCategory = 'stocks';
+        let selectedProduct = null;
+        let priceUpdateInterval = null;
+
+        // 투자 API 서비스 (실제 API 연동을 위한 구조)
+        const InvestmentAPI = {
+            // 주식 데이터 (Yahoo Finance API 연동)
+            async getStocks() {
+                // 실제 구현 시 Yahoo Finance API 사용
+                const mockStocks = [
+                    { name: '삼성전자', code: '005930', price: 75000, change: 1.2, volume: 1234567 },
+                    { name: 'SK하이닉스', code: '000660', price: 130000, change: -0.8, volume: 987654 },
+                    { name: 'NAVER', code: '035420', price: 195000, change: 2.1, volume: 567890 },
+                    { name: 'LG에너지솔루션', code: '373220', price: 520000, change: -1.5, volume: 345678 },
+                    { name: '카카오', code: '035720', price: 85000, change: 0.7, volume: 789012 }
+                ];
+                
+                // 가격 시뮬레이션 (실시간 변동)
+                return mockStocks.map(stock => ({
+                    ...stock,
+                    price: Math.round(stock.price * (1 + (Math.random() - 0.5) * 0.02)),
+                    change: Number(((Math.random() - 0.5) * 4).toFixed(2))
+                }));
+            },
+
+            // 암호화폐 데이터 (CoinGecko API 연동)
+            async getCrypto() {
+                const mockCrypto = [
+                    { name: '비트코인', code: 'BTC', price: 45000000, change: -0.8 },
+                    { name: '이더리움', code: 'ETH', price: 3200000, change: 1.5 },
+                    { name: '리플', code: 'XRP', price: 650, change: -2.1 },
+                    { name: '에이다', code: 'ADA', price: 520, change: 0.9 },
+                    { name: '폴카닷', code: 'DOT', price: 8200, change: 1.8 }
+                ];
+                
+                return mockCrypto.map(crypto => ({
+                    ...crypto,
+                    price: Math.round(crypto.price * (1 + (Math.random() - 0.5) * 0.05)),
+                    change: Number(((Math.random() - 0.5) * 6).toFixed(2))
+                }));
+            },
+
+            // 채권 데이터
+            async getBonds() {
+                return [
+                    { name: '국고채 3년', code: 'KTB3Y', price: 3.2, change: 0.1, unit: '%' },
+                    { name: '국고채 5년', code: 'KTB5Y', price: 3.5, change: -0.05, unit: '%' },
+                    { name: '국고채 10년', code: 'KTB10Y', price: 3.8, change: 0.15, unit: '%' },
+                    { name: '회사채 AA-', code: 'CORP_AA', price: 4.2, change: 0.08, unit: '%' }
+                ];
+            },
+
+            // ETF 데이터
+            async getETF() {
+                const mockETF = [
+                    { name: 'KODEX 200', code: '069500', price: 35400, change: 0.8 },
+                    { name: 'TIGER 미국S&P500', code: '360750', price: 14200, change: 1.2 },
+                    { name: 'KODEX 골드선물', code: '132030', price: 7850, change: -0.3 },
+                    { name: 'TIGER 나스닥100', code: '133690', price: 18900, change: 1.8 }
+                ];
+                
+                return mockETF.map(etf => ({
+                    ...etf,
+                    price: Math.round(etf.price * (1 + (Math.random() - 0.5) * 0.02)),
+                    change: Number(((Math.random() - 0.5) * 3).toFixed(2))
+                }));
+            },
+
+            // 예적금 데이터
+            async getSavings() {
+                return [
+                    { name: '정기예금 12개월', code: 'SAVINGS_12M', price: 3.5, change: 0, unit: '%' },
+                    { name: '정기적금 24개월', code: 'INSTALL_24M', price: 3.8, change: 0, unit: '%' },
+                    { name: 'CMA 통장', code: 'CMA', price: 2.1, change: 0, unit: '%' },
+                    { name: '자유적금', code: 'FREE_SAVINGS', price: 2.8, change: 0, unit: '%' }
+                ];
+            },
+
+            // 귀금속 데이터
+            async getCommodities() {
+                const mockCommodities = [
+                    { name: '금 (1g)', code: 'GOLD', price: 78000, change: 0.5 },
+                    { name: '은 (1g)', code: 'SILVER', price: 980, change: -0.3 },
+                    { name: '백금 (1g)', code: 'PLATINUM', price: 42000, change: 1.2 },
+                    { name: '팔라듐 (1g)', code: 'PALLADIUM', price: 85000, change: -1.8 }
+                ];
+                
+                return mockCommodities.map(commodity => ({
+                    ...commodity,
+                    price: Math.round(commodity.price * (1 + (Math.random() - 0.5) * 0.03)),
+                    change: Number(((Math.random() - 0.5) * 4).toFixed(2))
+                }));
+            }
+        };
+
+        // 카테고리 선택
+        function selectCategory(category) {
+            // 이전 활성 카드 비활성화
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // 새로운 카드 활성화
+            event.target.closest('.product-card').classList.add('active');
+            
+            currentCategory = category;
+            loadProducts(category);
+        }
+
+        // 상품 목록 로드
+        async function loadProducts(category) {
+            const container = document.getElementById('productContainer');
+            const header = document.getElementById('listHeader');
+            
+            // 로딩 상태
+            container.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading"></div></div>';
+            
+            let products = [];
+            let headerText = '';
+            
+            switch(category) {
+                case 'stocks':
+                    products = await InvestmentAPI.getStocks();
+                    headerText = '📈 주식';
+                    break;
+                case 'crypto':
+                    products = await InvestmentAPI.getCrypto();
+                    headerText = '₿ 암호화폐';
+                    break;
+                case 'bonds':
+                    products = await InvestmentAPI.getBonds();
+                    headerText = '📜 채권';
+                    break;
+                case 'etf':
+                    products = await InvestmentAPI.getETF();
+                    headerText = '📊 ETF';
+                    break;
+                case 'savings':
+                    products = await InvestmentAPI.getSavings();
+                    headerText = '🏦 예적금';
+                    break;
+                case 'commodities':
+                    products = await InvestmentAPI.getCommodities();
+                    headerText = '🥇 귀금속';
+                    break;
+            }
+            
+            header.textContent = headerText;
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const item = createProductItem(product, category);
+                container.appendChild(item);
+            });
+        }
+
+        // 상품 아이템 생성
+        function createProductItem(product, category) {
+            const item = document.createElement('div');
+            item.className = 'product-item';
+            item.onclick = () => openInvestModal(product, category);
+            
+            const priceClass = product.change >= 0 ? 'positive' : 'negative';
+            const changeSymbol = product.change >= 0 ? '+' : '';
+            const unit = product.unit || '';
+            
+            item.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">${product.name}</div>
+                    <div class="item-code">${product.code}</div>
+                </div>
+                <div class="item-price">
+                    <div class="current-price">
+                        ${unit ? product.price + unit : '₩' + product.price.toLocaleString()}
+                    </div>
+                    <div class="price-change ${priceClass}">
+                        ${changeSymbol}${product.change}%
+                    </div>
+                </div>
+            `;
+            
+            return item;
+        }
+
+        // 투자 모달 열기
+        function openInvestModal(product, category) {
+            selectedProduct = { ...product, category };
+            
+            document.getElementById('modalTitle').textContent = `${product.name} 투자하기`;
+            document.getElementById('investAmount').value = '';
+            document.getElementById('investQuantity').value = '';
+            document.getElementById('expectedTotal').textContent = '₩0';
+            
+            document.getElementById('investModal').style.display = 'block';
+            
+            // 실시간 계산
+            const amountInput = document.getElementById('investAmount');
+            const quantityInput = document.getElementById('investQuantity');
+            
+            [amountInput, quantityInput].forEach(input => {
+                input.addEventListener('input', calculateTotal);
+            });
+        }
+
+        // 총 투자금액 계산
+        function calculateTotal() {
+            const amount = parseFloat(document.getElementById('investAmount').value) || 0;
+            const quantity = parseFloat(document.getElementById('investQuantity').value) || 0;
+            
+            let total = 0;
+            if (selectedProduct.category === 'savings') {
+                total = amount; // 예적금은 원금만
+            } else {
+                total = selectedProduct.price * quantity;
+                if (amount > 0 && quantity === 0) {
+                    // 금액으로 수량 계산
+                    const calculatedQuantity = Math.floor(amount / selectedProduct.price);
+                    document.getElementById('investQuantity').value = calculatedQuantity;
+                    total = calculatedQuantity * selectedProduct.price;
+                }
+            }
+            
+            document.getElementById('expectedTotal').textContent = '₩' + total.toLocaleString();
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('investModal').style.display = 'none';
+            selectedProduct = null;
+        }
+
+        // 투자 실행
+        function executeInvestment() {
+            const amount = parseFloat(document.getElementById('investAmount').value);
+            const quantity = parseFloat(document.getElementById('investQuantity').value);
+            
+            if (!amount && !quantity) {
+                alert('투자 금액 또는 수량을 입력해주세요.');
+                return;
+            }
+            
+            const balance = parseFloat(localStorage.getItem('balance')) || 10000000;
+            let investmentAmount = 0;
+            
+            if (selectedProduct.category === 'savings') {
+                investmentAmount = amount;
+                // 예적금 가입시 가계부에 자동 기록
+                addToAccountBook(selectedProduct.name, amount, '예적금');
+            } else {
+                investmentAmount = selectedProduct.price * quantity;
+            }
+            
+            if (investmentAmount > balance) {
+                alert('잔고가 부족합니다.');
+                return;
+            }
+            
+            // 잔고 차감
+            const newBalance = balance - investmentAmount;
+            localStorage.setItem('balance', newBalance);
+            
+            // 포트폴리오에 추가
+            addToPortfolio(selectedProduct, quantity || amount, investmentAmount);
+            
+            // UI 업데이트
+            updateBalance();
+            updatePortfolioSummary();
+            
+            alert(`투자가 완료되었습니다!\n투자금액: ₩${investmentAmount.toLocaleString()}`);
+            closeModal();
+        }
+
+        // 포트폴리오에 추가
+        function addToPortfolio(product, quantity, amount) {
+            const portfolio = JSON.parse(localStorage.getItem('portfolio')) || [];
+            
+            const existingIndex = portfolio.findIndex(item => 
+                item.code === product.code && item.category === product.category
+            );
+            
+            if (existingIndex >= 0) {
+                // 기존 보유 상품에 추가
+                portfolio[existingIndex].quantity += quantity;
+                portfolio[existingIndex].totalInvested += amount;
+                portfolio[existingIndex].avgPrice = portfolio[existingIndex].totalInvested / portfolio[existingIndex].quantity;
+            } else {
+                // 새로운 상품 추가
+                portfolio.push({
+                    name: product.name,
+                    code: product.code,
+                    category: product.category,
+                    quantity: quantity,
+                    avgPrice: product.price,
+                    currentPrice: product.price,
+                    totalInvested: amount,
+                    purchaseDate: new Date().toISOString()
+                });
+            }
+            
+            localStorage.setItem('portfolio', JSON.stringify(portfolio));
+        }
+
+        // 가계부에 추가
+        function addToAccountBook(description, amount, category) {
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            
+            transactions.push({
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                description: description,
+                amount: -amount, // 지출
+                category: category,
+                type: 'expense'
+            });
+            
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // 잔고 업데이트
+        function updateBalance() {
+            const balance = parseFloat(localStorage.getItem('balance')) || 10000000;
+            document.getElementById('balance').textContent = '₩' + balance.toLocaleString();
+        }
+
+        // 포트폴리오 요약 업데이트
+        function updatePortfolioSummary() {
+            const portfolio = JSON.parse(localStorage.getItem('portfolio')) || [];
+            
+            let totalInvested = 0;
+            let currentValue = 0;
+            
+            portfolio.forEach(item => {
+                totalInvested += item.totalInvested;
+                currentValue += item.quantity * item.currentPrice;
+            });
+            
+            const profitLoss = currentValue - totalInvested;
+            const profitRate = totalInvested > 0 ? (profitLoss / totalInvested * 100) : 0;
+            
+            document.getElementById('totalInvested').textContent = '₩' + totalInvested.toLocaleString();
+            document.getElementById('currentValue').textContent = '₩' + currentValue.toLocaleString();
+            
+            const profitElement = document.getElementById('profitLoss');
+            const profitText = `₩${Math.abs(profitLoss).toLocaleString()} (${profitRate >= 0 ? '+' : ''}${profitRate.toFixed(2)}%)`;
+            profitElement.textContent = profitText;
+            profitElement.style.color = profitLoss >= 0 ? '#dc3545' : '#0d6efd';
+            
+            // 홈페이지 자산 정보도 업데이트
+            const assets = {
+                total: currentValue + (parseFloat(localStorage.getItem('balance')) || 10000000),
+                returnRate: profitRate
+            };
+            localStorage.setItem('userAssets', JSON.stringify(assets));
+        }
+
+        // 실시간 가격 업데이트 시작
+        function startPriceUpdates() {
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+            }
+            
+            priceUpdateInterval = setInterval(() => {
+                loadProducts(currentCategory);
+                updatePortfolioSummary();
+            }, 30000); // 30초마다 업데이트
+        }
+
+        // 프로필로 이동
+        function goToProfile() {
+            window.location.href = 'index.html';
+        }
+
+        // 프로필 이미지 로드
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const headerProfileImg = document.getElementById('headerProfileImg');
+                const headerDefaultIcon = document.getElementById('headerDefaultIcon');
+                
+                if (headerProfileImg && headerDefaultIcon) {
+                    headerProfileImg.src = savedImage;
+                    headerProfileImg.style.display = 'block';
+                    headerDefaultIcon.style.display = 'none';
+                }
+            }
+        }
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+            updateBalance();
+            updatePortfolioSummary();
+            loadProducts('stocks');
+            startPriceUpdates();
+        });
+
+        // 페이지 종료시 인터벌 정리
+        window.addEventListener('beforeunload', function() {
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+            }
+        });
+
+        // 모달 외부 클릭시 닫기
+        document.getElementById('investModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

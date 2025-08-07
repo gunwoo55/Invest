@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINE U - 스마트 투자 앱</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>FINE U</h1>
+            <p class="subtitle">스마트 투자로 미래를 설계하세요</p>
+            <div class="profile-icon" onclick="document.getElementById('profileInput').click()">
+                <img id="headerProfileImg" style="display: none;" alt="프로필">
+                <span class="default-icon" id="headerDefaultIcon">👤</span>
+            </div>
+        </header>
+
+        <!-- 프로필 섹션 -->
+        <section class="profile-section">
+            <div class="profile-image" onclick="document.getElementById('profileInput').click()">
+                <img id="profileImg" style="display: none;" alt="프로필 이미지">
+                <div class="upload-prompt" id="uploadPrompt">
+                    <div style="font-size: 40px; margin-bottom: 10px;">📷</div>
+                    <div>프로필 사진 업로드</div>
+                </div>
+            </div>
+            <input type="file" id="profileInput" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
+            
+            <div class="profile-info">
+                <h2 id="userName">안녕하세요!</h2>
+                <p id="userGreeting">오늘도 현명한 투자하세요</p>
+            </div>
+        </section>
+
+        <!-- 메인 컨텐츠 -->
+        <main class="content">
+            <div class="card">
+                <h3>💰 내 자산 현황</h3>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <div>
+                        <div style="font-size: 14px; color: #666;">총 자산</div>
+                        <div style="font-size: 24px; font-weight: 600; color: #333;" id="totalAssets">₩0</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; color: #666;">수익률</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="totalReturn">+0.00%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 추천 투자 상품</h3>
+                <ul class="investment-list">
+                    <li class="investment-item" onclick="goToInvestment()">
+                        <div class="investment-info">
+                            <div class="investment-name">삼성전자</div>
+                            <div class="investment-price">₩75,000</div>
+                        </div>
+                        <div class="investment-change positive">+1.2%</div>
+                    </li>
+                    <li class="investment-item" onclick="goToInvestment()">
+                        <div class="investment-info">
+                            <div class="investment-name">비트코인</div>
+                            <div class="investment-price">₩45,000,000</div>
+                        </div>
+                        <div class="investment-change negative">-0.8%</div>
+                    </li>
+                    <li class="investment-item" onclick="goToInvestment()">
+                        <div class="investment-info">
+                            <div class="investment-name">국고채 3년</div>
+                            <div class="investment-price">연 3.2%</div>
+                        </div>
+                        <div class="investment-change positive">+0.1%</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📈 오늘의 시장 동향</h3>
+                <p>코스피: <span style="color: #dc3545;">2,650.24 (+0.8%)</span></p>
+                <p>코스닥: <span style="color: #0d6efd;">850.12 (-0.3%)</span></p>
+                <p>달러/원: <span style="color: #dc3545;">1,325.50 (+0.2%)</span></p>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="goToInvestment()">투자하러 가기</button>
+            </div>
+        </main>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                홈
+            </a>
+            <a href="a1.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                포트폴리오
+            </a>
+            <a href="a2.html" class="nav-item">
+                <span class="nav-icon">📰</span>
+                뉴스
+            </a>
+            <a href="a3.html" class="nav-item">
+                <span class="nav-icon">📚</span>
+                학습
+            </a>
+            <a href="a4.html" class="nav-item">
+                <span class="nav-icon">💳</span>
+                가계부
+            </a>
+            <a href="a5.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                투자
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // 프로필 이미지 업로드 처리 함수
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 파일 크기 검증 (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('파일 크기는 2MB 이하여야 합니다.');
+                return;
+            }
+            
+            // 파일 형식 검증
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('JPG, PNG, GIF 파일만 업로드 가능합니다.');
+                return;
+            }
+            
+            // FileReader로 이미지를 Base64로 변환
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                // localStorage에 저장
+                localStorage.setItem('profileImage', imageData);
+                // UI 업데이트
+                updateProfileImages(imageData);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 프로필 이미지 UI 업데이트
+        function updateProfileImages(imageData) {
+            // 메인 프로필 이미지 업데이트
+            const profileImg = document.getElementById('profileImg');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            
+            if (profileImg && uploadPrompt) {
+                profileImg.src = imageData;
+                profileImg.style.display = 'block';
+                uploadPrompt.style.display = 'none';
+            }
+            
+            // 헤더 프로필 아이콘 업데이트
+            const headerProfileImg = document.getElementById('headerProfileImg');
+            const headerDefaultIcon = document.getElementById('headerDefaultIcon');
+            
+            if (headerProfileImg && headerDefaultIcon) {
+                headerProfileImg.src = imageData;
+                headerProfileImg.style.display = 'block';
+                headerDefaultIcon.style.display = 'none';
+            }
+        }
+
+        // 페이지 로드시 저장된 프로필 이미지 로드
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                updateProfileImages(savedImage);
+            }
+        }
+
+        // 투자 페이지로 이동
+        function goToInvestment() {
+            window.location.href = 'a5.html';
+        }
+
+        // 자산 정보 로드
+        function loadAssetInfo() {
+            const assets = JSON.parse(localStorage.getItem('userAssets')) || {
+                total: 0,
+                returnRate: 0
+            };
+            
+            document.getElementById('totalAssets').textContent = 
+                '₩' + assets.total.toLocaleString();
+            
+            const returnElement = document.getElementById('totalReturn');
+            const returnRate = assets.returnRate || 0;
+            returnElement.textContent = (returnRate >= 0 ? '+' : '') + returnRate.toFixed(2) + '%';
+            returnElement.style.color = returnRate >= 0 ? '#dc3545' : '#0d6efd';
+        }
+
+        // 사용자 정보 로드
+        function loadUserInfo() {
+            const userName = localStorage.getItem('userName') || '투자자';
+            document.getElementById('userName').textContent = `${userName}님 안녕하세요!`;
+        }
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+            loadAssetInfo();
+            loadUserInfo();
+        });
+    </script>
+</body>
+</html>

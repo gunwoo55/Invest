@@ -1,0 +1,316 @@
+/* FINE U 투자 앱 공통 스타일 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    background: white;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* 헤더 스타일 */
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.header .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.profile-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-icon .default-icon {
+    font-size: 20px;
+    color: #667eea;
+}
+
+/* 프로필 섹션 */
+.profile-section {
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    background: #f0f2f5;
+    border: 4px solid #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-image .upload-prompt {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+}
+
+.profile-info h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.profile-info p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* 메뉴 네비게이션 */
+.nav-menu {
+    display: flex;
+    background: white;
+    border-top: 1px solid #eee;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 1000;
+}
+
+.nav-item {
+    flex: 1;
+    padding: 15px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 12px;
+    border-right: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.nav-item:last-child {
+    border-right: none;
+}
+
+.nav-item.active {
+    color: #667eea;
+    background: #f8f9ff;
+}
+
+.nav-item:hover {
+    background: #f0f2f5;
+}
+
+.nav-icon {
+    font-size: 20px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* 컨텐츠 영역 */
+.content {
+    padding: 20px;
+    padding-bottom: 80px;
+}
+
+/* 카드 스타일 */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+}
+
+.card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.card p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* 버튼 스타일 */
+.btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+/* 탭 메뉴 */
+.tab-menu {
+    display: flex;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.tab-item {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.tab-item.active {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 투자 상품 리스트 */
+.investment-list {
+    list-style: none;
+}
+
+.investment-item {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.investment-item:hover {
+    background: #f8f9fa;
+}
+
+.investment-info {
+    flex: 1;
+}
+
+.investment-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.investment-price {
+    color: #666;
+    font-size: 14px;
+}
+
+.investment-change {
+    text-align: right;
+    font-weight: 600;
+}
+
+.investment-change.positive {
+    color: #dc3545;
+}
+
+.investment-change.negative {
+    color: #0d6efd;
+}
+
+/* 숨겨진 파일 입력 */
+.hidden {
+    display: none;
+}
+
+/* 로딩 스피너 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+    .container {
+        max-width: 100%;
+    }
+    
+    .content {
+        padding: 15px;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+}

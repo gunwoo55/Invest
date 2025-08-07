@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가계부 - FINE U</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .balance-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .balance-amount {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .balance-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .income {
+            color: #dc3545;
+        }
+        
+        .expense {
+            color: #0d6efd;
+        }
+        
+        .add-transaction-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            z-index: 100;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .transaction-info {
+            flex: 1;
+        }
+        
+        .transaction-description {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .transaction-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .transaction-amount {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .category-chip {
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>💳 가계부</h1>
+            <p class="subtitle">수입과 지출을 체계적으로 관리하세요</p>
+            <div class="profile-icon" onclick="goToProfile()">
+                <img id="headerProfileImg" style="display: none;" alt="프로필">
+                <span class="default-icon" id="headerDefaultIcon">👤</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- 잔고 요약 -->
+            <div class="balance-summary">
+                <div class="balance-item">
+                    <div class="balance-amount income" id="totalIncome">₩0</div>
+                    <div class="balance-label">총 수입</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-amount expense" id="totalExpense">₩0</div>
+                    <div class="balance-label">총 지출</div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-amount" id="netAmount">₩0</div>
+                    <div class="balance-label">순 수입</div>
+                </div>
+            </div>
+
+            <!-- 이번 달 통계 -->
+            <div class="card">
+                <h3>📊 이번 달 통계</h3>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>식비</span>
+                        <span style="font-weight: 600;">₩450,000</span>
+                    </div>
+                    <div style="background: #f0f2f5; height: 8px; border-radius: 4px; margin-bottom: 16px;">
+                        <div style="background: #FF6B6B; height: 100%; width: 45%; border-radius: 4px;"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>교통비</span>
+                        <span style="font-weight: 600;">₩200,000</span>
+                    </div>
+                    <div style="background: #f0f2f5; height: 8px; border-radius: 4px; margin-bottom: 16px;">
+                        <div style="background: #4ECDC4; height: 100%; width: 20%; border-radius: 4px;"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>투자</span>
+                        <span style="font-weight: 600;">₩300,000</span>
+                    </div>
+                    <div style="background: #f0f2f5; height: 8px; border-radius: 4px;">
+                        <div style="background: #45B7D1; height: 100%; width: 30%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 카테고리 필터 -->
+            <div class="card">
+                <h3>🔍 거래 내역</h3>
+                <div class="category-filter">
+                    <span class="category-chip active" onclick="filterByCategory('all')">전체</span>
+                    <span class="category-chip" onclick="filterByCategory('food')">식비</span>
+                    <span class="category-chip" onclick="filterByCategory('transport')">교통</span>
+                    <span class="category-chip" onclick="filterByCategory('investment')">투자</span>
+                    <span class="category-chip" onclick="filterByCategory('income')">수입</span>
+                    <span class="category-chip" onclick="filterByCategory('others')">기타</span>
+                </div>
+
+                <!-- 거래 내역 리스트 -->
+                <div id="transactionList">
+                    <!-- 거래 내역이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 거래 추가 버튼 -->
+        <button class="add-transaction-btn" onclick="openAddModal()" title="거래 추가">+</button>
+
+        <!-- 거래 추가/수정 모달 -->
+        <div id="transactionModal" class="modal">
+            <div class="modal-content">
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center;" id="modalTitle">
+                    거래 추가
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">날짜</label>
+                        <input type="date" id="transactionDate" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">내용</label>
+                        <input type="text" id="transactionDescription" placeholder="거래 내용을 입력하세요" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">금액</label>
+                        <input type="number" id="transactionAmount" placeholder="금액을 입력하세요" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">카테고리</label>
+                        <select id="transactionCategory" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+                            <option value="food">식비</option>
+                            <option value="transport">교통비</option>
+                            <option value="investment">투자</option>
+                            <option value="income">수입</option>
+                            <option value="others">기타</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">유형</label>
+                        <div style="display: flex; gap: 12px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="transactionType" value="income" style="margin-right: 6px;">
+                                수입
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="transactionType" value="expense" checked style="margin-right: 6px;">
+                                지출
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal()">취소</button>
+                    <button class="btn" style="flex: 1;" onclick="saveTransaction()">저장</button>
+                </div>
+                <div id="editActions" style="display: none; margin-top: 10px;">
+                    <button class="btn" style="background: #dc3545; width: 100%;" onclick="deleteTransaction()">삭제</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                홈
+            </a>
+            <a href="a1.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                포트폴리오
+            </a>
+            <a href="a2.html" class="nav-item">
+                <span class="nav-icon">📰</span>
+                뉴스
+            </a>
+            <a href="a3.html" class="nav-item">
+                <span class="nav-icon">📚</span>
+                학습
+            </a>
+            <a href="a4.html" class="nav-item active">
+                <span class="nav-icon">💳</span>
+                가계부
+            </a>
+            <a href="a5.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                투자
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let editingTransaction = null;
+
+        // 거래 내역 로드
+        function loadTransactions() {
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            renderTransactions(transactions);
+            updateSummary(transactions);
+        }
+
+        // 거래 내역 렌더링
+        function renderTransactions(transactions) {
+            const container = document.getElementById('transactionList');
+            
+            // 필터링
+            const filteredTransactions = transactions.filter(t => {
+                if (currentFilter === 'all') return true;
+                return t.category === currentFilter;
+            });
+            
+            if (filteredTransactions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">거래 내역이 없습니다.</p>';
+                return;
+            }
+            
+            // 날짜순 정렬 (최신순)
+            filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            container.innerHTML = '';
+            
+            filteredTransactions.forEach(transaction => {
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                item.onclick = () => editTransaction(transaction);
+                
+                const categoryNames = {
+                    food: '식비',
+                    transport: '교통비',
+                    investment: '투자',
+                    income: '수입',
+                    others: '기타'
+                };
+                
+                const amountClass = transaction.type === 'income' ? 'income' : 'expense';
+                const amountPrefix = transaction.type === 'income' ? '+' : '-';
+                
+                item.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-description">${transaction.description}</div>
+                        <div class="transaction-meta">${transaction.date} • ${categoryNames[transaction.category]}</div>
+                    </div>
+                    <div class="transaction-amount ${amountClass}">
+                        ${amountPrefix}₩${Math.abs(transaction.amount).toLocaleString()}
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        // 요약 정보 업데이트
+        function updateSummary(transactions) {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            transactions.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += Math.abs(t.amount);
+                } else {
+                    totalExpense += Math.abs(t.amount);
+                }
+            });
+            
+            const netAmount = totalIncome - totalExpense;
+            
+            document.getElementById('totalIncome').textContent = '₩' + totalIncome.toLocaleString();
+            document.getElementById('totalExpense').textContent = '₩' + totalExpense.toLocaleString();
+            
+            const netElement = document.getElementById('netAmount');
+            netElement.textContent = '₩' + Math.abs(netAmount).toLocaleString();
+            netElement.className = 'balance-amount ' + (netAmount >= 0 ? 'income' : 'expense');
+        }
+
+        // 카테고리 필터
+        function filterByCategory(category) {
+            // 이전 활성 칩 비활성화
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // 새로운 칩 활성화
+            event.target.classList.add('active');
+            
+            currentFilter = category;
+            loadTransactions();
+        }
+
+        // 거래 추가 모달 열기
+        function openAddModal() {
+            editingTransaction = null;
+            document.getElementById('modalTitle').textContent = '거래 추가';
+            document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDescription').value = '';
+            document.getElementById('transactionAmount').value = '';
+            document.getElementById('transactionCategory').value = 'food';
+            document.querySelector('input[name="transactionType"][value="expense"]').checked = true;
+            document.getElementById('editActions').style.display = 'none';
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        // 거래 수정
+        function editTransaction(transaction) {
+            editingTransaction = transaction;
+            document.getElementById('modalTitle').textContent = '거래 수정';
+            document.getElementById('transactionDate').value = transaction.date;
+            document.getElementById('transactionDescription').value = transaction.description;
+            document.getElementById('transactionAmount').value = Math.abs(transaction.amount);
+            document.getElementById('transactionCategory').value = transaction.category;
+            document.querySelector(`input[name="transactionType"][value="${transaction.type}"]`).checked = true;
+            document.getElementById('editActions').style.display = 'block';
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        // 거래 저장
+        function saveTransaction() {
+            const date = document.getElementById('transactionDate').value;
+            const description = document.getElementById('transactionDescription').value;
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const category = document.getElementById('transactionCategory').value;
+            const type = document.querySelector('input[name="transactionType"]:checked').value;
+            
+            if (!date || !description || !amount) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            
+            if (editingTransaction) {
+                // 수정
+                const index = transactions.findIndex(t => t.id === editingTransaction.id);
+                if (index >= 0) {
+                    transactions[index] = {
+                        ...editingTransaction,
+                        date,
+                        description,
+                        amount: type === 'income' ? amount : -amount,
+                        category,
+                        type
+                    };
+                }
+            } else {
+                // 추가
+                transactions.push({
+                    id: Date.now(),
+                    date,
+                    description,
+                    amount: type === 'income' ? amount : -amount,
+                    category,
+                    type
+                });
+            }
+            
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            loadTransactions();
+            closeModal();
+        }
+
+        // 거래 삭제
+        function deleteTransaction() {
+            if (!editingTransaction || !confirm('이 거래를 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            const filteredTransactions = transactions.filter(t => t.id !== editingTransaction.id);
+            
+            localStorage.setItem('transactions', JSON.stringify(filteredTransactions));
+            loadTransactions();
+            closeModal();
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('transactionModal').style.display = 'none';
+            editingTransaction = null;
+        }
+
+        // 프로필로 이동
+        function goToProfile() {
+            window.location.href = 'index.html';
+        }
+
+        // 프로필 이미지 로드
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const headerProfileImg = document.getElementById('headerProfileImg');
+                const headerDefaultIcon = document.getElementById('headerDefaultIcon');
+                
+                if (headerProfileImg && headerDefaultIcon) {
+                    headerProfileImg.src = savedImage;
+                    headerProfileImg.style.display = 'block';
+                    headerDefaultIcon.style.display = 'none';
+                }
+            }
+        }
+
+        // 모달 외부 클릭시 닫기
+        document.getElementById('transactionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+            loadTransactions();
+        });
+    </script>
+</body>
+</html>

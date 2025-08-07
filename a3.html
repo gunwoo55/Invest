@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습 - FINE U</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>📚 학습</h1>
+            <p class="subtitle">투자 지식을 쌓아 현명한 투자자가 되세요</p>
+            <div class="profile-icon" onclick="goToProfile()">
+                <img id="headerProfileImg" style="display: none;" alt="프로필">
+                <span class="default-icon" id="headerDefaultIcon">👤</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- 학습 진도 -->
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>🎯 학습 진도</h3>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>투자 기초</span>
+                        <span>75%</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.3); height: 8px; border-radius: 4px;">
+                        <div style="background: white; height: 100%; width: 75%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 추천 학습 과정 -->
+            <div class="card">
+                <h3>⭐ 추천 학습 과정</h3>
+                <div class="learning-item" onclick="startCourse('basic')">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 60px; height: 60px; background: #E3F2FD; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 24px;">📈</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">투자 기초 완성</div>
+                            <div style="color: #666; font-size: 14px;">주식, 채권, ETF의 기본 개념</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item" onclick="startCourse('analysis')">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 60px; height: 60px; background: #E8F5E8; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 24px;">🔍</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">기술적 분석</div>
+                            <div style="color: #666; font-size: 14px;">차트 읽기와 투자 타이밍</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-item" onclick="startCourse('portfolio')">
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 60px; height: 60px; background: #FFF3E0; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 24px;">💼</div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">포트폴리오 관리</div>
+                            <div style="color: #666; font-size: 14px;">리스크 관리와 자산 배분</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 금융 용어 퀴즈 -->
+            <div class="card">
+                <h3>🎲 금융 용어 퀴즈</h3>
+                <p style="color: #666; margin-bottom: 15px;">재미있는 퀴즈로 금융 용어를 익혀보세요!</p>
+                <button class="btn" onclick="startQuiz()">퀴즈 시작하기</button>
+            </div>
+
+            <!-- 투자 시뮬레이션 -->
+            <div class="card">
+                <h3>🎮 투자 시뮬레이션</h3>
+                <p style="color: #666; margin-bottom: 15px;">가상의 시나리오에서 투자 전략을 연습해보세요.</p>
+                <button class="btn" onclick="startSimulation()">시뮬레이션 시작</button>
+            </div>
+
+            <!-- 학습 자료 -->
+            <div class="card">
+                <h3>📖 학습 자료</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer;" onclick="openResource('guide')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 500;">📋 초보자 투자 가이드</div>
+                                <div style="color: #666; font-size: 14px;">기본적인 투자 개념과 시작 방법</div>
+                            </div>
+                            <span style="color: #667eea;">→</span>
+                        </div>
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer;" onclick="openResource('dictionary')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 500;">📚 금융 용어 사전</div>
+                                <div style="color: #666; font-size: 14px;">500개 이상의 핵심 금융 용어</div>
+                            </div>
+                            <span style="color: #667eea;">→</span>
+                        </div>
+                    </li>
+                    <li style="padding: 12px 0; cursor: pointer;" onclick="openResource('videos')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 500;">🎬 투자 강의 영상</div>
+                                <div style="color: #666; font-size: 14px;">전문가가 설명하는 투자 전략</div>
+                            </div>
+                            <span style="color: #667eea;">→</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 학습 통계 -->
+            <div class="card">
+                <h3>📊 학습 통계</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 600; color: #667eea;">7</div>
+                        <div style="color: #666; font-size: 14px;">완료한 강의</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 600; color: #667eea;">85%</div>
+                        <div style="color: #666; font-size: 14px;">퀴즈 평균 점수</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 600; color: #667eea;">12</div>
+                        <div style="color: #666; font-size: 14px;">연속 학습일</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: 600; color: #667eea;">3</div>
+                        <div style="color: #666; font-size: 14px;">획득한 배지</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                홈
+            </a>
+            <a href="a1.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                포트폴리오
+            </a>
+            <a href="a2.html" class="nav-item">
+                <span class="nav-icon">📰</span>
+                뉴스
+            </a>
+            <a href="a3.html" class="nav-item active">
+                <span class="nav-icon">📚</span>
+                학습
+            </a>
+            <a href="a4.html" class="nav-item">
+                <span class="nav-icon">💳</span>
+                가계부
+            </a>
+            <a href="a5.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                투자
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // 학습 과정 시작
+        function startCourse(courseType) {
+            alert(`${getCourseTitle(courseType)} 과정을 시작합니다!`);
+            // 실제 구현 시 학습 과정 페이지로 이동
+        }
+
+        function getCourseTitle(courseType) {
+            const titles = {
+                'basic': '투자 기초 완성',
+                'analysis': '기술적 분석',
+                'portfolio': '포트폴리오 관리'
+            };
+            return titles[courseType] || '학습 과정';
+        }
+
+        // 퀴즈 시작
+        function startQuiz() {
+            const questions = [
+                {
+                    question: "PER은 무엇의 약자일까요?",
+                    options: ["Price Earnings Ratio", "Personal Economic Rate", "Public Equity Return", "Private Exchange Rate"],
+                    correct: 0
+                },
+                {
+                    question: "주식의 액면가란 무엇일까요?",
+                    options: ["시장에서 거래되는 가격", "회사가 정한 기본 가격", "최고가", "최저가"],
+                    correct: 1
+                }
+            ];
+            
+            let currentQuestion = 0;
+            let score = 0;
+            
+            function showQuestion() {
+                if (currentQuestion >= questions.length) {
+                    alert(`퀴즈 완료! 점수: ${score}/${questions.length}`);
+                    return;
+                }
+                
+                const q = questions[currentQuestion];
+                const answer = prompt(`문제 ${currentQuestion + 1}: ${q.question}\n\n${q.options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\n번호를 입력하세요 (1-4):`);
+                
+                if (answer && parseInt(answer) - 1 === q.correct) {
+                    score++;
+                    alert("정답입니다! 🎉");
+                } else {
+                    alert(`틀렸습니다. 정답: ${q.options[q.correct]}`);
+                }
+                
+                currentQuestion++;
+                setTimeout(showQuestion, 1000);
+            }
+            
+            showQuestion();
+        }
+
+        // 시뮬레이션 시작
+        function startSimulation() {
+            alert("투자 시뮬레이션을 시작합니다!\n\n실제 시장 상황을 기반으로 한 가상 투자 게임입니다.");
+            // 실제 구현 시 시뮬레이션 페이지로 이동
+        }
+
+        // 학습 자료 열기
+        function openResource(resourceType) {
+            const resources = {
+                'guide': '📋 초보자 투자 가이드를 준비 중입니다.',
+                'dictionary': '📚 금융 용어 사전을 준비 중입니다.',
+                'videos': '🎬 투자 강의 영상을 준비 중입니다.'
+            };
+            
+            alert(resources[resourceType] || '준비 중인 자료입니다.');
+        }
+
+        // 프로필로 이동
+        function goToProfile() {
+            window.location.href = 'index.html';
+        }
+
+        // 프로필 이미지 로드
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const headerProfileImg = document.getElementById('headerProfileImg');
+                const headerDefaultIcon = document.getElementById('headerDefaultIcon');
+                
+                if (headerProfileImg && headerDefaultIcon) {
+                    headerProfileImg.src = savedImage;
+                    headerProfileImg.style.display = 'block';
+                    headerDefaultIcon.style.display = 'none';
+                }
+            }
+        }
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포트폴리오 - FINE U</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>📊 포트폴리오</h1>
+            <p class="subtitle">내 투자 현황을 한눈에 확인하세요</p>
+            <div class="profile-icon" onclick="goToProfile()">
+                <img id="headerProfileImg" style="display: none;" alt="프로필">
+                <span class="default-icon" id="headerDefaultIcon">👤</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- 총 자산 현황 -->
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>💰 총 자산</h3>
+                <div style="font-size: 32px; font-weight: 600; margin: 15px 0;" id="totalAssets">₩0</div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 14px; opacity: 0.9;">투자금액</div>
+                        <div style="font-size: 18px; font-weight: 500;" id="investedAmount">₩0</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; opacity: 0.9;">수익률</div>
+                        <div style="font-size: 18px; font-weight: 500;" id="returnRate">+0.00%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 자산 분배 차트 -->
+            <div class="card">
+                <h3>📈 자산 분배</h3>
+                <div id="assetChart" style="margin: 20px 0;">
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                        <div>투자 후 차트가 표시됩니다</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 보유 종목 -->
+            <div class="card">
+                <h3>💼 보유 종목</h3>
+                <div id="portfolioList">
+                    <!-- 포트폴리오 목록이 여기에 표시됩니다 -->
+                </div>
+            </div>
+
+            <!-- 투자 히스토리 -->
+            <div class="card">
+                <h3>📋 투자 히스토리</h3>
+                <div id="investmentHistory">
+                    <!-- 투자 히스토리가 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                홈
+            </a>
+            <a href="a1.html" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                포트폴리오
+            </a>
+            <a href="a2.html" class="nav-item">
+                <span class="nav-icon">📰</span>
+                뉴스
+            </a>
+            <a href="a3.html" class="nav-item">
+                <span class="nav-icon">📚</span>
+                학습
+            </a>
+            <a href="a4.html" class="nav-item">
+                <span class="nav-icon">💳</span>
+                가계부
+            </a>
+            <a href="a5.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                투자
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // 포트폴리오 데이터 로드
+        function loadPortfolio() {
+            const portfolio = JSON.parse(localStorage.getItem('portfolio')) || [];
+            const balance = parseFloat(localStorage.getItem('balance')) || 10000000;
+            
+            let totalInvested = 0;
+            let currentValue = 0;
+            
+            portfolio.forEach(item => {
+                totalInvested += item.totalInvested;
+                currentValue += item.quantity * item.currentPrice;
+            });
+            
+            const totalAssets = currentValue + balance;
+            const returnRate = totalInvested > 0 ? ((currentValue - totalInvested) / totalInvested * 100) : 0;
+            
+            // UI 업데이트
+            document.getElementById('totalAssets').textContent = '₩' + totalAssets.toLocaleString();
+            document.getElementById('investedAmount').textContent = '₩' + totalInvested.toLocaleString();
+            
+            const returnElement = document.getElementById('returnRate');
+            returnElement.textContent = (returnRate >= 0 ? '+' : '') + returnRate.toFixed(2) + '%';
+            returnElement.style.color = returnRate >= 0 ? '#4CAF50' : '#F44336';
+            
+            // 포트폴리오 목록 렌더링
+            renderPortfolioList(portfolio);
+            renderAssetChart(portfolio, balance);
+        }
+
+        // 포트폴리오 목록 렌더링
+        function renderPortfolioList(portfolio) {
+            const container = document.getElementById('portfolioList');
+            
+            if (portfolio.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">보유 종목이 없습니다.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            portfolio.forEach(item => {
+                const currentValue = item.quantity * item.currentPrice;
+                const profitLoss = currentValue - item.totalInvested;
+                const profitRate = (profitLoss / item.totalInvested * 100);
+                
+                const listItem = document.createElement('div');
+                listItem.className = 'investment-item';
+                listItem.style.marginBottom = '12px';
+                listItem.style.border = '1px solid #eee';
+                listItem.style.borderRadius = '8px';
+                listItem.style.padding = '16px';
+                
+                listItem.innerHTML = `
+                    <div class="investment-info">
+                        <div class="investment-name">${item.name}</div>
+                        <div class="investment-price">보유: ${item.quantity.toLocaleString()}${item.category === 'savings' ? '원' : '주'}</div>
+                    </div>
+                    <div class="investment-change ${profitLoss >= 0 ? 'positive' : 'negative'}">
+                        <div>₩${currentValue.toLocaleString()}</div>
+                        <div style="font-size: 12px;">${profitLoss >= 0 ? '+' : ''}₩${Math.abs(profitLoss).toLocaleString()}</div>
+                    </div>
+                `;
+                
+                container.appendChild(listItem);
+            });
+        }
+
+        // 자산 분배 차트 렌더링 (간단한 버전)
+        function renderAssetChart(portfolio, balance) {
+            const container = document.getElementById('assetChart');
+            
+            if (portfolio.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                        <div>투자 후 차트가 표시됩니다</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 카테고리별 자산 집계
+            const categoryTotals = {};
+            let totalInvested = 0;
+            
+            portfolio.forEach(item => {
+                const value = item.quantity * item.currentPrice;
+                totalInvested += value;
+                
+                if (!categoryTotals[item.category]) {
+                    categoryTotals[item.category] = 0;
+                }
+                categoryTotals[item.category] += value;
+            });
+            
+            const categoryNames = {
+                stocks: '주식',
+                crypto: '암호화폐',
+                bonds: '채권',
+                etf: 'ETF',
+                savings: '예적금',
+                commodities: '귀금속'
+            };
+            
+            const colors = {
+                stocks: '#FF6B6B',
+                crypto: '#4ECDC4',
+                bonds: '#45B7D1',
+                etf: '#96CEB4',
+                savings: '#FFEAA7',
+                commodities: '#DDA0DD'
+            };
+            
+            let chartHTML = '';
+            Object.keys(categoryTotals).forEach(category => {
+                const percentage = (categoryTotals[category] / totalInvested * 100).toFixed(1);
+                chartHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 12px; height: 12px; background: ${colors[category]}; border-radius: 50%; margin-right: 8px;"></div>
+                            <span>${categoryNames[category]}</span>
+                        </div>
+                        <div>
+                            <span style="font-weight: 600;">₩${categoryTotals[category].toLocaleString()}</span>
+                            <span style="color: #666; margin-left: 8px;">(${percentage}%)</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // 현금 비중 추가
+            const totalAssets = totalInvested + balance;
+            const cashPercentage = (balance / totalAssets * 100).toFixed(1);
+            chartHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 12px; height: 12px; background: #BDC3C7; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>현금</span>
+                    </div>
+                    <div>
+                        <span style="font-weight: 600;">₩${balance.toLocaleString()}</span>
+                        <span style="color: #666; margin-left: 8px;">(${cashPercentage}%)</span>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = chartHTML;
+        }
+
+        // 프로필로 이동
+        function goToProfile() {
+            window.location.href = 'index.html';
+        }
+
+        // 프로필 이미지 로드
+        function loadProfileImage() {
+            const savedImage = localStorage.getItem('profileImage');
+            if (savedImage) {
+                const headerProfileImg = document.getElementById('headerProfileImg');
+                const headerDefaultIcon = document.getElementById('headerDefaultIcon');
+                
+                if (headerProfileImg && headerDefaultIcon) {
+                    headerProfileImg.src = savedImage;
+                    headerProfileImg.style.display = 'block';
+                    headerDefaultIcon.style.display = 'none';
+                }
+            }
+        }
+
+        // 페이지 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileImage();
+            loadPortfolio();
+        });
+    </script>
+</body>
+</html>
